@@ -58,15 +58,16 @@
   "peerDependencies": {
     "tslib": "2"
   },
-  "dependencies": {
-  },
+  "dependencies": {},
   "devDependencies": {
     "@types/benchmark": "^2.1.2",
     "@types/jest": "^29.5.12",
     "benchmark": "^2.1.4",
     "jest": "^29.7.0",
+    "js-sdsl": "^4.4.2",
     "prettier": "^3.2.5",
     "rimraf": "^5.0.0",
+    "sorted-btree": "^1.8.1",
     "ts-jest": "^29.1.2",
     "ts-node": "^10.9.2",
     "tslib": "^2.6.2",
@@ -101,6 +102,9 @@
     "bracketSpacing": false
   },
   "release": {
-    "branches": ["master", "next"]
+    "branches": [
+      "master",
+      "next"
+    ]
   }
 }

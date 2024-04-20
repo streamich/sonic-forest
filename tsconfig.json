@@ -39,7 +39,8 @@
   ],
   "typedocOptions": {
     "entryPoints": [
-      "src/index.ts"
+      "src/avl/index.ts",
+      "src/red-black/index.ts"
     ],
     "out": "typedocs"
   }

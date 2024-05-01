@@ -58,7 +58,9 @@
   "peerDependencies": {
     "tslib": "2"
   },
-  "dependencies": {},
+  "dependencies": {
+    "tree-dump": "^1.0.0"
+  },
   "devDependencies": {
     "@types/benchmark": "^2.1.2",
     "@types/jest": "^29.5.12",

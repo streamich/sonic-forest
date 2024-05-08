@@ -12,6 +12,7 @@
   },
   "homepage": "https://github.com/streamich/sonic-forest",
   "repository": "streamich/sonic-forest",
+  "license": "Apache-2.0",
   "funding": {
     "type": "github",
     "url": "https://github.com/sponsors/streamich"

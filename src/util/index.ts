@@ -1,11 +1,10 @@
-import type {Comparator, HeadlessNode, ITreeNode} from './types';
+import {first} from './first';
+import {next} from './next';
+import type {Comparator, HeadlessNode, ITreeNode} from '../types';
 
-export const first = <N extends HeadlessNode>(root: N | undefined): N | undefined => {
-  let curr = root;
-  while (curr)
-    if (curr.l) curr = curr.l as N;
-    else return curr;
-  return curr;
+export {
+  first,
+  next,
 };
 
 export const last = <N extends HeadlessNode>(root: N | undefined): N | undefined => {
@@ -14,20 +13,6 @@ export const last = <N extends HeadlessNode>(root: N | undefined): N | undefined
     if (curr.r) curr = curr.r as N;
     else return curr;
   return curr;
-};
-
-export const next = <N extends HeadlessNode>(curr: N): N | undefined => {
-  if (curr.r) {
-    curr = curr.r as N;
-    while (curr.l) curr = curr.l as N;
-    return curr;
-  }
-  let p = curr.p as N;
-  while (p && p.r === curr) {
-    curr = p;
-    p = p.p as N;
-  }
-  return p;
 };
 
 export const prev = <N extends HeadlessNode>(curr: N): N | undefined => {

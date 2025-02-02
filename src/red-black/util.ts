@@ -141,9 +141,11 @@ const removeCase2 = <K, N extends IRbTreeNode<K>>(root: N, n: N): N => {
   // console.log('case 2');
   const p = n.p! as N;
   const s = (n === p.l ? p.r : p.l) as N;
-  if (s && !s.b) {
+  if (s && !s.b && (!s.l || s.l.b) && (!s.r || s.r.b)) {
     if (n === p.l) rrRotate(p, s); else llRotate(p, s);
-    if (!s.p) return s;
+    p.b = false;
+    s.b = true;
+    if (!s.p) root = s;
   }
   return removeCase3(root, n);
 };

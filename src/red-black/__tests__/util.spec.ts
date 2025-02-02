@@ -169,6 +169,42 @@ describe('deletes', () => {
   });
 
   describe('removed node is double-black', () => {
+    test('case 2', () => {
+      const nn20: IRbTreeNode<number, string> = n(-20, true);
+      const nn10: IRbTreeNode<number, string> = n(-10, true);
+      const nn5: IRbTreeNode<number, string> = n(-5, true);
+      const n10: IRbTreeNode<number, string> = n(10, true);
+      const n20: IRbTreeNode<number, string> = n(20, true);
+      const n40: IRbTreeNode<number, string> = n(40, true);
+      const n50: IRbTreeNode<number, string> = n(50, true);
+      const n60: IRbTreeNode<number, string> = n(60, false);
+      const n80: IRbTreeNode<number, string> = n(80, true);
+      let root = n10;
+      linkLeft(root, nn10);
+      linkRight(root, n40);
+      linkLeft(nn10, nn20);
+      linkRight(nn10, nn5);
+      linkLeft(n40, n20);
+      linkRight(n40, n60);
+      linkLeft(n60, n50);
+      linkRight(n60, n80);
+      assertRedBlackTree(root);
+      expect(size(root)).toBe(9);
+      root = remove(root, n10)!;
+      expect(size(root)).toBe(8);
+      // console.log(print(root));
+      assertRedBlackTree(root);
+      expect(!!find(root, 10, comparator)).toBe(false);
+      expect(!!find(root, -20, comparator)).toBe(true);
+      expect(!!find(root, -10, comparator)).toBe(true);
+      expect(!!find(root, -5, comparator)).toBe(true);
+      expect(!!find(root, 20, comparator)).toBe(true);
+      expect(!!find(root, 40, comparator)).toBe(true);
+      expect(!!find(root, 50, comparator)).toBe(true);
+      expect(!!find(root, 60, comparator)).toBe(true);
+      expect(!!find(root, 80, comparator)).toBe(true);
+    });
+
     test('case 3', () => {
       const n0: IRbTreeNode<number, string> = n(0, true);
       const n10: IRbTreeNode<number, string> = n(10, true);
@@ -287,7 +323,7 @@ describe('deletes', () => {
       root = remove(root, nn40)!;
       assertRedBlackTree(root);
       expect(size(root)).toBe(8);
-      console.log(print(root));
+      // console.log(print(root));
       expect(!!find(root, -40, comparator)).toBe(false);
       expect(!!find(root, -30, comparator)).toBe(true);
       expect(!!find(root, -20, comparator)).toBe(true);

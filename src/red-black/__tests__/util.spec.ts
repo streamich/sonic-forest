@@ -1,14 +1,22 @@
 import {find, first, next, size} from '../../util';
 import {IRbTreeNode, RbHeadlessNode} from '../types';
-import {insert, print} from '../util';
+import {insert, remove, print} from '../util';
 
 const node = <K, V>(k: K, v: V): IRbTreeNode<K, V> => ({k, v, b: false, p: undefined, l: undefined, r: undefined});
 const n = (val: number) => node(val, '' + val);
 const comparator = (a: number, b: number) => a - b;
 const setup = () => {
   const root: {root: IRbTreeNode<number, string> | undefined} = {root: undefined};
-  const ins = (...vals: number[]) => vals.forEach((val) => (root.root = insert(root.root, n(val), comparator)));
-  return {root, ins};
+  const ins = (...vals: number[]) => {
+    vals.forEach((val) => (root.root = insert(root.root, n(val), comparator)));
+    assertRedBlackTree(root.root);
+  };
+  const del = (val: number) => {
+    const node = find(root.root!, val, comparator) as IRbTreeNode<number, string>;
+    root.root = remove(root.root, node);
+    assertRedBlackTree(root.root);
+  };
+  return {root, ins, del};
 };
 
 const treeBlackHeight = (node: RbHeadlessNode): number => {
@@ -139,5 +147,78 @@ describe('inserts', () => {
     expect(size(root.root)).toBe(16);
     const val = find(root.root, 43, comparator);
     expect(val!.v).toBe('43');
+  });
+});
+
+describe.only('deletes', () => {
+  test('can delete a red leaf', () => {
+    const {root, ins} = setup();
+    ins(10);
+    assertRedBlackTree(root.root);
+    ins(15);
+    assertRedBlackTree(root.root);
+    const node = find(root.root, 15, comparator)! as IRbTreeNode<number, string>;
+    expect(node.b).toBe(false);
+    expect(node.k).toBe(15);
+    expect(node.v).toBe('15');
+    expect(size(root.root)).toBe(2);
+    root.root = remove(root.root, node);
+    assertRedBlackTree(root.root);
+    expect(size(root.root)).toBe(1);
+    expect(root.root!.k).toBe(10);
+  });
+
+  describe('removed node is double-black', () => {
+    test('delete non-leaf red node', () => {
+      const {root, ins, del} = setup();
+      ins(10);
+      ins(9);
+      ins(8);
+      ins(7);
+      ins(6);
+      ins(5);
+      // del(10);
+      // del(8);
+      // ins(4);
+      // assertRedBlackTree(root.root);
+      // ins(3);
+      // assertRedBlackTree(root.root);
+      // ins(2);
+      // assertRedBlackTree(root.root);
+      // ins(1);
+      // assertRedBlackTree(root.root);
+      // ins(0);
+      // assertRedBlackTree(root.root);
+      // ins(11);
+      // assertRedBlackTree(root.root);
+      // ins(5);
+      // assertRedBlackTree(root.root);
+      // ins(16);
+      // assertRedBlackTree(root.root);
+      // ins(4);
+      // assertRedBlackTree(root.root);
+      // ins(2);
+      // assertRedBlackTree(root.root);
+      // ins(0);
+      // assertRedBlackTree(root.root);
+      // ins(3);
+      // assertRedBlackTree(root.root);
+      // ins(2);
+      // assertRedBlackTree(root.root);
+      // ins(1);
+      // assertRedBlackTree(root.root);
+      // ins(25);
+      // assertRedBlackTree(root.root);
+      console.log(print(root.root));
+      // const node = find(root.root, 6, comparator)! as IRbTreeNode<number, string>;
+      // expect(node.b).toBe(false);
+      // expect(node.k).toBe(15);
+      // expect(node.v).toBe('15');
+      // expect(size(root.root)).toBe(2);
+      // root.root = remove(root.root, node);
+      // assertRedBlackTree(root.root);
+      // expect(size(root.root)).toBe(1);
+      // expect(root.root!.k).toBe(10);
+    });
   });
 });

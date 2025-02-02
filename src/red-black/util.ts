@@ -132,10 +132,13 @@ export const remove = <K, N extends IRbTreeNode<K>>(root: N | undefined, n: N): 
   return root;
 };
 
-const removeCase1 = <K, N extends IRbTreeNode<K>>(root: N, n: N): N =>
-  !n.p ? n : removeCase2(root, n);
+const removeCase1 = <K, N extends IRbTreeNode<K>>(root: N, n: N): N => {
+  // console.log('case 1');
+  return !n.p ? n : removeCase2(root, n);
+};
 
 const removeCase2 = <K, N extends IRbTreeNode<K>>(root: N, n: N): N => {
+  // console.log('case 2');
   const p = n.p! as N;
   const s = (n === p.l ? p.r : p.l) as N;
   if (s && !s.b) {
@@ -146,6 +149,7 @@ const removeCase2 = <K, N extends IRbTreeNode<K>>(root: N, n: N): N => {
 };
 
 const removeCase3 = <K, N extends IRbTreeNode<K>>(root: N, n: N): N => {
+  // console.log('case 3');
   const p = n.p! as N;
   const s = (n === p.l ? p.r : p.l) as N;
   if (p.b && s.b && (!s.l || s.l.b) && (!s.r || s.r.b)) {
@@ -156,6 +160,7 @@ const removeCase3 = <K, N extends IRbTreeNode<K>>(root: N, n: N): N => {
 };
 
 const removeCase4 = <K, N extends IRbTreeNode<K>>(root: N, n: N): N => {
+  // console.log('case 4');
   const p = n.p! as N;
   const s = (n === p.l ? p.r : p.l) as N;
   if (!p.b && s.b && (!s.l || s.l.b) && (!s.r || s.r.b)) {
@@ -167,6 +172,7 @@ const removeCase4 = <K, N extends IRbTreeNode<K>>(root: N, n: N): N => {
 };
 
 const removeCase5 = <K, N extends IRbTreeNode<K>>(root: N, n: N): N => {
+  // console.log('case 5');
   const p = n.p! as N;
   const s = (n === p.l ? p.r : p.l) as N;
   if (s.b) {
@@ -184,18 +190,19 @@ const removeCase5 = <K, N extends IRbTreeNode<K>>(root: N, n: N): N => {
 };
 
 const removeCase6 = <K, N extends IRbTreeNode<K>>(root: N, n: N): N => {
+  // console.log('case 6');
   const p = n.p! as N;
   const s = (n === p.l ? p.r : p.l) as N;
   s.b = p.b;
   p.b = true;
   if (n === p.l) {
     s.r!.b = true;
-    llRotate(p, s);
+    rrRotate(p, s);
   } else {
     s.l!.b = true;
-    rrRotate(p, s);
+    llRotate(p, s);
   }
-  return root;
+  return s.p ? root : s;
 };
 
 export const print = (node: undefined | RbHeadlessNode | IRbTreeNode, tab: string = ''): string => {

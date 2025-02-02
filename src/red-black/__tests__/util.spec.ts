@@ -188,5 +188,28 @@ describe('deletes', () => {
       expect(!!find(root, 10, comparator)).toBe(true);
       expect(!!find(root, 40, comparator)).toBe(true);
     });
+
+    test('case 6', () => {
+      const n0: IRbTreeNode<number, string> = n(0, true);
+      const n10: IRbTreeNode<number, string> = n(10, true);
+      const n20: IRbTreeNode<number, string> = n(20, false);
+      const n30: IRbTreeNode<number, string> = n(30, true);
+      const n40: IRbTreeNode<number, string> = n(40, false);
+      let root = n10;
+      linkLeft(root, n0);
+      linkRight(root, n30);
+      linkLeft(n30, n20);
+      linkRight(n30, n40);
+      assertRedBlackTree(root);
+      root = remove(root, n0)!;
+      assertRedBlackTree(root);
+      // console.log(print(root));
+      expect(size(root)).toBe(4);
+      expect(!!find(root, 0, comparator)).toBe(false);
+      expect(!!find(root, 10, comparator)).toBe(true);
+      expect(!!find(root, 20, comparator)).toBe(true);
+      expect(!!find(root, 30, comparator)).toBe(true);
+      expect(!!find(root, 40, comparator)).toBe(true);
+    });
   });
 });

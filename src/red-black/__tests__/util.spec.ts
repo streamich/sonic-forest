@@ -2,7 +2,14 @@ import {find, first, next, size} from '../../util';
 import {IRbTreeNode, RbHeadlessNode} from '../types';
 import {insert, remove, print} from '../util';
 
-const node = <K, V>(k: K, v: V, black: boolean = false): IRbTreeNode<K, V> => ({k, v, b: black, p: undefined, l: undefined, r: undefined});
+const node = <K, V>(k: K, v: V, black: boolean = false): IRbTreeNode<K, V> => ({
+  k,
+  v,
+  b: black,
+  p: undefined,
+  l: undefined,
+  r: undefined,
+});
 const n = (val: number, black: boolean = false) => node(val, '' + val, black);
 const linkLeft = <K, V>(parent: IRbTreeNode<K, V>, child: IRbTreeNode<K, V>) => {
   parent.l = child;

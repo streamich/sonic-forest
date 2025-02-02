@@ -120,14 +120,17 @@ export const remove = <K, N extends IRbTreeNode<K>>(root: N | undefined, n: N): 
   const child = (l || r) as N | undefined;
   if (child) {
     child.p = p;
-    if (p.l === n) p.l = child; else p.r = child;
+    if (p.l === n) p.l = child;
+    else p.r = child;
     const b = n.b;
     if (b && !child.b) child.b = true;
     else root = removeCase1(root, child);
   } else {
     if (n.b) root = removeCase1(root, n);
     const p2 = n.p as N;
-    if (p2) if (n === p2.l) p2.l = void 0; else p2.r = void 0;
+    if (p2)
+      if (n === p2.l) p2.l = void 0;
+      else p2.r = void 0;
   }
   return root;
 };
@@ -142,7 +145,8 @@ const removeCase2 = <K, N extends IRbTreeNode<K>>(root: N, n: N): N => {
   const p = n.p! as N;
   const s = (n === p.l ? p.r : p.l) as N;
   if (s && !s.b && (!s.l || s.l.b) && (!s.r || s.r.b)) {
-    if (n === p.l) rrRotate(p, s); else llRotate(p, s);
+    if (n === p.l) rrRotate(p, s);
+    else llRotate(p, s);
     p.b = false;
     s.b = true;
     if (!s.p) root = s;

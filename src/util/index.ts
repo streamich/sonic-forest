@@ -2,10 +2,7 @@ import {first} from './first';
 import {next} from './next';
 import type {Comparator, HeadlessNode, ITreeNode} from '../types';
 
-export {
-  first,
-  next,
-};
+export {first, next};
 
 export const last = <N extends HeadlessNode>(root: N | undefined): N | undefined => {
   let curr = root;

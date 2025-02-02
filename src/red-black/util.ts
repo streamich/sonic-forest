@@ -179,12 +179,13 @@ const removeCase5 = <K, N extends IRbTreeNode<K>>(root: N, n: N): N => {
     if (n === p.l && (!s.r || s.r.b) && s.l && !s.l.b) {
       s.l.b = true;
       s.b = false;
-      rrRotate(s, s.l);
+      llRotate(s, s.l);
     } else if (n === p.r && (!s.l || s.l.b) && s.r && !s.r.b) {
       s.r.b = true;
       s.b = false;
-      llRotate(s, s.r);
+      rrRotate(s, s.r);
     }
+    if (!s.p) return s;
   }
   return removeCase6(root, n);
 };

@@ -169,6 +169,23 @@ describe('deletes', () => {
   });
 
   describe('removed node is double-black', () => {
+    test('case 3', () => {
+      const n0: IRbTreeNode<number, string> = n(0, true);
+      const n10: IRbTreeNode<number, string> = n(10, true);
+      const n20: IRbTreeNode<number, string> = n(20, true);
+      let root = n10;
+      linkLeft(root, n0);
+      linkRight(root, n20);
+      assertRedBlackTree(root);
+      root = remove(root, n0)!;
+      assertRedBlackTree(root);
+      // console.log(print(root));
+      expect(size(root)).toBe(2);
+      expect(!!find(root, 0, comparator)).toBe(false);
+      expect(!!find(root, 10, comparator)).toBe(true);
+      expect(!!find(root, 20, comparator)).toBe(true);
+    });
+
     test('case 4', () => {
       const n0: IRbTreeNode<number, string> = n(0, true);
       const n10: IRbTreeNode<number, string> = n(10, true);
@@ -187,6 +204,40 @@ describe('deletes', () => {
       expect(!!find(root, 20, comparator)).toBe(false);
       expect(!!find(root, 10, comparator)).toBe(true);
       expect(!!find(root, 40, comparator)).toBe(true);
+    });
+
+    test('case 5 (after case 3)', () => {
+      const n10: IRbTreeNode<number, string> = n(10, true);
+      const nn20: IRbTreeNode<number, string> = n(-20, true);
+      const nn30: IRbTreeNode<number, string> = n(-30, true);
+      const nn40: IRbTreeNode<number, string> = n(-40, true);
+      const n50: IRbTreeNode<number, string> = n(50, true);
+      const n30: IRbTreeNode<number, string> = n(30, false);
+      const n15: IRbTreeNode<number, string> = n(15, true);
+      const n40: IRbTreeNode<number, string> = n(40, true);
+      const n70: IRbTreeNode<number, string> = n(70, true);
+      let root = n10;
+      linkLeft(root, nn30);
+      linkLeft(nn30, nn40);
+      linkRight(nn30, nn20);
+      linkRight(root, n50);
+      linkLeft(n50, n30);
+      linkRight(n50, n70);
+      linkLeft(n30, n15);
+      linkRight(n30, n40);
+      assertRedBlackTree(root);
+      expect(size(root)).toBe(9);
+      root = remove(root, nn40)!;
+      assertRedBlackTree(root);
+      expect(size(root)).toBe(8);
+      // console.log(print(root));
+      expect(!!find(root, -40, comparator)).toBe(false);
+      expect(!!find(root, -30, comparator)).toBe(true);
+      expect(!!find(root, 10, comparator)).toBe(true);
+      expect(!!find(root, 15, comparator)).toBe(true);
+      expect(!!find(root, 30, comparator)).toBe(true);
+      expect(!!find(root, 30, comparator)).toBe(true);
+      expect(!!find(root, 70, comparator)).toBe(true);
     });
 
     test('case 6', () => {

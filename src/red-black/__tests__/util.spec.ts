@@ -2,8 +2,16 @@ import {find, first, next, size} from '../../util';
 import {IRbTreeNode, RbHeadlessNode} from '../types';
 import {insert, remove, print} from '../util';
 
-const node = <K, V>(k: K, v: V): IRbTreeNode<K, V> => ({k, v, b: false, p: undefined, l: undefined, r: undefined});
-const n = (val: number) => node(val, '' + val);
+const node = <K, V>(k: K, v: V, black: boolean = false): IRbTreeNode<K, V> => ({k, v, b: black, p: undefined, l: undefined, r: undefined});
+const n = (val: number, black: boolean = false) => node(val, '' + val, black);
+const linkLeft = <K, V>(parent: IRbTreeNode<K, V>, child: IRbTreeNode<K, V>) => {
+  parent.l = child;
+  child.p = parent;
+};
+const linkRight = <K, V>(parent: IRbTreeNode<K, V>, child: IRbTreeNode<K, V>) => {
+  parent.r = child;
+  child.p = parent;
+};
 const comparator = (a: number, b: number) => a - b;
 const setup = () => {
   const root: {root: IRbTreeNode<number, string> | undefined} = {root: undefined};
@@ -150,7 +158,7 @@ describe('inserts', () => {
   });
 });
 
-describe.only('deletes', () => {
+describe('deletes', () => {
   test('can delete a red leaf', () => {
     const {root, ins} = setup();
     ins(10);
@@ -169,56 +177,24 @@ describe.only('deletes', () => {
   });
 
   describe('removed node is double-black', () => {
-    test('delete non-leaf red node', () => {
-      const {root, ins, del} = setup();
-      ins(10);
-      ins(9);
-      ins(8);
-      ins(7);
-      ins(6);
-      ins(5);
-      // del(10);
-      // del(8);
-      // ins(4);
-      // assertRedBlackTree(root.root);
-      // ins(3);
-      // assertRedBlackTree(root.root);
-      // ins(2);
-      // assertRedBlackTree(root.root);
-      // ins(1);
-      // assertRedBlackTree(root.root);
-      // ins(0);
-      // assertRedBlackTree(root.root);
-      // ins(11);
-      // assertRedBlackTree(root.root);
-      // ins(5);
-      // assertRedBlackTree(root.root);
-      // ins(16);
-      // assertRedBlackTree(root.root);
-      // ins(4);
-      // assertRedBlackTree(root.root);
-      // ins(2);
-      // assertRedBlackTree(root.root);
-      // ins(0);
-      // assertRedBlackTree(root.root);
-      // ins(3);
-      // assertRedBlackTree(root.root);
-      // ins(2);
-      // assertRedBlackTree(root.root);
-      // ins(1);
-      // assertRedBlackTree(root.root);
-      // ins(25);
-      // assertRedBlackTree(root.root);
-      console.log(print(root.root));
-      // const node = find(root.root, 6, comparator)! as IRbTreeNode<number, string>;
-      // expect(node.b).toBe(false);
-      // expect(node.k).toBe(15);
-      // expect(node.v).toBe('15');
-      // expect(size(root.root)).toBe(2);
-      // root.root = remove(root.root, node);
-      // assertRedBlackTree(root.root);
-      // expect(size(root.root)).toBe(1);
-      // expect(root.root!.k).toBe(10);
+    test('case 4', () => {
+      const n0: IRbTreeNode<number, string> = n(0, true);
+      const n10: IRbTreeNode<number, string> = n(10, true);
+      const n20: IRbTreeNode<number, string> = n(20, true);
+      const n30: IRbTreeNode<number, string> = n(30, false);
+      const n40: IRbTreeNode<number, string> = n(40, true);
+      let root = n10;
+      linkLeft(root, n0);
+      linkRight(root, n30);
+      linkLeft(n30, n20);
+      linkRight(n30, n40);
+      assertRedBlackTree(root);
+      root = remove(root, n20)!;
+      assertRedBlackTree(root);
+      expect(size(root)).toBe(4);
+      expect(!!find(root, 20, comparator)).toBe(false);
+      expect(!!find(root, 10, comparator)).toBe(true);
+      expect(!!find(root, 40, comparator)).toBe(true);
     });
   });
 });

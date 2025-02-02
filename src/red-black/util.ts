@@ -116,15 +116,18 @@ export const remove = <K, N extends IRbTreeNode<K>>(root: N | undefined, n: N): 
     return remove(root, inOrderSuccessor);
   }
   const p = n.p as N | undefined;
-  n.p = n.l = n.r = void 0;
   const child = (l || r) as N | undefined;
   if (!p) return child;
-  if (p.l === n) p.l = child; else p.r = child;
   if (child) {
     child.p = p;
+    if (p.l === n) p.l = child; else p.r = child;
     const b = n.b;
     if (b && !child.b) child.b = true;
-    return removeCase1(root, child);
+    else root = removeCase1(root, child);
+  } else {
+    if (n.b) root = removeCase1(root, n);
+    const p2 = n.p as N;
+    if (p2) if (n === p2.l) p2.l = void 0; else p2.r = void 0;
   }
   return root;
 };

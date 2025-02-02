@@ -27,12 +27,13 @@ const setup = () => {
   return {root, ins, del};
 };
 
-const treeBlackHeight = (node: RbHeadlessNode): number => {
+const assertTreeBlackHeight = (node: RbHeadlessNode): number => {
   const {l, r} = node;
-  if (!l && !r) return 1;
-  const lh = l ? treeBlackHeight(l) : 0;
-  const rh = r ? treeBlackHeight(r) : 0;
-  return +node.b + Math.max(lh, rh);
+  if (!l && !r) return node.b ? 1 : 0;
+  const lh = l ? assertTreeBlackHeight(l) : 0;
+  const rh = r ? assertTreeBlackHeight(r) : 0;
+  expect(lh).toBe(rh);
+  return lh + (node.b ? 1 : 0);
 };
 
 const assertRedBlackTree = (root?: RbHeadlessNode): void => {
@@ -42,12 +43,10 @@ const assertRedBlackTree = (root?: RbHeadlessNode): void => {
     console.log('root:\n\n' + print(root));
     throw new Error('Root is not black');
   }
+  assertTreeBlackHeight(root);
   let curr = first(root);
   while (curr) {
     const {b, l, r, p} = curr;
-    const lh = l ? treeBlackHeight(l) : 0;
-    const rh = r ? treeBlackHeight(r) : 0;
-    const bf = lh - rh;
     if (!b) {
       if (p && !p.b) {
         // tslint:disable-next-line: no-console
@@ -64,13 +63,6 @@ const assertRedBlackTree = (root?: RbHeadlessNode): void => {
         console.log('at node:\n\n' + print(curr));
         throw new Error('Red node has red right child');
       }
-    }
-    try {
-      expect(bf < 2 && bf > -2).toBe(true);
-    } catch (error) {
-      // tslint:disable-next-line: no-console
-      console.log('at node:\n\n' + print(curr));
-      throw error;
     }
     curr = next(curr);
   }

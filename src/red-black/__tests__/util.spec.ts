@@ -21,6 +21,7 @@ const setup = () => {
   };
   const del = (val: number) => {
     const node = find(root.root!, val, comparator) as IRbTreeNode<number, string>;
+    if (!node) return;
     root.root = remove(root.root, node);
     assertRedBlackTree(root.root);
   };
@@ -166,6 +167,18 @@ describe('deletes', () => {
     assertRedBlackTree(root.root);
     expect(size(root.root)).toBe(1);
     expect(root.root!.k).toBe(10);
+  });
+
+  test('single red child', () => {
+    const n100: IRbTreeNode<number, string> = n(100, false);
+    const n99: IRbTreeNode<number, string> = n(99, true);
+    let root = n99;
+    linkRight(root, n100);
+    assertRedBlackTree(root);
+    expect(size(root)).toBe(2);
+    root = remove(root, root)!;
+    expect(size(root)).toBe(1);
+    assertRedBlackTree(root);
   });
 
   describe('removed node is double-black', () => {
@@ -334,5 +347,86 @@ describe('deletes', () => {
       expect(!!find(root, 50, comparator)).toBe(true);
       expect(!!find(root, 70, comparator)).toBe(true);
     });
+  });
+});
+
+describe('scale tests', () => {
+  test('can insert and delete various numbers', () => {
+    const {root, ins, del} = setup();
+    ins(10);
+    ins(11);
+    ins(12);
+    ins(50);
+    ins(60);
+    ins(25);
+    ins(100);
+    ins(88);
+    ins(33);
+    ins(22);
+    ins(55);
+    ins(59);
+    ins(51);
+    expect(size(root.root)).toBe(13);
+    del(100);
+    expect(size(root.root)).toBe(12);
+    del(33);
+    del(33);
+    expect(size(root.root)).toBe(11);
+    del(10);
+    expect(size(root.root)).toBe(10);
+    del(60);
+    expect(size(root.root)).toBe(9);
+    del(22);
+    expect(size(root.root)).toBe(8);
+  });
+
+  test('numbers from 0 to 100', () => {
+    const {root, ins, del} = setup();
+    for (let i = 0; i <= 100; i++) {
+      ins(i);
+      expect(size(root.root)).toBe(i + 1);
+    }
+    for (let i = 0; i <= 100; i++) {
+      del(i);
+      expect(size(root.root)).toBe(100 - i);
+    }
+  });
+
+  test('numbers from 100 to 11', () => {
+    const {root, ins, del} = setup();
+    for (let i = 100; i >= 11; i--) ins(i);
+    for (let i = 100; i >= 11; i--) del(i);
+    expect(root.root).toBeUndefined();
+  });
+
+  test('numbers going both directions from 50', () => {
+    const {root, ins, del} = setup();
+    for (let i = 0; i <= 100; i++) {
+      ins(50 + i);
+      ins(50 - i);
+      expect(size(root.root)).toBe(i * 2 + 2);
+    }
+    for (let i = 0; i <= 100; i++) {
+      del(50 - i);
+      del(50 + i);
+    }
+    expect(root.root).toBeUndefined();
+  });
+
+  test('random numbers from 0 to 100', () => {
+    const {root, ins, del} = setup();
+    for (let i = 0; i <= 1000; i++) {
+      const num = (Math.random() * 100) | 0;
+      const found = find(root.root!, num, comparator);
+      if (!found) ins(num);
+    }
+    const size1 = size(root.root);
+    expect(size1 > 4).toBe(true);
+    for (let i = 0; i <= 400; i++) {
+      const num = (Math.random() * 100) | 0;
+      del(num);
+    }
+    const size2 = size(root.root);
+    expect(size2 < size1).toBe(true);
   });
 });

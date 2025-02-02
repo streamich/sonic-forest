@@ -109,15 +109,15 @@ export const remove = <K, N extends IRbTreeNode<K>>(root: N | undefined, n: N): 
   if (!root) return;
   const l = n.l;
   const r = n.r;
-  if (l && r) {
-    const inOrderSuccessor = first(r)! as N;
+  const p = n.p as N | undefined;
+  if (!p || (l && r)) {
+    const inOrderSuccessor = first(r) as N | undefined;
+    if (!inOrderSuccessor) return;
     n.k = inOrderSuccessor.k;
     n.v = inOrderSuccessor.v;
     return remove(root, inOrderSuccessor);
   }
-  const p = n.p as N | undefined;
   const child = (l || r) as N | undefined;
-  if (!p) return child;
   if (child) {
     child.p = p;
     if (p.l === n) p.l = child; else p.r = child;

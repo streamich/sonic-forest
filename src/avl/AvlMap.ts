@@ -1,4 +1,4 @@
-import {insert, insertLeft, remove, insertRight, print} from './util';
+import {insert, insertLeft, insertRight, remove, print} from './util';
 import {printTree} from '../print/printTree';
 import {findOrNextLower, first, next} from '../util';
 import type {Comparator, HeadlessNode, SonicMap} from '../types';

@@ -8,6 +8,7 @@ import * as payloads from './payloads';
 import BTree from 'sorted-btree';
 import {OrderedMap} from 'js-sdsl';
 import {AvlMap} from '../avl/AvlMap';
+import {AvlMap as AvlMapOld} from '../avl/AvlMapOld';
 import {RbMap} from '../red-black/RbMap';
 
 const benchmark: IBenchmark = {
@@ -20,6 +21,20 @@ const benchmark: IBenchmark = {
       setup: () => {
         return (num: unknown) => {
           const map = new AvlBstNumNumMap();
+          const numbers = num as number[];
+          const length = numbers.length;
+          for (let i = 0; i < length; i++) {
+            const key = numbers[i];
+            map.set(key, key);
+          }
+        };
+      },
+    },
+    {
+      name: 'json-joy AvlMapOld<number, number>',
+      setup: () => {
+        return (num: unknown) => {
+          const map = new AvlMapOld<number, number>();
           const numbers = num as number[];
           const length = numbers.length;
           for (let i = 0; i < length; i++) {

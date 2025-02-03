@@ -1,8 +1,7 @@
 import {insert, insertLeft, remove, insertRight, print} from './util';
 import {printTree} from '../print/printTree';
 import {findOrNextLower, first, next} from '../util';
-import type {Printable} from '../print/types';
-import type {Comparator, HeadlessNode} from '../types';
+import type {Comparator, HeadlessNode, SonicMap} from '../types';
 import type {AvlNodeReference, IAvlTreeNode} from './types';
 
 export class AvlNode<K, V> implements IAvlTreeNode<K, V> {
@@ -18,7 +17,7 @@ export class AvlNode<K, V> implements IAvlTreeNode<K, V> {
 
 const defaultComparator = (a: unknown, b: unknown) => (a === b ? 0 : (a as any) < (b as any) ? -1 : 1);
 
-export class AvlMap<K, V> implements Printable {
+export class AvlMap<K, V> implements SonicMap<K, V, AvlNode<K, V>> {
   public root: AvlNode<K, V> | undefined = undefined;
   public readonly comparator: Comparator<K>;
 

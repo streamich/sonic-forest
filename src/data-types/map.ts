@@ -31,19 +31,32 @@ export const createMap = (
       const root = this.root;
       if (!root) return this.insert(k, v);
       const comparator = this.comparator;
-      let next: ITreeNode<K, V> | undefined = root,
-        curr: ITreeNode<K, V> | undefined = next;
-      let cmp: number = 0;
+      let curr: ITreeNode<K, V> | undefined = root;
       do {
-        curr = next;
-        cmp = comparator(k, curr.k);
-        if (cmp === 0) return (curr.v = v), curr;
-      } while ((next = cmp < 0 ? (curr.l as ITreeNode<K, V>) : (curr.r as ITreeNode<K, V>)));
-      const node = new Node<K, V>(k, v);
-      this.root =
-        cmp < 0 ? (insertLeft(root, node, curr) as ITreeNode<K, V>) : (insertRight(root, node, curr) as ITreeNode<K, V>);
-      this._size++;
-      return node;
+        const cmp = comparator(k, curr.k);
+        if (cmp < 0) {
+          const l = curr.l;
+          if (l === undefined) {
+            const node = new Node<K, V>(k, v);
+            curr.l = node;
+            this.root = insertLeft(root, node, curr) as ITreeNode<K, V>;
+            this._size++;
+            return node;
+          }
+          curr = l as ITreeNode<K, V>;
+        } else if (cmp > 0) {
+          const r = curr.r;
+          if (r === undefined) {
+            const node = new Node<K, V>(k, v);
+            curr.r = node;
+            this.root = insertRight(root, node, curr) as ITreeNode<K, V>;
+            this._size++;
+            return node;
+          }
+          curr = r as ITreeNode<K, V>;
+        }
+        else return (curr.v = v), curr;
+      } while (true);
     }
   
     public find(k: K): SonicNodePublicReference<ITreeNode<K, V>> | undefined {

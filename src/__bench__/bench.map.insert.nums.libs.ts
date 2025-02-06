@@ -10,6 +10,7 @@ import {OrderedMap} from 'js-sdsl';
 import {AvlMap} from '../avl/AvlMap';
 import {AvlMap as AvlMapOld} from '../avl/AvlMapOld';
 import {RbMap} from '../red-black/RbMap';
+import {SortedMap} from '../SortedMap/SortedMap';
 
 const benchmark: IBenchmark = {
   name: 'Numeric inserts into maps',
@@ -68,6 +69,20 @@ const benchmark: IBenchmark = {
           for (let i = 0; i < length; i++) {
             const key = numbers[i];
             map.set(key, key);
+          }
+        };
+      },
+    },
+    {
+      name: 'json-joy SortedMap<number, number>',
+      setup: () => {
+        return (num: unknown) => {
+          const map = new SortedMap<number, number>();
+          const numbers = num as number[];
+          const length = numbers.length;
+          for (let i = 0; i < length; i++) {
+            const key = numbers[i];
+            map.setElement(key, key);
           }
         };
       },

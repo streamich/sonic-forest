@@ -107,109 +107,104 @@ const rrRotate = (n: RbHeadlessNode, nr: RbHeadlessNode): void => {
 
 export const remove = <K, N extends IRbTreeNode<K>>(root: N | undefined, n: N): N | undefined => {
   if (!root) return;
-  const l = n.l;
-  const r = n.r;
-  const p = n.p as N | undefined;
-  if (!p || (l && r)) {
-    const inOrderSuccessor = first(r) as N | undefined;
+  let r = n.r;
+  if ((r && n.l) || !n.p) {
+    let inOrderSuccessor = r as N | undefined;
+    while (inOrderSuccessor)
+      if (inOrderSuccessor.l) inOrderSuccessor = inOrderSuccessor.l as N;
+      else break;
     if (!inOrderSuccessor) return;
     n.k = inOrderSuccessor.k;
     n.v = inOrderSuccessor.v;
-    return remove(root, inOrderSuccessor);
+    n = inOrderSuccessor;
+    r = n.r;
   }
-  const child = (l || r) as N | undefined;
+  const child = r as N | undefined;
   if (child) {
+    const p = n.p! as N;
     child.p = p;
     if (p.l === n) p.l = child;
     else p.r = child;
-    const b = n.b;
-    if (b && !child.b) child.b = true;
-    else root = removeCase1(root, child);
+    if (!child.b) child.b = true;
+    else root = correctDoubleBlack(root, child);
   } else {
-    if (n.b) root = removeCase1(root, n);
+    if (n.b) root = correctDoubleBlack(root, n);
     const p2 = n.p as N;
     if (p2)
-      if (n === p2.l) p2.l = void 0;
-      else p2.r = void 0;
+      if (n === p2.l) p2.l = undefined;
+      else p2.r = undefined;
   }
   return root;
 };
 
-const removeCase1 = <K, N extends IRbTreeNode<K>>(root: N, n: N): N => {
-  // console.log('case 1');
-  return !n.p ? n : removeCase2(root, n);
-};
-
-const removeCase2 = <K, N extends IRbTreeNode<K>>(root: N, n: N): N => {
-  // console.log('case 2');
-  const p = n.p! as N;
-  const s = (n === p.l ? p.r : p.l) as N;
-  if (s && !s.b && (!s.l || s.l.b) && (!s.r || s.r.b)) {
-    if (n === p.l) rrRotate(p, s);
-    else llRotate(p, s);
-    p.b = false;
-    s.b = true;
-    if (!s.p) root = s;
-  }
-  return removeCase3(root, n);
-};
-
-const removeCase3 = <K, N extends IRbTreeNode<K>>(root: N, n: N): N => {
-  // console.log('case 3');
-  const p = n.p! as N;
-  const s = (n === p.l ? p.r : p.l) as N;
-  if (p.b && s.b && (!s.l || s.l.b) && (!s.r || s.r.b)) {
-    s.b = false;
-    return removeCase1(root, p);
-  }
-  return removeCase4(root, n);
-};
-
-const removeCase4 = <K, N extends IRbTreeNode<K>>(root: N, n: N): N => {
-  // console.log('case 4');
-  const p = n.p! as N;
-  const s = (n === p.l ? p.r : p.l) as N;
-  if (!p.b && s.b && (!s.l || s.l.b) && (!s.r || s.r.b)) {
-    s.b = false;
-    p.b = true;
-    return root;
-  }
-  return removeCase5(root, n);
-};
-
-const removeCase5 = <K, N extends IRbTreeNode<K>>(root: N, n: N): N => {
-  // console.log('case 5');
-  const p = n.p! as N;
-  const s = (n === p.l ? p.r : p.l) as N;
-  if (s.b) {
-    if (n === p.l && (!s.r || s.r.b) && s.l && !s.l.b) {
-      s.l.b = true;
-      s.b = false;
-      llRotate(s, s.l);
-    } else if (n === p.r && (!s.l || s.l.b) && s.r && !s.r.b) {
-      s.r.b = true;
-      s.b = false;
-      rrRotate(s, s.r);
+const correctDoubleBlack = <K, N extends IRbTreeNode<K>>(root: N, n: N): N => {
+  LOOP: while (true) {
+    let p = n.p as N | undefined;
+    if (!p) return n;
+    const pl = p.l;
+    let s = (n === pl ? p.r : pl) as N;
+    const sl = s.l;
+    if (s && !s.b && (!sl || sl.b)) {
+      const sr = s.r;
+      if (!sr || sr.b) {
+        if (n === p.l) rrRotate(p, s);
+        else llRotate(p, s);
+        p.b = false;
+        s.b = true;
+        if (!s.p) root = s;
+      }
     }
-    if (!s.p) return s;
+    if (p.b && s.b && (!sl || sl.b)) {
+      const sr = s.r;
+      if (!sr || sr.b) {
+        s.b = false;
+        n = p;
+        continue LOOP;
+      }
+    }
+    if (!p.b) {
+      const pl = p.l;
+      s = (n === pl ? p.r : pl) as N;
+      const sl = s.l;
+      if (s.b && (!sl || sl.b)) {
+        const sr = s.r;
+        if (!sr || sr.b) {
+          const sr = s.r;
+          if (!sr || sr.b) {
+            s.b = false;
+            p.b = true;
+            return root;
+          }
+        }
+      }
+    }
+    if (s.b) {
+      const sl = s.l;
+      const sr = s.r;
+      if (n === p.l && (!sr || sr.b) && sl && !sl.b) {
+        sl.b = true;
+        s.b = false;
+        llRotate(s, sl);
+      } else if (n === p.r && (!sl || sl.b) && sr && !sr.b) {
+        sr.b = true;
+        s.b = false;
+        rrRotate(s, sr);
+      }
+      if (!s.p) return s;
+      const pl = p.l;
+      s = (n === pl ? p.r : pl) as N;
+    }
+    s.b = p.b;
+    p.b = true;
+    if (n === p.l) {
+      s.r!.b = true;
+      rrRotate(p, s);
+    } else {
+      s.l!.b = true;
+      llRotate(p, s);
+    }
+    return s.p ? root : s;
   }
-  return removeCase6(root, n);
-};
-
-const removeCase6 = <K, N extends IRbTreeNode<K>>(root: N, n: N): N => {
-  // console.log('case 6');
-  const p = n.p! as N;
-  const s = (n === p.l ? p.r : p.l) as N;
-  s.b = p.b;
-  p.b = true;
-  if (n === p.l) {
-    s.r!.b = true;
-    rrRotate(p, s);
-  } else {
-    s.l!.b = true;
-    llRotate(p, s);
-  }
-  return s.p ? root : s;
 };
 
 export const print = (node: undefined | RbHeadlessNode | IRbTreeNode, tab: string = ''): string => {

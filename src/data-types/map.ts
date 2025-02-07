@@ -64,10 +64,10 @@ export const createMap = (
       let curr: ITreeNode<K, V> | undefined = this.root;
       while (curr) {
         const cmp = comparator(k, curr.k);
-        if (cmp === 0) return curr;
+        if (!cmp) return curr;
         curr = cmp < 0 ? (curr.l as ITreeNode<K, V>) : (curr.r as ITreeNode<K, V>);
       }
-      return undefined;
+      return;
     }
   
     public get(k: K): V | undefined {

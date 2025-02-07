@@ -1,6 +1,6 @@
 import {insert, insertLeft, insertRight, remove, print} from './util';
 import {createMap} from '../data-types/map';
-import type {Comparator, HeadlessNode, ITreeNode} from '../types';
+import type {Comparator, HeadlessNode, ITreeNode, SonicMap} from '../types';
 import type {IAvlTreeNode} from './types';
 
 export class AvlNode<K, V> implements IAvlTreeNode<K, V> {
@@ -22,3 +22,5 @@ export const AvlMap = createMap(
   remove as (<K, N extends ITreeNode<K, unknown>>(root: N | undefined, n: N) => N | undefined),
   print as (<K, V>(node: undefined | HeadlessNode | ITreeNode<K, V>, tab?: string) => string),
 );
+
+export type AvlMap<K, V> = SonicMap<K, V, AvlNode<K, V>>;

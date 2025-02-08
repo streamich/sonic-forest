@@ -21,8 +21,7 @@ export class LlrbNode<K, V> {
   ) {}
 }
 
-const defaultComparator = (a: unknown, b: unknown) =>
-  (a === b ? 0 : (a as any) < (b as any) ? -1 : 1);
+const defaultComparator = (a: unknown, b: unknown) => (a === b ? 0 : (a as any) < (b as any) ? -1 : 1);
 
 export class LlrbTree<K, V> implements SonicMap<K, V, LlrbNode<K, V>> {
   public min: LlrbNode<K, V> | undefined = undefined;
@@ -153,7 +152,8 @@ export class LlrbTree<K, V> implements SonicMap<K, V, LlrbNode<K, V>> {
     n.l = p;
     p.r = nl;
     if (g) {
-      if (g.l === p) g.l = n; else g.r = n;
+      if (g.l === p) g.l = n;
+      else g.r = n;
     } else this.root = n;
     if (nl) nl.p = p;
     p.b = false;
@@ -182,7 +182,8 @@ export class LlrbTree<K, V> implements SonicMap<K, V, LlrbNode<K, V>> {
         this._fixBRR(n, p);
         return;
       }
-    } else { // Case R-B-R
+    } else {
+      // Case R-B-R
       p.b = false;
       s!.b = true;
       n.b = true;

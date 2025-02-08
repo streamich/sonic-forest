@@ -27,23 +27,20 @@ export class OrderedMapIterator<K, V> {
   pre: () => this;
   next: () => this;
 
+  readonly container: SortedMap<K, V>;
 
-
-    readonly container: SortedMap<K, V>;
-
-
-    /**
-     * @description Iterator's type.
-     * @example
-     * console.log(container.end().iteratorType === IteratorType.NORMAL);  // true
-     */
-    readonly iteratorType: IteratorType;
+  /**
+   * @description Iterator's type.
+   * @example
+   * console.log(container.end().iteratorType === IteratorType.NORMAL);  // true
+   */
+  readonly iteratorType: IteratorType;
 
   constructor(
     node: TreeNode<K, V>,
     header: TreeNode<K, V>,
     container: SortedMap<K, V>,
-    iteratorType: IteratorType = IteratorType.NORMAL
+    iteratorType: IteratorType = IteratorType.NORMAL,
   ) {
     this._node = node;
     this._header = header;
@@ -123,14 +120,9 @@ export class OrderedMapIterator<K, V> {
   }
 
   copy() {
-    return new OrderedMapIterator<K, V>(
-      this._node,
-      this._header,
-      this.container,
-      this.iteratorType
-    );
+    return new OrderedMapIterator<K, V>(this._node, this._header, this.container, this.iteratorType);
   }
-    
+
   equals(iter: OrderedMapIterator<K, V>) {
     return this._node === iter._node;
   }

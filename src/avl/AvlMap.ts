@@ -16,11 +16,11 @@ export class AvlNode<K, V> implements IAvlTreeNode<K, V> {
 
 export const AvlMap = createMap(
   AvlNode,
-  insert as (<K, N extends ITreeNode<K, unknown>>(root: N | undefined, node: N, comparator: Comparator<K>) => N),
-  insertLeft as (<K, N extends ITreeNode<K, unknown>>(root: N, node: N, parent: N) => N),
-  insertRight as (<K, N extends ITreeNode<K, unknown>>(root: N, node: N, parent: N) => N),
-  remove as (<K, N extends ITreeNode<K, unknown>>(root: N | undefined, n: N) => N | undefined),
-  print as (<K, V>(node: undefined | HeadlessNode | ITreeNode<K, V>, tab?: string) => string),
+  insert as <K, N extends ITreeNode<K, unknown>>(root: N | undefined, node: N, comparator: Comparator<K>) => N,
+  insertLeft as <K, N extends ITreeNode<K, unknown>>(root: N, node: N, parent: N) => N,
+  insertRight as <K, N extends ITreeNode<K, unknown>>(root: N, node: N, parent: N) => N,
+  remove as <K, N extends ITreeNode<K, unknown>>(root: N | undefined, n: N) => N | undefined,
+  print as <K, V>(node: undefined | HeadlessNode | ITreeNode<K, V>, tab?: string) => string,
 );
 
 export type AvlMap<K, V> = SonicMap<K, V, AvlNode<K, V>>;

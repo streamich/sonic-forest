@@ -15,18 +15,18 @@ export const createMap = (
   class SonicMapImpl<K, V> implements SonicMap<K, V, ITreeNode<K, V>> {
     public root: ITreeNode<K, V> | undefined = undefined;
     public readonly comparator: Comparator<K>;
-  
+
     constructor(comparator?: Comparator<K>) {
       this.comparator = comparator || defaultComparator;
     }
-  
+
     public insert(k: K, v: V): SonicNodePublicReference<ITreeNode<K, V>> {
       const item = new Node<K, V>(k, v);
       this.root = insert(this.root, item, this.comparator);
       this._size++;
       return item;
     }
-  
+
     public set(k: K, v: V): SonicNodePublicReference<ITreeNode<K, V>> {
       const root = this.root;
       if (!root) return this.insert(k, v);
@@ -54,11 +54,10 @@ export const createMap = (
             return node;
           }
           curr = r as ITreeNode<K, V>;
-        }
-        else return (curr.v = v), curr;
+        } else return (curr.v = v), curr;
       } while (true);
     }
-  
+
     public find(k: K): SonicNodePublicReference<ITreeNode<K, V>> | undefined {
       const comparator = this.comparator;
       let curr: ITreeNode<K, V> | undefined = this.root;
@@ -69,11 +68,11 @@ export const createMap = (
       }
       return;
     }
-  
+
     public get(k: K): V | undefined {
       return this.find(k)?.v;
     }
-  
+
     public del(k: K): boolean {
       const node = this.find(k);
       if (!node) return false;
@@ -81,44 +80,44 @@ export const createMap = (
       this._size--;
       return true;
     }
-  
+
     public clear(): void {
       this._size = 0;
       this.root = undefined;
     }
-  
+
     public has(k: K): boolean {
       return !!this.find(k);
     }
-  
+
     public _size: number = 0;
-  
+
     public size(): number {
       return this._size;
     }
-  
+
     public isEmpty(): boolean {
       return !this.root;
     }
-  
+
     public getOrNextLower(k: K): ITreeNode<K, V> | undefined {
       return (findOrNextLower(this.root, k, this.comparator) as ITreeNode<K, V>) || undefined;
     }
-  
+
     public forEach(fn: (node: ITreeNode<K, V>) => void): void {
       let curr = this.first();
       if (!curr) return;
       do fn(curr!);
       while ((curr = next(curr as HeadlessNode) as ITreeNode<K, V> | undefined));
     }
-  
+
     public first(): ITreeNode<K, V> | undefined {
       const root = this.root;
       return root ? first(root) : undefined;
     }
-  
+
     public readonly next = next;
-  
+
     public iterator0(): () => undefined | ITreeNode<K, V> {
       let curr = this.first();
       return () => {
@@ -128,7 +127,7 @@ export const createMap = (
         return value;
       };
     }
-  
+
     public iterator(): Iterator<ITreeNode<K, V>> {
       const iterator = this.iterator0();
       return {
@@ -139,11 +138,11 @@ export const createMap = (
         },
       };
     }
-  
+
     public entries(): IterableIterator<ITreeNode<K, V>> {
       return <any>{[Symbol.iterator]: () => this.iterator()};
     }
-  
+
     public toString(tab: string): string {
       return this.constructor.name + printTree(tab, [(tab) => print(this.root, tab)]);
     }

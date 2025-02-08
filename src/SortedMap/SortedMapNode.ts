@@ -7,11 +7,7 @@ export class TreeNode<K, V> {
   _left: TreeNode<K, V> | undefined = undefined;
   _right: TreeNode<K, V> | undefined = undefined;
   _parent: TreeNode<K, V> | undefined = undefined;
-  constructor(
-    key?: K,
-    value?: V,
-    color: TreeNodeColor = TreeNodeColor.RED
-  ) {
+  constructor(key?: K, value?: V, color: TreeNodeColor = TreeNodeColor.RED) {
     this._key = key;
     this._value = value;
     this._color = color;

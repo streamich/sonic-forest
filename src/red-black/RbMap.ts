@@ -16,11 +16,11 @@ export class RbNode<K, V> implements IRbTreeNode<K, V> {
 
 export const RbMap = createMap(
   RbNode,
-  insert as (<K, N extends ITreeNode<K, unknown>>(root: N | undefined, node: N, comparator: Comparator<K>) => N),
-  insertLeft as (<K, N extends ITreeNode<K, unknown>>(root: N, node: N, parent: N) => N),
-  insertRight as (<K, N extends ITreeNode<K, unknown>>(root: N, node: N, parent: N) => N),
-  remove as (<K, N extends ITreeNode<K, unknown>>(root: N | undefined, n: N) => N | undefined),
-  print as (<K, V>(node: undefined | HeadlessNode | ITreeNode<K, V>, tab?: string) => string),
+  insert as <K, N extends ITreeNode<K, unknown>>(root: N | undefined, node: N, comparator: Comparator<K>) => N,
+  insertLeft as <K, N extends ITreeNode<K, unknown>>(root: N, node: N, parent: N) => N,
+  insertRight as <K, N extends ITreeNode<K, unknown>>(root: N, node: N, parent: N) => N,
+  remove as <K, N extends ITreeNode<K, unknown>>(root: N | undefined, n: N) => N | undefined,
+  print as <K, V>(node: undefined | HeadlessNode | ITreeNode<K, V>, tab?: string) => string,
 );
 
 export type RbMap<K, V> = SonicMap<K, V, RbNode<K, V>>;

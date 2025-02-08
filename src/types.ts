@@ -34,7 +34,6 @@ export interface SonicNodePublicReference<N extends Pick<ITreeNode, 'k' | 'v'>> 
   v: N['v'];
 }
 
-
 export interface SonicMap<K, V, Node extends ITreeNode<K, V>> extends Printable {
   root: Node | undefined;
   comparator: Comparator<K>;
@@ -46,7 +45,7 @@ export interface SonicMap<K, V, Node extends ITreeNode<K, V>> extends Printable 
   isEmpty(): boolean;
   next: <N extends HeadlessNode>(curr: N) => N | undefined;
   insert(k: K, v: V): SonicNodePublicReference<Node>;
-  set(k: K, v: V): SonicNodePublicReference<Node>
+  set(k: K, v: V): SonicNodePublicReference<Node>;
   first(): SonicNodePublicReference<Node> | undefined;
   find(k: K): SonicNodePublicReference<Node> | undefined;
   getOrNextLower(k: K): SonicNodePublicReference<Node> | undefined;

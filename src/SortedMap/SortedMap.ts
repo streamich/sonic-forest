@@ -24,12 +24,9 @@ export class SortedMap<K, V> {
    */
   protected readonly _TreeNodeClass: typeof TreeNode | typeof TreeNodeEnableIndex;
 
-
-
   constructor(
     container: initContainer<[K, V]> = [],
-    cmp: (x: K, y: K) => number =
-    function (x: K, y: K) {
+    cmp: (x: K, y: K) => number = (x: K, y: K) => {
       if (x < y) return -1;
       if (x > y) return 1;
       return 0;
@@ -42,44 +39,43 @@ export class SortedMap<K, V> {
     this._header = new this._TreeNodeClass();
 
     const self = this;
-    container.forEach(function (el) {
+    container.forEach((el) => {
       self.setElement(el[0], el[1]);
     });
   }
 
-    /**
+  /**
    * @description Container's size.
    * @internal
    */
-    protected _length = 0;
-    /**
-     * @returns The size of the container.
-     * @example
-     * const container = new Vector([1, 2]);
-     * console.log(container.length); // 2
-     */
-    get length() {
-      return this._length;
-    }
-    /**
-     * @returns The size of the container.
-     * @example
-     * const container = new Vector([1, 2]);
-     * console.log(container.size()); // 2
-     */
-    size() {
-      return this._length;
-    }
-    /**
-     * @returns Whether the container is empty.
-     * @example
-     * container.clear();
-     * console.log(container.empty());  // true
-     */
-    empty() {
-      return this._length === 0;
-    }
-    
+  protected _length = 0;
+  /**
+   * @returns The size of the container.
+   * @example
+   * const container = new Vector([1, 2]);
+   * console.log(container.length); // 2
+   */
+  get length() {
+    return this._length;
+  }
+  /**
+   * @returns The size of the container.
+   * @example
+   * const container = new Vector([1, 2]);
+   * console.log(container.size()); // 2
+   */
+  size() {
+    return this._length;
+  }
+  /**
+   * @returns Whether the container is empty.
+   * @example
+   * container.clear();
+   * console.log(container.empty());  // true
+   */
+  empty() {
+    return this._length === 0;
+  }
 
   /**
    * @internal
@@ -256,15 +252,11 @@ export class SortedMap<K, V> {
   }
   protected _inOrderTraversal(): TreeNode<K, V>[];
   protected _inOrderTraversal(pos: number): TreeNode<K, V>;
-  protected _inOrderTraversal(
-    callback: (node: TreeNode<K, V>, index: number, map: this) => void
-  ): TreeNode<K, V>;
+  protected _inOrderTraversal(callback: (node: TreeNode<K, V>, index: number, map: this) => void): TreeNode<K, V>;
   /**
    * @internal
    */
-  protected _inOrderTraversal(
-    param?: number | ((node: TreeNode<K, V>, index: number, map: this) => void)
-  ) {
+  protected _inOrderTraversal(param?: number | ((node: TreeNode<K, V>, index: number, map: this) => void)) {
     const pos = typeof param === 'number' ? param : undefined;
     const callback = typeof param === 'function' ? param : undefined;
     const nodeList = typeof param === 'undefined' ? <TreeNode<K, V>[]>[] : undefined;
@@ -426,8 +418,8 @@ export class SortedMap<K, V> {
             if (iterCmpRes === 0) {
               iterNode._value = value;
               return this._length;
-            } else /* istanbul ignore else */ if (iterCmpRes > 0) {
-              const preNode = iterNode._pre();
+            } else if (iterCmpRes > 0) {
+              /* istanbul ignore else */ const preNode = iterNode._pre();
               const preCmpRes = this._cmp(preNode._key!, key);
               if (preCmpRes === 0) {
                 preNode._value = value;
@@ -539,10 +531,7 @@ export class SortedMap<K, V> {
       }
       return false;
     }
-    if (
-      this._cmp(preKey, key) >= 0 ||
-      this._cmp(nextKey, key) <= 0
-    ) return false;
+    if (this._cmp(preKey, key) >= 0 || this._cmp(nextKey, key) <= 0) return false;
     node._key = key;
     return true;
   }
@@ -597,14 +586,6 @@ export class SortedMap<K, V> {
     return traversal(this._root);
   }
 
-
-
-
-
-
-
-
-
   begin() {
     return new OrderedMapIterator<K, V>(this._header._left || this._header, this._header, this);
   }
@@ -612,12 +593,7 @@ export class SortedMap<K, V> {
     return new OrderedMapIterator<K, V>(this._header, this._header, this);
   }
   rBegin() {
-    return new OrderedMapIterator<K, V>(
-      this._header._right || this._header,
-      this._header,
-      this,
-      IteratorType.REVERSE
-    );
+    return new OrderedMapIterator<K, V>(this._header._right || this._header, this._header, this, IteratorType.REVERSE);
   }
   rEnd() {
     return new OrderedMapIterator<K, V>(this._header, this._header, this, IteratorType.REVERSE);
@@ -694,7 +670,7 @@ export class SortedMap<K, V> {
     });
     return this._length;
   }
-  * [Symbol.iterator]() {
+  *[Symbol.iterator]() {
     const length = this._length;
     const nodeList = this._inOrderTraversal();
     for (let i = 0; i < length; ++i) {

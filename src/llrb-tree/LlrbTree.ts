@@ -64,14 +64,30 @@ export class LlrbTree<K, V> implements SonicMap<K, V, LlrbNode<K, V>> {
     if (cmp < 0) h.l = this.put0(h.l, k, v);
     else if (cmp > 0) h.r = this.put0(h.r, k, v);
     else h.v = v;
-    if (!h.r?.b && !!h.l?.b) h = rotateLeft(h);
-    if (!h.l?.b && !h.l?.l?.b) h = rotateRight(h);
-    const hl = h.l;
-    const hr = h.r;
-    if ((hl && !hl.b) && (hr && hr.b)) {
-      h.b = 1;
-      hl.b = 1;
-      hr.b = 1;
+    {
+      const hr = h.r;
+      if (hr && !hr.b) {
+        const hl = h.l;
+        if (!hl || hl.b) h = rotateLeft(h);
+      }
+    }
+    {
+      const hl = h.l;
+      if (hl && !hl.b) {
+        const hll = hl.l;
+        if (hll && !hll.b) h = rotateRight(h);
+      }
+    }
+    {
+      const hl = h.l;
+      if (hl && !hl.b) {
+        const hr = h.r;
+        if (hr && !hr.b) {
+          h.b = 1;
+          hl.b = 1;
+          hr.b = 1;
+        }
+      }
     }
     h.N = 1 + (h.l?.N || 0) + (h.r?.N || 0);
     return h;

@@ -1,11 +1,14 @@
+import {assertRedBlackTree} from '../../red-black/__tests__/utils';
 import {LlrbTree} from '../LlrbTree';
 
 describe('.put()', () => {
   test('can insert one element', () => {
     const tree = new LlrbTree<number, string>();
     expect(tree.root).toBeUndefined();
-    tree.put(1, 'a');
-    expect(tree.root).toMatchObject({k: 1, v: 'a', N: 1, b: 1});
+    assertRedBlackTree(tree.root as any);
+    tree.set(1, 'a');
+    expect(tree.root).toMatchObject({k: 1, v: 'a', b: true});
+    assertRedBlackTree(tree.root as any);
     const val = tree.get(1);
     expect(val).toBe('a');
   });
@@ -25,7 +28,8 @@ describe('.put()', () => {
           expect(tree.size()).toBe(i);
           const char = chars[i];
           expect(tree.get(char)).toBe(undefined);
-          tree.put(char, char);
+          tree.set(char, char);
+          assertRedBlackTree(tree.root);
           expect(tree.size()).toBe(i + 1);
           expect(tree.get(char)).toBe(char);
         }

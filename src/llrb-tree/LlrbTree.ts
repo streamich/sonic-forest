@@ -1,4 +1,6 @@
 import {next} from '../util';
+import {printTree} from '../print/printTree';
+import {print} from '../red-black';
 import type {Comparator, SonicMap} from '../types';
 
 export class LlrbNode<K, V> {
@@ -8,8 +10,6 @@ export class LlrbNode<K, V> {
   public l: LlrbNode<K, V> | undefined = undefined;
   /** Right. */
   public r: LlrbNode<K, V> | undefined = undefined;
-  /** Number of nodes in the subtree rooted at this node. */
-  public N: number = 1;
 
   constructor(
     /** Node key. */
@@ -17,81 +17,20 @@ export class LlrbNode<K, V> {
     /** Node value. */
     public v: V,
     /** Whether the node is "black". */
-    public b: 0 | 1,
+    public b: boolean,
   ) {}
 }
 
 const defaultComparator = (a: unknown, b: unknown) =>
   (a === b ? 0 : (a as any) < (b as any) ? -1 : 1);
 
-const rotateLeft = <K, V>(h: LlrbNode<K, V>): LlrbNode<K, V> => {
-  const x = h.r!;
-  h.r = x.l;
-  x.l = h;
-  x.b = h.b;
-  h.b = 0;
-  x.N = h.N;
-  h.N = 1 + (h.l?.N || 0) + (h.r?.N || 0);
-  return x;
-};
-
-const rotateRight = <K, V>(h: LlrbNode<K, V>): LlrbNode<K, V> => {
-  const x = h.l!;
-  h.l = x.r;
-  x.r = h;
-  x.b = h.b;
-  h.b = 0;
-  x.N = h.N;
-  h.N = 1 + (h.l?.N || 0) + (h.r?.N || 0);
-  return x;
-};
-
 export class LlrbTree<K, V> implements SonicMap<K, V, LlrbNode<K, V>> {
-  // public min: LlrbNode<K, V> | undefined = undefined;
+  public min: LlrbNode<K, V> | undefined = undefined;
   public root: LlrbNode<K, V> | undefined = undefined;
-  // public max: LlrbNode<K, V> | undefined = undefined;
+  public max: LlrbNode<K, V> | undefined = undefined;
+  protected _size: number = 0;
 
   constructor(public readonly comparator: Comparator<K> = defaultComparator) {}
-
-  public put(k: K, v: V): void {
-    const root = this.root = this.put0(this.root, k, v);
-    root.b = 1;
-  }
-
-  public put0(h: LlrbNode<K, V> | undefined, k: K, v: V): LlrbNode<K, V> {
-    if (!h) return new LlrbNode(k, v, 0);
-    const cmp = this.comparator(k, h.k);
-    if (cmp < 0) h.l = this.put0(h.l, k, v);
-    else if (cmp > 0) h.r = this.put0(h.r, k, v);
-    else h.v = v;
-    {
-      const hr = h.r;
-      if (hr && !hr.b) {
-        const hl = h.l;
-        if (!hl || hl.b) h = rotateLeft(h);
-      }
-    }
-    {
-      const hl = h.l;
-      if (hl && !hl.b) {
-        const hll = hl.l;
-        if (hll && !hll.b) h = rotateRight(h);
-      }
-    }
-    {
-      const hl = h.l;
-      if (hl && !hl.b) {
-        const hr = h.r;
-        if (hr && !hr.b) {
-          h.b = 1;
-          hl.b = 1;
-          hr.b = 1;
-        }
-      }
-    }
-    h.N = 1 + (h.l?.N || 0) + (h.r?.N || 0);
-    return h;
-  }
 
   public insert(k: K, v: V): LlrbNode<K, V> {
     // const root = this.root;
@@ -117,27 +56,139 @@ export class LlrbTree<K, V> implements SonicMap<K, V, LlrbNode<K, V>> {
   }
 
   public set(k: K, v: V): LlrbNode<K, V> {
-    // const root = this.root;
-    // if (!root) {
-    //   const item = new LlrbNode<K, V>(k, v, 1);
-    //   this.min = this.max = this.root = item;
-    //   this._size = 1;
-    //   return item;
-    // }
-    // const comparator = this.comparator;
-    // const cmp = comparator(k, root.k);
-    // if (cmp < 0) {
-    //   const min = this.min!;
-    //   const cmp2 = comparator(k, min.k);
-    //   if (cmp2 < 0) {
-    //     const item = new LlrbNode<K, V>(k, v, 1);
-    //     item.l = this.min;
-    //     this.min = item;
-    //     this._size++;
-    //     return item;
-    //   }
-    // }
-    throw new Error('Method not implemented.');
+    const root = this.root;
+    if (!root) {
+      const item = new LlrbNode<K, V>(k, v, true);
+      this.min = this.max = this.root = item;
+      this._size = 1;
+      return item;
+    }
+    let p = root;
+    const comparator = this.comparator;
+    const min = this.min!;
+    let cmp: number;
+    cmp = comparator(k, min.k);
+    // TODO: perf: maybe check min instanceof LlrbNode
+    if (cmp < 0) {
+      this.min = p = new LlrbNode<K, V>(k, v, false);
+      p.p = min;
+      min.l = p;
+      this._size++;
+      if (!min.b) this._fixRRB(p, min);
+      return p;
+    }
+    const max = this.max!;
+    cmp = comparator(k, max.k);
+    // TODO: perf: maybe check max instanceof LlrbNode
+    if (cmp > 0) {
+      this.max = p = new LlrbNode<K, V>(k, v, false);
+      p.p = max;
+      max.r = p;
+      this._size++;
+      this._fix(p);
+      return p;
+    }
+    while (true) {
+      cmp = comparator(k, p.k);
+      if (cmp < 0) {
+        const l = p.l;
+        if (!l) {
+          const n = new LlrbNode<K, V>(k, v, false);
+          n.p = p;
+          p.l = n;
+          this._size++;
+          if (!p.b) this._fixRRB(n, p);
+          return n;
+        }
+        p = l;
+      } else if (cmp > 0) {
+        const r = p.r;
+        if (!r) {
+          const n = new LlrbNode<K, V>(k, v, false);
+          n.p = p;
+          p.r = n;
+          this._size++;
+          this._fix(n);
+          return n;
+        }
+        p = r;
+      } else {
+        p.v = v;
+        return p;
+      }
+    }
+  }
+
+  private _fixRRB(n: LlrbNode<K, V>, p: LlrbNode<K, V>): void {
+    const g = p.p!;
+    const s = p.r;
+    const gp = g.p;
+    p.p = gp;
+    p.r = g;
+    g.p = p;
+    g.l = s;
+    if (s) s.p = g;
+    n.b = true;
+    if (!gp) this.root = p;
+    this._fix(p);
+  }
+
+  private _fixBRR(n: LlrbNode<K, V>, p: LlrbNode<K, V>): void {
+    const g = p.p!;
+    const nl = n.l;
+    g.l = n;
+    n.p = g;
+    n.l = p;
+    p.p = n;
+    p.r = nl;
+    if (nl) nl.p = p;
+    this._fixRRB(p, n);
+  }
+
+  private _fixBBR(n: LlrbNode<K, V>, p: LlrbNode<K, V>): void {
+    const g = p.p;
+    const nl = n.l;
+    n.p = g;
+    p.p = n;
+    n.l = p;
+    p.r = nl;
+    if (g) {
+      if (g.l === p) g.l = n; else g.r = n;
+    } else this.root = n;
+    if (nl) nl.p = p;
+    p.b = false;
+    n.b = true;
+  }
+
+  private _fix(n: LlrbNode<K, V>): void {
+    const p = n.p;
+    if (!p) {
+      n.b = true;
+      return;
+    }
+    const isLeftChild = p.l === n;
+    if (isLeftChild) {
+      if (p.b) return;
+      this._fixRRB(n, p);
+      return;
+    }
+    const s = p.l;
+    const siblingIsBlack = !s || s.b;
+    if (siblingIsBlack) {
+      if (p.b) {
+        this._fixBBR(n, p);
+        return;
+      } else {
+        this._fixBRR(n, p);
+        return;
+      }
+    } else { // Case R-B-R
+      p.b = false;
+      s!.b = true;
+      n.b = true;
+      this._fix(p);
+      return;
+    }
   }
 
   public find(k: K): LlrbNode<K, V> | undefined {
@@ -174,7 +225,7 @@ export class LlrbTree<K, V> implements SonicMap<K, V, LlrbNode<K, V>> {
   }
 
   public size(): number {
-    return this.root?.N || 0;
+    return this._size;
   }
 
   public isEmpty(): boolean {
@@ -229,7 +280,6 @@ export class LlrbTree<K, V> implements SonicMap<K, V, LlrbNode<K, V>> {
   }
 
   public toString(tab: string): string {
-    // return this.constructor.name + printTree(tab, [(tab) => print(this.root, tab)]);
-    throw new Error('Method not implemented.');
+    return this.constructor.name + printTree(tab, [(tab) => print(this.root, tab)]);
   }
 }

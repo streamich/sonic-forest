@@ -63,29 +63,31 @@ export class LlrbTree<K, V> implements SonicMap<K, V, LlrbNode<K, V>> {
       return item;
     }
     let p = root;
-    const comparator = this.comparator;
-    const min = this.min!;
     let cmp: number;
-    cmp = comparator(k, min.k);
-    // TODO: perf: maybe check min instanceof LlrbNode
-    if (cmp < 0) {
-      this.min = p = new LlrbNode<K, V>(k, v, false);
-      p.p = min;
-      min.l = p;
-      this._size++;
-      if (!min.b) this._fixRRB(p, min);
-      return p;
+    const comparator = this.comparator;
+    const min = this.min;
+    if (min instanceof LlrbNode) {
+      cmp = comparator(k, min.k);
+      if (cmp < 0) {
+        this.min = p = new LlrbNode<K, V>(k, v, false);
+        p.p = min;
+        min.l = p;
+        this._size++;
+        if (!min.b) this._fixRRB(p, min);
+        return p;
+      }
     }
-    const max = this.max!;
-    cmp = comparator(k, max.k);
-    // TODO: perf: maybe check max instanceof LlrbNode
-    if (cmp > 0) {
-      this.max = p = new LlrbNode<K, V>(k, v, false);
-      p.p = max;
-      max.r = p;
-      this._size++;
-      this._fix(p);
-      return p;
+    const max = this.max;
+    if (max instanceof LlrbNode) {
+      cmp = comparator(k, max.k);
+      if (cmp > 0) {
+        this.max = p = new LlrbNode<K, V>(k, v, false);
+        p.p = max;
+        max.r = p;
+        this._size++;
+        this._fix(p);
+        return p;
+      }
     }
     while (true) {
       cmp = comparator(k, p.k);
@@ -129,6 +131,10 @@ export class LlrbTree<K, V> implements SonicMap<K, V, LlrbNode<K, V>> {
     if (s) s.p = g;
     n.b = true;
     if (!gp) this.root = p;
+    else {
+      if (gp.l === g) gp.l = p;
+      else gp.r = p;
+    }
     this._fix(p);
   }
 

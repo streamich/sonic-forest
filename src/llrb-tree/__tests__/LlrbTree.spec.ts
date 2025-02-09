@@ -13,6 +13,52 @@ describe('.put()', () => {
     expect(val).toBe('a');
   });
 
+  test('can insert the same element', () => {
+    const tree = new LlrbTree<string, string>();
+    tree.set('a', 'a');
+    tree.set('b', 'b');
+    tree.set('b', 'b');
+    tree.set('b', 'b');
+    tree.set('a', 'a');
+    tree.set('c', 'c');
+    tree.set('d', 'd');
+    tree.set('e', 'e');
+    tree.set('a', 'a');
+  });
+
+  test('can insert specific numbers', () => {
+    const tree = new LlrbTree<number, number>();
+    const nums = [
+      88,
+      13,
+      30,
+      18,
+      35,
+      98,
+      51,
+      76,
+      96,
+      72,
+      94,
+      59,
+      92,
+    ];
+    for (const num of nums) {
+      tree.set(num, num);
+      assertRedBlackTree(tree.root);
+    }
+    expect(tree.size()).toBe(nums.length);
+    for (const num of nums) {
+      tree.set(num, num);
+      assertRedBlackTree(tree.root);
+    }
+    expect(tree.size()).toBe(nums.length);
+    for (const num of nums) {
+      expect(tree.get(num)).toBe(num);
+    }
+    expect(tree.size()).toBe(nums.length);
+  });
+
   describe('can insert multiple elements', () => {
     type Trace = [name: string, chars: string[]];
     const traces: Trace[] = [
@@ -36,4 +82,41 @@ describe('.put()', () => {
       });
     }
   });
+
+  describe('hundred numbers in increasing order', () => {
+    test('once', () => {
+      const tree = new LlrbTree<number, number>();
+      for (let i = 0; i < 100; i++) {
+        const num = i;
+        tree.set(num, num);
+        assertRedBlackTree(tree.root);
+      }
+    });
+
+    test('twice', () => {
+      const tree = new LlrbTree<number, number>();
+      for (let i = 0; i < 100; i++) {
+        const num = i;
+        tree.set(num, num);
+        assertRedBlackTree(tree.root);
+      }
+      for (let i = 0; i < 100; i++) {
+        const num = i;
+        tree.set(num, num);
+        assertRedBlackTree(tree.root);
+      }
+    });
+  });
+
+  // describe('hundred random numbers', () => {
+  //   test('...', () => {
+  //     const tree = new LlrbTree<number, number>();
+  //     for (let i = 0; i < 100; i++) {
+  //       const num = Math.floor(Math.random() * 100);
+  //       console.log(num);
+  //       tree.set(num, num);
+  //       assertRedBlackTree(tree.root);
+  //     }
+  //   });
+  // });
 });

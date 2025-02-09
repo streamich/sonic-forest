@@ -1,5 +1,4 @@
 import {printBinary} from '../print/printBinary';
-import {first} from '../util/first';
 import type {Comparator} from '../types';
 import type {IRbTreeNode, RbHeadlessNode} from './types';
 
@@ -34,38 +33,40 @@ export const insertLeft = (root: RbHeadlessNode, n: RbHeadlessNode, p: RbHeadles
 };
 
 const rRebalance = (n: RbHeadlessNode, p: RbHeadlessNode, g: RbHeadlessNode): RbHeadlessNode => {
-  const u = g.l === p ? g.r : g.l;
+  const gl = g.l;
+  const zigzag = gl === p;
+  const u = zigzag ? g.r : gl;
   const uncleIsBlack = !u || u.b;
   if (uncleIsBlack) {
-    const zigzag = g.l === p;
     g.b = false;
     if (zigzag) {
       n.b = true;
-      rrRotate(p, n);
-      llRotate(g, n);
+      rRotate(p, n);
+      lRotate(g, n);
       return n;
     }
     p.b = true;
-    rrRotate(g, p);
+    rRotate(g, p);
     return p;
   }
   return recolor(p, g, u);
 };
 
 const lRebalance = (n: RbHeadlessNode, p: RbHeadlessNode, g: RbHeadlessNode): RbHeadlessNode => {
-  const u = g.l === p ? g.r : g.l;
+  const gr = g.r;
+  const zigzag = gr === p;
+  const u = zigzag ? g.l : gr;
   const uncleIsBlack = !u || u.b;
   if (uncleIsBlack) {
-    const zigzag = g.r === p;
     g.b = false;
     if (zigzag) {
       n.b = true;
-      llRotate(p, n);
-      rrRotate(g, n);
+      lRotate(p, n);
+      rRotate(g, n);
       return n;
     }
     p.b = true;
-    llRotate(g, p);
+    lRotate(g, p);
     return p;
   }
   return recolor(p, g, u);
@@ -73,17 +74,21 @@ const lRebalance = (n: RbHeadlessNode, p: RbHeadlessNode, g: RbHeadlessNode): Rb
 
 const recolor = (p: RbHeadlessNode, g: RbHeadlessNode, u?: RbHeadlessNode): RbHeadlessNode => {
   p.b = true;
-  g.b = false;
   if (u) u.b = true;
   const gg = g.p;
-  if (!gg) return (g.b = true), g;
-  if (gg.b) return g;
+  if (gg) {
+    g.b = false;
+    if (gg.b) return g;
+  } else {
+    g.b = true;
+    return g;
+  }
   const ggg = gg.p;
-  if (!ggg) return (gg.b = true), gg;
+  if (!ggg) return gg;
   return gg.l === g ? lRebalance(g, gg, ggg) : rRebalance(g, gg, ggg);
 };
 
-const llRotate = (n: RbHeadlessNode, nl: RbHeadlessNode): void => {
+const lRotate = (n: RbHeadlessNode, nl: RbHeadlessNode): void => {
   const p = n.p;
   const nlr = nl.r;
   nl.p = p;
@@ -94,7 +99,7 @@ const llRotate = (n: RbHeadlessNode, nl: RbHeadlessNode): void => {
   p && (p.l === n ? (p.l = nl) : (p.r = nl));
 };
 
-const rrRotate = (n: RbHeadlessNode, nr: RbHeadlessNode): void => {
+const rRotate = (n: RbHeadlessNode, nr: RbHeadlessNode): void => {
   const p = n.p;
   const nrl = nr.l;
   nr.p = p;
@@ -147,8 +152,8 @@ const correctDoubleBlack = <K, N extends IRbTreeNode<K>>(root: N, n: N): N => {
     if (s && !s.b && (!sl || sl.b)) {
       const sr = s.r;
       if (!sr || sr.b) {
-        if (n === p.l) rrRotate(p, s);
-        else llRotate(p, s);
+        if (n === p.l) rRotate(p, s);
+        else lRotate(p, s);
         p.b = false;
         s.b = true;
         if (!s.p) root = s;
@@ -184,11 +189,11 @@ const correctDoubleBlack = <K, N extends IRbTreeNode<K>>(root: N, n: N): N => {
       if (n === p.l && (!sr || sr.b) && sl && !sl.b) {
         sl.b = true;
         s.b = false;
-        llRotate(s, sl);
+        lRotate(s, sl);
       } else if (n === p.r && (!sl || sl.b) && sr && !sr.b) {
         sr.b = true;
         s.b = false;
-        rrRotate(s, sr);
+        rRotate(s, sr);
       }
       if (!s.p) return s;
       const pl = p.l;
@@ -198,10 +203,10 @@ const correctDoubleBlack = <K, N extends IRbTreeNode<K>>(root: N, n: N): N => {
     p.b = true;
     if (n === p.l) {
       s.r!.b = true;
-      rrRotate(p, s);
+      rRotate(p, s);
     } else {
       s.l!.b = true;
-      llRotate(p, s);
+      lRotate(p, s);
     }
     return s.p ? root : s;
   }

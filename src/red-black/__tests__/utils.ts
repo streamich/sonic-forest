@@ -40,26 +40,64 @@ export const setup = () => {
   return {root, ins, del};
 };
 
+export const assertTreeLinks = (node: RbHeadlessNode): void => {
+  const {l, r} = node;
+  if (l) {
+    if (l.p !== node) {
+      // tslint:disable-next-line: no-console
+      console.log('at node:\n\n' + print(node));
+      throw new Error('Left child has wrong parent');
+    }
+    assertTreeLinks(l);
+  }
+  if (r) {
+    if (r.p !== node) {
+      // tslint:disable-next-line: no-console
+      console.log('at node:\n\n' + print(node));
+      throw new Error('Right child has wrong parent');
+    }
+    assertTreeLinks(r);
+  }
+};
+
 export const assertTreeBlackHeight = (node: RbHeadlessNode): number => {
   const {l, r} = node;
   if (!l && !r) return node.b ? 1 : 0;
   const lh = l ? assertTreeBlackHeight(l) : 0;
   const rh = r ? assertTreeBlackHeight(r) : 0;
-  expect(lh).toBe(rh);
+  if (lh !== rh) {
+    // tslint:disable-next-line: no-console
+    console.log('at node:\n\n' + print(node));
+    throw new Error('Black height mismatch');
+  }
   return lh + (node.b ? 1 : 0);
 };
 
 export const assertRedBlackTree = (root?: RbHeadlessNode | (RbHeadlessNode & {b: 0 | 1})): void => {
   if (!root) return;
+  if (!!root.p) {
+    // tslint:disable-next-line: no-console
+    console.log('root:\n\n' + print(root));
+    throw new Error('Root has parent');
+  }
   if (!root.b) {
     // tslint:disable-next-line: no-console
     console.log('root:\n\n' + print(root));
     throw new Error('Root is not black');
   }
+  assertTreeLinks(root);
   assertTreeBlackHeight(root);
   let curr = first(root);
+  let prev: typeof curr;
   while (curr) {
     const {b, l, r, p} = curr;
+    if (prev) {
+      if ((prev as IRbTreeNode<any, any>).k > (curr as IRbTreeNode<any, any>).k) {
+        // tslint:disable-next-line: no-console
+        console.log('at node:\n\n' + print(curr));
+        throw new Error('Node is out of order');
+      }
+    }
     if (!b) {
       if (p && !p.b) {
         // tslint:disable-next-line: no-console
@@ -77,6 +115,7 @@ export const assertRedBlackTree = (root?: RbHeadlessNode | (RbHeadlessNode & {b:
         throw new Error('Red node has red right child');
       }
     }
+    prev = curr;
     curr = next(curr);
   }
 };

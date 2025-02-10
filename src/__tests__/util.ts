@@ -1,5 +1,5 @@
 import {print} from '../util/print';
-import type {HeadlessNode} from '../types';
+import type {HeadlessNode, SonicMap} from '../types';
 
 export const assertTreeLinks = (node: HeadlessNode): void => {
   const {l, r, p} = node;
@@ -37,5 +37,16 @@ export const assertTreeLinks = (node: HeadlessNode): void => {
     // tslint:disable-next-line: no-console
     console.log('at node:\n\n' + print(node));
     throw new Error('Empty parent is not undefined');
+  }
+};
+
+export const assertMapContents = (map: SonicMap<number, number>, twin: Map<number, number>): void => {
+  if (map.size() !== twin.size) {
+    throw new Error(`Size mismatch: ${map.size()} !== ${twin.size}`);
+  }
+  for (const [key, value] of twin) {
+    if (map.get(key) !== value) {
+      throw new Error(`Value mismatch for key ${key}: ${map.get(key)} !== ${value}`);
+    }
   }
 };

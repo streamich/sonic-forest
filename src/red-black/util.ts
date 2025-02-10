@@ -131,9 +131,11 @@ const rlRotate = (g: RbHeadlessNode, p: RbHeadlessNode, n: RbHeadlessNode): void
 };
 
 export const remove = <K, N extends IRbTreeNode<K>>(root: N | undefined, n: N): N | undefined => {
-  if (!root) return;
-  let r = n.r;
-  if ((r && n.l) || !n.p) {
+  if (!root) return; // TODO: This line is not necessary...?
+  let r = n.r as N | undefined;
+  const l = n.l as N | undefined;
+  let child: N | undefined;
+  if ((r && l) || !n.p) {
     let inOrderSuccessor = r as N | undefined;
     while (inOrderSuccessor)
       if (inOrderSuccessor.l) inOrderSuccessor = inOrderSuccessor.l as N;
@@ -142,9 +144,10 @@ export const remove = <K, N extends IRbTreeNode<K>>(root: N | undefined, n: N): 
     n.k = inOrderSuccessor.k;
     n.v = inOrderSuccessor.v;
     n = inOrderSuccessor;
-    r = n.r;
+    child = r = n.r as N | undefined;
+  } else {
+    child = r || l;
   }
-  const child = r as N | undefined;
   if (child) {
     const p = n.p! as N;
     child.p = p;

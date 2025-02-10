@@ -34,7 +34,7 @@ export interface SonicNodePublicReference<N extends Pick<ITreeNode, 'k' | 'v'>> 
   v: N['v'];
 }
 
-export interface SonicMap<K, V, Node extends ITreeNode<K, V>> extends Printable {
+export interface SonicMap<K, V, Node extends ITreeNode<K, V> = ITreeNode<K, V>> extends Printable {
   root: Node | undefined;
   comparator: Comparator<K>;
   get(k: K): V | undefined;

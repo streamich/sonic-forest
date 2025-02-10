@@ -1,3 +1,4 @@
+import {assertTreeLinks} from '../../__tests__/util';
 import {find, first, next} from '../../util';
 import {IRbTreeNode, RbHeadlessNode} from '../types';
 import {insert, remove, print} from '../util';
@@ -38,26 +39,6 @@ export const setup = () => {
     assertRedBlackTree(root.root);
   };
   return {root, ins, del};
-};
-
-export const assertTreeLinks = (node: RbHeadlessNode): void => {
-  const {l, r} = node;
-  if (l) {
-    if (l.p !== node) {
-      // tslint:disable-next-line: no-console
-      console.log('at node:\n\n' + print(node));
-      throw new Error('Left child has wrong parent');
-    }
-    assertTreeLinks(l);
-  }
-  if (r) {
-    if (r.p !== node) {
-      // tslint:disable-next-line: no-console
-      console.log('at node:\n\n' + print(node));
-      throw new Error('Right child has wrong parent');
-    }
-    assertTreeLinks(r);
-  }
 };
 
 export const assertTreeBlackHeight = (node: RbHeadlessNode): number => {

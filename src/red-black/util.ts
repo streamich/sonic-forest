@@ -135,16 +135,24 @@ export const remove = <K, N extends IRbTreeNode<K>>(root: N | undefined, n: N): 
   let r = n.r as N | undefined;
   const l = n.l as N | undefined;
   let child: N | undefined;
-  if ((r && l) || !n.p) {
+  if (r) {
     let inOrderSuccessor = r as N | undefined;
-    while (inOrderSuccessor)
-      if (inOrderSuccessor.l) inOrderSuccessor = inOrderSuccessor.l as N;
-      else break;
+    if (inOrderSuccessor) while (true) {
+        const next = inOrderSuccessor.l as N | undefined;
+        if (next) inOrderSuccessor = next;
+        else break;
+      }
     if (!inOrderSuccessor) return;
     n.k = inOrderSuccessor.k;
     n.v = inOrderSuccessor.v;
     n = inOrderSuccessor;
     child = r = n.r as N | undefined;
+  } else if (!n.p) {
+    if (l) {
+      l.b = true;
+      l.p = undefined;
+    }
+    return l;
   } else {
     child = r || l;
   }
@@ -158,9 +166,13 @@ export const remove = <K, N extends IRbTreeNode<K>>(root: N | undefined, n: N): 
   } else {
     if (n.b) root = correctDoubleBlack(root, n);
     const p2 = n.p as N;
-    if (p2)
+    if (p2) {
       if (n === p2.l) p2.l = undefined;
       else p2.r = undefined;
+    } else {
+      n.b = true;
+      return n;
+    }
   }
   return root;
 };

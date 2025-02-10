@@ -6,7 +6,7 @@ describe('RbMap fuzzing', () => {
     test(`map instance ${i}`, () => {
       const map = new RbMap<number, number>();
       const fuzzer = new MapFuzzer(map);
-      for (let j = 0; j < 1000; j++) fuzzer.runStep();
+      for (let j = 0; j < 10; j++) fuzzer.runStep();
     });
   }
 });

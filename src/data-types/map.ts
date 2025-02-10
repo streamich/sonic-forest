@@ -1,4 +1,4 @@
-import {findOrNextLower, first, next} from '../util';
+import {findOrNextLower, first, next, prev} from '../util';
 import {printTree} from '../print/printTree';
 import type {Comparator, HeadlessNode, ITreeNode, SonicMap, SonicNodePublicReference} from '../types';
 
@@ -13,7 +13,21 @@ export const createMap = (
   print: <K, V>(node: undefined | HeadlessNode | ITreeNode<K, V>, tab?: string) => string,
 ) => {
   class SonicMapImpl<K, V> implements SonicMap<K, V, ITreeNode<K, V>> {
+    /**
+     * Minimum node. The node with the smallest key in the tree.
+     */
+    public min: ITreeNode<K, V> | undefined = undefined;
+    /**
+     * Root node. Typically approximates the middle of the tree.
+     */
     public root: ITreeNode<K, V> | undefined = undefined;
+    /**
+     * Maximum node. The node with the largest key in the tree.
+     */
+    public max: ITreeNode<K, V> | undefined = undefined;
+    /**
+     * Comparator function. Used to relatively compare keys.
+     */
     public readonly comparator: Comparator<K>;
 
     constructor(comparator?: Comparator<K>) {
@@ -29,8 +43,25 @@ export const createMap = (
 
     public set(k: K, v: V): SonicNodePublicReference<ITreeNode<K, V>> {
       const root = this.root;
-      if (!root) return this.insert(k, v);
+      if (root === undefined) {
+        this._size = 1;
+        return this.root = this.min = this.max = new Node<K, V>(k, v);
+      }
       const comparator = this.comparator;
+      const max = this.max!;
+      if (comparator(k, max.k) > 0) {
+        const node = this.max = new Node<K, V>(k, v);
+        this.root = insertRight(root, node, max) as ITreeNode<K, V>;
+        this._size++;
+        return node;
+      }
+      const min = this.min!;
+      if (comparator(k, min.k) < 0) {
+        const node = this.min = new Node<K, V>(k, v);
+        this.root = insertLeft(root, node, min) as ITreeNode<K, V>;
+        this._size++;
+        return node;
+      }
       let curr: ITreeNode<K, V> | undefined = root;
       do {
         const cmp = comparator(k, curr.k);
@@ -38,7 +69,6 @@ export const createMap = (
           const l = curr.l;
           if (l === undefined) {
             const node = new Node<K, V>(k, v);
-            curr.l = node;
             this.root = insertLeft(root, node, curr) as ITreeNode<K, V>;
             this._size++;
             return node;
@@ -48,7 +78,6 @@ export const createMap = (
           const r = curr.r;
           if (r === undefined) {
             const node = new Node<K, V>(k, v);
-            curr.r = node;
             this.root = insertRight(root, node, curr) as ITreeNode<K, V>;
             this._size++;
             return node;
@@ -74,8 +103,10 @@ export const createMap = (
     }
 
     public del(k: K): boolean {
-      const node = this.find(k);
+      const node = this.find(k) as ITreeNode<K, V>;
       if (!node) return false;
+      if (node === this.max) this.max = prev(node);
+      else if (node === this.min) this.min = next(node);
       this.root = remove(this.root, node as ITreeNode<K, V>);
       this._size--;
       return true;
@@ -112,8 +143,11 @@ export const createMap = (
     }
 
     public first(): ITreeNode<K, V> | undefined {
-      const root = this.root;
-      return root ? first(root) : undefined;
+      return this.min;
+    }
+
+    public last(): ITreeNode<K, V> | undefined {
+      return this.max;
     }
 
     public readonly next = next;

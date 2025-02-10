@@ -47,6 +47,7 @@ export interface SonicMap<K, V, Node extends ITreeNode<K, V> = ITreeNode<K, V>> 
   insert(k: K, v: V): SonicNodePublicReference<Node>;
   set(k: K, v: V): SonicNodePublicReference<Node>;
   first(): SonicNodePublicReference<Node> | undefined;
+  last(): SonicNodePublicReference<Node> | undefined;
   find(k: K): SonicNodePublicReference<Node> | undefined;
   getOrNextLower(k: K): SonicNodePublicReference<Node> | undefined;
   forEach(fn: (node: SonicNodePublicReference<Node>) => void): void;

@@ -40,9 +40,10 @@ const rRebalance = (n: RbHeadlessNode, p: RbHeadlessNode, g: RbHeadlessNode): Rb
   if (uncleIsBlack) {
     g.b = false;
     if (zigzag) {
+      lrRotate(g, p, n);
+      // rRotate(p, n);
+      // lRotate(g, n);
       n.b = true;
-      rRotate(p, n);
-      lRotate(g, n);
       return n;
     }
     p.b = true;
@@ -60,9 +61,10 @@ const lRebalance = (n: RbHeadlessNode, p: RbHeadlessNode, g: RbHeadlessNode): Rb
   if (uncleIsBlack) {
     g.b = false;
     if (zigzag) {
+      rlRotate(g, p, n);
+      // lRotate(p, n);
+      // rRotate(g, n);
       n.b = true;
-      lRotate(p, n);
-      rRotate(g, n);
       return n;
     }
     p.b = true;
@@ -91,23 +93,41 @@ const recolor = (p: RbHeadlessNode, g: RbHeadlessNode, u?: RbHeadlessNode): RbHe
 const lRotate = (n: RbHeadlessNode, nl: RbHeadlessNode): void => {
   const p = n.p;
   const nlr = nl.r;
-  nl.p = p;
-  nl.r = n;
-  n.p = nl;
-  n.l = nlr;
-  nlr && (nlr.p = n);
-  p && (p.l === n ? (p.l = nl) : (p.r = nl));
+  ((nl.r = n).l = nlr) && (nlr.p = n);
+  ((n.p = nl).p = p) && (p.l === n ? (p.l = nl) : (p.r = nl));
 };
 
 const rRotate = (n: RbHeadlessNode, nr: RbHeadlessNode): void => {
   const p = n.p;
   const nrl = nr.l;
-  nr.p = p;
-  nr.l = n;
-  n.p = nr;
-  n.r = nrl;
-  nrl && (nrl.p = n);
-  p && (p.l === n ? (p.l = nr) : (p.r = nr));
+  ((nr.l = n).r = nrl) && (nrl.p = n);
+  ((n.p = nr).p = p) && (p.l === n ? (p.l = nr) : (p.r = nr));
+};
+
+const lrRotate = (g: RbHeadlessNode, p: RbHeadlessNode, n: RbHeadlessNode): void => {
+  const gg = g.p;
+  const nl = n.l;
+  const nr = n.r;
+  gg && (gg.l === g ? (gg.l = n) : (gg.r = n));
+  n.p = gg;
+  n.l = p;
+  n.r = g;
+  p.p = g.p = n;
+  (p.r = nl) && (nl.p = p);
+  (g.l = nr) && (nr.p = g);
+};
+
+const rlRotate = (g: RbHeadlessNode, p: RbHeadlessNode, n: RbHeadlessNode): void => {
+  const gg = g.p;
+  const nl = n.l;
+  const nr = n.r;
+  gg && (gg.l === g ? (gg.l = n) : (gg.r = n));
+  n.p = gg;
+  n.l = g;
+  n.r = p;
+  g.p = p.p = n;
+  (g.r = nl) && (nl.p = g);
+  (p.l = nr) && (nr.p = p);
 };
 
 export const remove = <K, N extends IRbTreeNode<K>>(root: N | undefined, n: N): N | undefined => {
@@ -147,12 +167,13 @@ const correctDoubleBlack = <K, N extends IRbTreeNode<K>>(root: N, n: N): N => {
     let p = n.p as N | undefined;
     if (!p) return n;
     const pl = p.l;
-    let s = (n === pl ? p.r : pl) as N;
+    const nIsPl = n === pl;
+    let s = (nIsPl ? p.r : pl) as N;
     const sl = s.l;
     if (s && !s.b && (!sl || sl.b)) {
       const sr = s.r;
       if (!sr || sr.b) {
-        if (n === p.l) rRotate(p, s);
+        if (nIsPl) rRotate(p, s);
         else lRotate(p, s);
         p.b = false;
         s.b = true;

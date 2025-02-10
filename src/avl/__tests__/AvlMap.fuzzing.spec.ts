@@ -2,7 +2,7 @@ import {MapFuzzer} from '../../__tests__/MapFuzzer';
 import {AvlMap} from '../AvlMap';
 
 describe('AvlMap fuzzing', () => {
-  for (let i = 0; i < 25; i++) {
+  for (let i = 0; i < 50; i++) {
     test(`map instance ${i}`, () => {
       const map = new AvlMap<number, number>();
       const fuzzer = new MapFuzzer(map);

@@ -1,13 +1,12 @@
-import type {SonicMap} from '../types';
-import {Trace} from './types';
 import {assertMapContents} from './util';
+import type {FuzzerSonicMap, Trace} from './types';
 
 export class MapFuzzer {
   public readonly twin: Map<number, number> = new Map();
   public readonly trace: Trace = [];
 
   constructor(
-    public readonly map: SonicMap<number, number>,
+    public readonly map: FuzzerSonicMap,
   ) {}
 
   public runStep(): void {

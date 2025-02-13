@@ -1,5 +1,6 @@
 import {print} from '../util/print';
-import type {HeadlessNode, SonicMap} from '../types';
+import type {HeadlessNode} from '../types';
+import type {FuzzerSonicMap} from './types';
 
 export const assertTreeLinks = (node: HeadlessNode): void => {
   const {l, r, p} = node;
@@ -40,7 +41,7 @@ export const assertTreeLinks = (node: HeadlessNode): void => {
   }
 };
 
-export const assertMapContents = (map: SonicMap<number, number>, twin: Map<number, number>): void => {
+export const assertMapContents = (map: FuzzerSonicMap, twin: Map<number, number>): void => {
   if (map.size() !== twin.size) {
     throw new Error(`Size mismatch: ${map.size()} !== ${twin.size}`);
   }

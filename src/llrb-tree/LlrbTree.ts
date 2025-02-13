@@ -1,4 +1,4 @@
-import {next} from '../util';
+import {first, last, next} from '../util';
 import {printTree} from '../print/printTree';
 import {print} from '../red-black';
 import type {Comparator, SonicMap} from '../types';
@@ -253,8 +253,11 @@ export class LlrbTree<K, V> implements SonicMap<K, V, LlrbNode<K, V>> {
   }
 
   public first(): LlrbNode<K, V> | undefined {
-    // return this.min;
-    throw new Error('Method not implemented.');
+    return first(this.root);
+  }
+
+  public last(): LlrbNode<K, V> | undefined {
+    return last(this.root);
   }
 
   public readonly next = next;

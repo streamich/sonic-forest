@@ -44,7 +44,6 @@ export interface SonicMap<K, V, Node extends ITreeNode<K, V> = ITreeNode<K, V>> 
   size(): number;
   isEmpty(): boolean;
   next: <N extends HeadlessNode>(curr: N) => N | undefined;
-  insert(k: K, v: V): SonicNodePublicReference<Node>;
   set(k: K, v: V): SonicNodePublicReference<Node>;
   first(): SonicNodePublicReference<Node> | undefined;
   last(): SonicNodePublicReference<Node> | undefined;

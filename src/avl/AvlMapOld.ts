@@ -1,6 +1,6 @@
 import {insert, insertLeft, insertRight, remove, print} from './util';
 import {printTree} from '../print/printTree';
-import {findOrNextLower, first, next} from '../util';
+import {findOrNextLower, first, last, next} from '../util';
 import type {Comparator, HeadlessNode, SonicMap} from '../types';
 import type {AvlNodeReference, IAvlTreeNode} from './types';
 
@@ -107,6 +107,11 @@ export class AvlMap<K, V> implements SonicMap<K, V, AvlNode<K, V>> {
   public first(): AvlNode<K, V> | undefined {
     const root = this.root;
     return root ? first(root) : undefined;
+  }
+
+  public last(): AvlNode<K, V> | undefined {
+    const root = this.root;
+    return root ? last(root) : undefined;
   }
 
   public readonly next = next;

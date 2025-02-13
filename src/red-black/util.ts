@@ -182,13 +182,13 @@ const correctDoubleBlack = <K, N extends IRbTreeNode<K>>(root: N, n: N): N => {
     let p = n.p as N | undefined;
     if (!p) return n;
     const pl = p.l;
-    const nIsPl = n === pl;
-    let s = (nIsPl ? p.r : pl) as N;
+    const isLeftChild = n === pl;
+    let s = (isLeftChild ? p.r : pl) as N;
     const sl = s.l;
     if (s && !s.b && (!sl || sl.b)) {
       const sr = s.r;
       if (!sr || sr.b) {
-        if (nIsPl) rRotate(p, s);
+        if (isLeftChild) rRotate(p, s);
         else lRotate(p, s);
         p.b = false;
         s.b = true;

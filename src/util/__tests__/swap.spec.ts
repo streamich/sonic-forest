@@ -2,6 +2,8 @@ import {assertTreeLinks} from '../../__tests__/util';
 import {HeadlessNode} from '../../types';
 import {swap} from '../swap';
 import {print} from '../print';
+import {IRbTreeNode} from '../../red-black';
+import {linkLeft, linkRight, n} from '../../red-black/__tests__/utils';
 
 test('immediate left child at root', () => {
   const x: HeadlessNode = {p: undefined, l: undefined, r: undefined};
@@ -55,4 +57,34 @@ test('immediate left child not at root', () => {
   expect(x.l).toBe(undefined);
   expect(y.p).toBe(z);
   // console.log(print(root));
+});
+
+test('root and leaf nodes', () => {
+  const nn20: IRbTreeNode<number, string> = n(-20, true);
+  const nn10: IRbTreeNode<number, string> = n(-10, true);
+  const nn5: IRbTreeNode<number, string> = n(-5, true);
+  const n10: IRbTreeNode<number, string> = n(10, true);
+  const n20: IRbTreeNode<number, string> = n(20, true);
+  const n40: IRbTreeNode<number, string> = n(40, true);
+  const n50: IRbTreeNode<number, string> = n(50, true);
+  const n60: IRbTreeNode<number, string> = n(60, false);
+  const n80: IRbTreeNode<number, string> = n(80, true);
+  let root = n10;
+  linkLeft(root, nn10);
+  linkRight(root, n40);
+  linkLeft(nn10, nn20);
+  linkRight(nn10, nn5);
+  linkLeft(n40, n20);
+  linkRight(n40, n60);
+  linkLeft(n60, n50);
+  linkRight(n60, n80);
+  assertTreeLinks(root);
+  const x = root;
+  const y = n20;
+  // console.log(print(root));
+  root = swap(root, x, y);
+  // console.log(print(root));
+  assertTreeLinks(root);
+  expect(root).toBe(y);
+  expect(y.p).toBe(undefined);
 });

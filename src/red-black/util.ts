@@ -1,5 +1,6 @@
 import {printBinary} from '../print/printBinary';
 import type {Comparator} from '../types';
+import {swap} from '../util/swap';
 import type {IRbTreeNode, RbHeadlessNode} from './types';
 
 const stringify = JSON.stringify;
@@ -132,21 +133,19 @@ const rlRotate = (g: RbHeadlessNode, p: RbHeadlessNode, n: RbHeadlessNode): void
 
 export const remove = <K, N extends IRbTreeNode<K>>(root: N | undefined, n: N): N | undefined => {
   if (!root) return; // TODO: This line is not necessary...?
+  const originalNode = n;
   let r = n.r as N | undefined;
   const l = n.l as N | undefined;
   let child: N | undefined;
   if (r) {
-    let inOrderSuccessor = r as N | undefined;
+    let inOrderSuccessor = r as N;
     if (inOrderSuccessor) while (true) {
         const next = inOrderSuccessor.l as N | undefined;
         if (next) inOrderSuccessor = next;
         else break;
       }
-    if (!inOrderSuccessor) return;
-    n.k = inOrderSuccessor.k;
-    n.v = inOrderSuccessor.v;
     n = inOrderSuccessor;
-    child = r = n.r as N | undefined;
+    child = n.r as N | undefined;
   } else if (!n.p) {
     if (l) {
       l.b = true;
@@ -155,6 +154,15 @@ export const remove = <K, N extends IRbTreeNode<K>>(root: N | undefined, n: N): 
     return l;
   } else {
     child = r || l;
+  }
+  if (n !== originalNode) {
+    originalNode.k = n.k;
+    originalNode.v = n.v;
+    const b = n.b;
+    n.b = originalNode.b;
+    originalNode.b = b;
+    root = swap(root, originalNode, n);
+    n = originalNode;
   }
   if (child) {
     const p = n.p! as N;

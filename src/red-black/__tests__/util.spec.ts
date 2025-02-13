@@ -1,6 +1,6 @@
 import {find, size} from '../../util';
 import {IRbTreeNode} from '../types';
-import {remove} from '../util';
+import {print, remove} from '../util';
 import {assertRedBlackTree, comparator, linkLeft, linkRight, n, setup} from './utils';
 
 describe('inserts', () => {
@@ -154,11 +154,13 @@ describe('deletes', () => {
       linkLeft(n60, n50);
       linkRight(n60, n80);
       assertRedBlackTree(root);
+      // console.log(print(root));
       expect(size(root)).toBe(9);
       root = remove(root, n10)!;
       expect(size(root)).toBe(8);
-      // console.log(print(root));
       assertRedBlackTree(root);
+      expect(root).not.toBe(n10);
+      // console.log(print(root));
       expect(!!find(root, 10, comparator)).toBe(false);
       expect(!!find(root, -20, comparator)).toBe(true);
       expect(!!find(root, -10, comparator)).toBe(true);

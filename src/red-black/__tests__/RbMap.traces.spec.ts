@@ -226,6 +226,98 @@ const trace3: Trace = [
   ["delete", 63]
 ];
 
+const trace4: Trace = [
+  ["insert", 35, 35],
+  ["insert", 56, 56],
+  ["insert", 78, 78],
+  ["insert", 14, 14],
+  ["insert", 1, 1],
+  ["insert", 52, 52],
+  ["insert", 88, 88],
+  ["delete", 31],
+  ["delete", 24],
+  ["delete", 26],
+  ["delete", 45],
+  ["delete", 10],
+  ["delete", 74],
+  ["delete", 71],
+  ["delete", 84],
+  ["delete", 80],
+  ["delete", 27],
+  ["delete", 74],
+  ["delete", 17],
+  ["delete", 47],
+  ["delete", 5],
+  ["delete", 38],
+  ["delete", 3],
+  ["delete", 24],
+  ["delete", 45],
+  ["delete", 75],
+  ["delete", 87],
+  ["delete", 70],
+  ["delete", 12],
+  ["delete", 34],
+  ["delete", 89],
+  ["delete", 33],
+  ["delete", 72],
+  ["delete", 95],
+  ["delete", 78],
+  ["delete", 90],
+  ["delete", 41],
+  ["delete", 32],
+  ["delete", 12],
+  ["delete", 26],
+  ["delete", 54],
+  ["delete", 92],
+  ["delete", 43],
+  ["delete", 2],
+  ["delete", 18],
+  ["delete", 6],
+  ["delete", 4],
+  ["delete", 37],
+  ["delete", 15],
+  ["delete", 85],
+  ["delete", 38],
+  ["delete", 98],
+  ["delete", 48],
+  ["delete", 33],
+  ["delete", 67],
+  ["delete", 2],
+  ["delete", 70],
+  ["delete", 54],
+  ["delete", 81],
+  ["delete", 30],
+  ["delete", 68],
+  ["delete", 76],
+  ["delete", 91],
+  ["delete", 22],
+  ["delete", 32],
+  ["delete", 57],
+  ["delete", 15],
+  ["delete", 37],
+  ["delete", 82],
+  ["delete", 58],
+  ["delete", 1],
+  ["delete", 34],
+  ["delete", 8],
+  ["delete", 37],
+  ["delete", 98],
+  ["delete", 70],
+  ["delete", 1],
+  ["insert", 85, 85],
+  ["insert", 99, 99]
+];
+
+const trace5: Trace = [
+  ["insert", 59, 59],
+  ["insert", 86, 86],
+  ["insert", 56, 56],
+  ["insert", 43, 43],
+  ["insert", 24, 24],
+  ["delete", 59],
+  ["insert", 90, 90],
+];
+
 test('trace 1', () => {
   const map = new RbMap<number, number>();
   const replay = new TraceReplay(trace1, (step) => {
@@ -247,6 +339,24 @@ test('trace 2', () => {
 test('trace 3', () => {
   const map = new RbMap<number, number>();
   const replay = new TraceReplay(trace3, (step) => {
+    assertRedBlackTree(map.root as any);
+  });
+  replay.run(map);
+});
+
+test('trace 4', () => {
+  const map = new RbMap<number, number>();
+  const replay = new TraceReplay(trace4, (step) => {
+    assertRedBlackTree(map.root as any);
+  });
+  replay.run(map);
+});
+
+test('trace 5', () => {
+  const map = new RbMap<number, number>();
+  const replay = new TraceReplay(trace5, (step) => {
+    console.log(step);
+    console.log(map + '');
     assertRedBlackTree(map.root as any);
   });
   replay.run(map);

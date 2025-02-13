@@ -103,6 +103,24 @@ describe('deletes', () => {
     expect(root.root!.k).toBe(10);
   });
 
+  test('delete root node', () => {
+    const n148 = n(148, true);
+    const n149 = n(149, true);
+    const n150 = n(150, false);
+    const n49 = n(-49, false);
+    const n50 = n(-50, true);
+    const n48 = n(-48, true);
+    let root: typeof n148 | undefined = n148;
+    linkLeft(root, n49);
+    linkRight(root, n149);
+    linkLeft(n49, n50);
+    linkRight(n49, n48);
+    linkRight(n149, n150);
+    assertRedBlackTree(root);
+    root = remove(root, n148);
+    assertRedBlackTree(root);
+  });
+
   test('single red child', () => {
     const n100: IRbTreeNode<number, string> = n(100, false);
     const n99: IRbTreeNode<number, string> = n(99, true);

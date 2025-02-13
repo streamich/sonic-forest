@@ -47,10 +47,10 @@ export class OrderedMapIterator<K, V> {
     this.iteratorType = iteratorType;
     if (this.iteratorType === IteratorType.NORMAL) {
       this.pre = function () {
-        if (this._node === this._header._left) {
+        if (this._node === this._header.l) {
           throwIteratorAccessError();
         }
-        this._node = this._node._pre();
+        this._node = this._node.prev();
         return this;
       };
 
@@ -58,15 +58,15 @@ export class OrderedMapIterator<K, V> {
         if (this._node === this._header) {
           throwIteratorAccessError();
         }
-        this._node = this._node._next();
+        this._node = this._node.next();
         return this;
       };
     } else {
       this.pre = function () {
-        if (this._node === this._header._right) {
+        if (this._node === this._header.r) {
           throwIteratorAccessError();
         }
-        this._node = this._node._next();
+        this._node = this._node.next();
         return this;
       };
 
@@ -74,7 +74,7 @@ export class OrderedMapIterator<K, V> {
         if (this._node === this._header) {
           throwIteratorAccessError();
         }
-        this._node = this._node._pre();
+        this._node = this._node.prev();
         return this;
       };
     }
@@ -92,23 +92,23 @@ export class OrderedMapIterator<K, V> {
    */
   get index() {
     let _node = this._node as TreeNodeEnableIndex<K, V>;
-    const root = this._header._parent as TreeNodeEnableIndex<K, V>;
+    const root = this._header.p as TreeNodeEnableIndex<K, V>;
     if (_node === this._header) {
       if (root) {
-        return root._subTreeSize - 1;
+        return root._size - 1;
       }
       return 0;
     }
     let index = 0;
-    if (_node._left) {
-      index += (_node._left as TreeNodeEnableIndex<K, V>)._subTreeSize;
+    if (_node.l) {
+      index += (_node.l as TreeNodeEnableIndex<K, V>)._size;
     }
     while (_node !== root) {
-      const _parent = _node._parent as TreeNodeEnableIndex<K, V>;
-      if (_node === _parent._right) {
+      const _parent = _node.p as TreeNodeEnableIndex<K, V>;
+      if (_node === _parent.r) {
         index += 1;
-        if (_parent._left) {
-          index += (_parent._left as TreeNodeEnableIndex<K, V>)._subTreeSize;
+        if (_parent.l) {
+          index += (_parent.l as TreeNodeEnableIndex<K, V>)._size;
         }
       }
       _node = _parent;

@@ -1,145 +1,103 @@
-import {TreeNodeColor} from './constants';
+import type {IRbTreeNode} from '../red-black/types';
 
-export class TreeNode<K, V> {
-  _color: TreeNodeColor;
-  _key: K | undefined;
-  _value: V | undefined;
-  _left: TreeNode<K, V> | undefined = undefined;
-  _right: TreeNode<K, V> | undefined = undefined;
-  _parent: TreeNode<K, V> | undefined = undefined;
-  constructor(key?: K, value?: V, color: TreeNodeColor = TreeNodeColor.RED) {
-    this._key = key;
-    this._value = value;
-    this._color = color;
-  }
-  /**
-   * @description Get the pre node.
-   * @returns TreeNode about the pre node.
-   */
-  _pre() {
-    let preNode: TreeNode<K, V> = this;
-    const isRootOrHeader = preNode._parent!._parent === preNode;
-    if (isRootOrHeader && preNode._color === TreeNodeColor.RED) {
-      preNode = preNode._right!;
-    } else if (preNode._left) {
-      preNode = preNode._left;
-      while (preNode._right) {
-        preNode = preNode._right;
-      }
+export class TreeNode<K, V> implements IRbTreeNode<K, V> {
+  l: TreeNode<K, V> | undefined = undefined;
+  r: TreeNode<K, V> | undefined = undefined;
+  p: TreeNode<K, V> | undefined = undefined;
+
+  constructor(public k: K, public v: V, public b = false) {}
+
+  prev() {
+    let prev: TreeNode<K, V> = this;
+    const isRootOrHeader = prev.p!.p === prev;
+    if (isRootOrHeader && !prev.b) prev = prev.r!;
+    else if (prev.l) {
+      prev = prev.l;
+      while (prev.r) prev = prev.r;
     } else {
-      // Must be root and left is null
-      if (isRootOrHeader) {
-        return preNode._parent!;
+      if (isRootOrHeader) return prev.p!;
+      let v = prev.p!;
+      while (v.l === prev) {
+        prev = v;
+        v = prev.p!;
       }
-      let pre = preNode._parent!;
-      while (pre._left === preNode) {
-        preNode = pre;
-        pre = preNode._parent!;
-      }
-      preNode = pre;
+      prev = v;
     }
-    return preNode;
+    return prev;
   }
-  /**
-   * @description Get the next node.
-   * @returns TreeNode about the next node.
-   */
-  _next() {
-    let nextNode: TreeNode<K, V> = this;
-    if (nextNode._right) {
-      nextNode = nextNode._right;
-      while (nextNode._left) {
-        nextNode = nextNode._left;
-      }
-      return nextNode;
+
+  next() {
+    let next: TreeNode<K, V> = this;
+    if (next.r) {
+      next = next.r;
+      while (next.l) next = next.l;
+      return next;
     } else {
-      let pre = nextNode._parent!;
-      while (pre._right === nextNode) {
-        nextNode = pre;
-        pre = nextNode._parent!;
+      let v = next.p!;
+      while (v.r === next) {
+        next = v;
+        v = next.p!;
       }
-      if (nextNode._right !== pre) {
-        return pre;
-      } else return nextNode;
+      if (next.r !== v) return v;
+      else return next;
     }
   }
-  /**
-   * @description Rotate left.
-   * @returns TreeNode about moved to original position after rotation.
-   */
-  _rotateLeft() {
-    const PP = this._parent!;
-    const V = this._right!;
-    const R = V._left;
 
-    if (PP._parent === this) PP._parent = V;
-    else if (PP._left === this) PP._left = V;
-    else PP._right = V;
-
-    V._parent = PP;
-    V._left = this;
-
-    this._parent = V;
-    this._right = R;
-
-    if (R) R._parent = this;
-
-    return V;
+  rRotate() {
+    const p = this.p!;
+    const r = this.r!;
+    const l = r.l;
+    if (p.p === this) p.p = r;
+    else if (p.l === this) p.l = r;
+    else p.r = r;
+    r.p = p;
+    r.l = this;
+    this.p = r;
+    this.r = l;
+    if (l) l.p = this;
+    return r;
   }
-  /**
-   * @description Rotate right.
-   * @returns TreeNode about moved to original position after rotation.
-   */
-  _rotateRight() {
-    const PP = this._parent!;
-    const F = this._left!;
-    const K = F._right;
 
-    if (PP._parent === this) PP._parent = F;
-    else if (PP._left === this) PP._left = F;
-    else PP._right = F;
-
-    F._parent = PP;
-    F._right = this;
-
-    this._parent = F;
-    this._left = K;
-
-    if (K) K._parent = this;
-
-    return F;
+  lRotate() {
+    const p = this.p!;
+    const l = this.l!;
+    const r = l.r;
+    if (p.p === this) p.p = l;
+    else if (p.l === this) p.l = l;
+    else p.r = l;
+    l.p = p;
+    l.r = this;
+    this.p = l;
+    this.l = r;
+    if (r) r.p = this;
+    return l;
   }
 }
 
 export class TreeNodeEnableIndex<K, V> extends TreeNode<K, V> {
-  _subTreeSize = 1;
-  /**
-   * @description Rotate left and do recount.
-   * @returns TreeNode about moved to original position after rotation.
-   */
-  _rotateLeft() {
-    const parent = super._rotateLeft() as TreeNodeEnableIndex<K, V>;
-    this._recount();
-    parent._recount();
+  _size = 1;
+
+  rRotate() {
+    const parent = super.rRotate() as TreeNodeEnableIndex<K, V>;
+    this.compute();
+    parent.compute();
     return parent;
   }
-  /**
-   * @description Rotate right and do recount.
-   * @returns TreeNode about moved to original position after rotation.
-   */
-  _rotateRight() {
-    const parent = super._rotateRight() as TreeNodeEnableIndex<K, V>;
-    this._recount();
-    parent._recount();
+
+  lRotate() {
+    const parent = super.lRotate() as TreeNodeEnableIndex<K, V>;
+    this.compute();
+    parent.compute();
     return parent;
   }
-  _recount() {
-    this._subTreeSize = 1;
-    if (this._left) {
-      this._subTreeSize += (this._left as TreeNodeEnableIndex<K, V>)._subTreeSize;
+
+  compute() {
+    this._size = 1;
+    if (this.l) {
+      this._size += (this.l as TreeNodeEnableIndex<K, V>)._size;
     }
-    if (this._right) {
-      this._subTreeSize += (this._right as TreeNodeEnableIndex<K, V>)._subTreeSize;
+    if (this.r) {
+      this._size += (this.r as TreeNodeEnableIndex<K, V>)._size;
     }
   }
 }

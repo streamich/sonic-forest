@@ -1,4 +1,4 @@
-import {IteratorType, TreeNodeColor} from './constants';
+import {IteratorType} from './constants';
 import {OrderedMapIterator} from './SortedMapIterator';
 import {TreeNode} from './SortedMapNode';
 import {TreeNodeEnableIndex} from './SortedMapNode';
@@ -36,7 +36,7 @@ export class SortedMap<K, V> {
     this._cmp = cmp;
     this.enableIndex = enableIndex;
     this._TreeNodeClass = enableIndex ? TreeNodeEnableIndex : TreeNode;
-    this._header = new this._TreeNodeClass();
+    this._header = new this._TreeNodeClass<undefined, undefined>(undefined, undefined) as TreeNode<K, V>;
 
     const self = this;
     container.forEach((el) => {
@@ -83,12 +83,12 @@ export class SortedMap<K, V> {
   protected _lowerBound(curNode: TreeNode<K, V> | undefined, key: K) {
     let resNode = this._header;
     while (curNode) {
-      const cmpResult = this._cmp(curNode._key!, key);
+      const cmpResult = this._cmp(curNode.k!, key);
       if (cmpResult < 0) {
-        curNode = curNode._right;
+        curNode = curNode.r;
       } else if (cmpResult > 0) {
         resNode = curNode;
-        curNode = curNode._left;
+        curNode = curNode.l;
       } else return curNode;
     }
     return resNode;
@@ -99,12 +99,12 @@ export class SortedMap<K, V> {
   protected _upperBound(curNode: TreeNode<K, V> | undefined, key: K) {
     let resNode = this._header;
     while (curNode) {
-      const cmpResult = this._cmp(curNode._key!, key);
+      const cmpResult = this._cmp(curNode.k!, key);
       if (cmpResult <= 0) {
-        curNode = curNode._right;
+        curNode = curNode.r;
       } else {
         resNode = curNode;
-        curNode = curNode._left;
+        curNode = curNode.l;
       }
     }
     return resNode;
@@ -115,12 +115,12 @@ export class SortedMap<K, V> {
   protected _reverseLowerBound(curNode: TreeNode<K, V> | undefined, key: K) {
     let resNode = this._header;
     while (curNode) {
-      const cmpResult = this._cmp(curNode._key!, key);
+      const cmpResult = this._cmp(curNode.k!, key);
       if (cmpResult < 0) {
         resNode = curNode;
-        curNode = curNode._right;
+        curNode = curNode.r;
       } else if (cmpResult > 0) {
-        curNode = curNode._left;
+        curNode = curNode.l;
       } else return curNode;
     }
     return resNode;
@@ -131,12 +131,12 @@ export class SortedMap<K, V> {
   protected _reverseUpperBound(curNode: TreeNode<K, V> | undefined, key: K) {
     let resNode = this._header;
     while (curNode) {
-      const cmpResult = this._cmp(curNode._key!, key);
+      const cmpResult = this._cmp(curNode.k!, key);
       if (cmpResult < 0) {
         resNode = curNode;
-        curNode = curNode._right;
+        curNode = curNode.r;
       } else {
-        curNode = curNode._left;
+        curNode = curNode.l;
       }
     }
     return resNode;
@@ -146,61 +146,61 @@ export class SortedMap<K, V> {
    */
   protected _eraseNodeSelfBalance(curNode: TreeNode<K, V>) {
     while (true) {
-      const parentNode = curNode._parent!;
+      const parentNode = curNode.p!;
       if (parentNode === this._header) return;
-      if (curNode._color === TreeNodeColor.RED) {
-        curNode._color = TreeNodeColor.BLACK;
+      if (!curNode.b) {
+        curNode.b = true;
         return;
       }
-      if (curNode === parentNode._left) {
-        const brother = parentNode._right!;
-        if (brother._color === TreeNodeColor.RED) {
-          brother._color = TreeNodeColor.BLACK;
-          parentNode._color = TreeNodeColor.RED;
+      if (curNode === parentNode.l) {
+        const brother = parentNode.r!;
+        if (!brother.b) {
+          brother.b = true;
+          parentNode.b = false;
           if (parentNode === this._root) {
-            this._root = parentNode._rotateLeft();
-          } else parentNode._rotateLeft();
+            this._root = parentNode.rRotate();
+          } else parentNode.rRotate();
         } else {
-          if (brother._right && brother._right._color === TreeNodeColor.RED) {
-            brother._color = parentNode._color;
-            parentNode._color = TreeNodeColor.BLACK;
-            brother._right._color = TreeNodeColor.BLACK;
+          if (brother.r && brother.r.b === false) {
+            brother.b = parentNode.b;
+            parentNode.b = true;
+            brother.r.b = true;
             if (parentNode === this._root) {
-              this._root = parentNode._rotateLeft();
-            } else parentNode._rotateLeft();
+              this._root = parentNode.rRotate();
+            } else parentNode.rRotate();
             return;
-          } else if (brother._left && brother._left._color === TreeNodeColor.RED) {
-            brother._color = TreeNodeColor.RED;
-            brother._left._color = TreeNodeColor.BLACK;
-            brother._rotateRight();
+          } else if (brother.l && brother.l.b === false) {
+            brother.b = false;
+            brother.l.b = true;
+            brother.lRotate();
           } else {
-            brother._color = TreeNodeColor.RED;
+            brother.b = false;
             curNode = parentNode;
           }
         }
       } else {
-        const brother = parentNode._left!;
-        if (brother._color === TreeNodeColor.RED) {
-          brother._color = TreeNodeColor.BLACK;
-          parentNode._color = TreeNodeColor.RED;
+        const brother = parentNode.l!;
+        if (brother.b === false) {
+          brother.b = true;
+          parentNode.b = false;
           if (parentNode === this._root) {
-            this._root = parentNode._rotateRight();
-          } else parentNode._rotateRight();
+            this._root = parentNode.lRotate();
+          } else parentNode.lRotate();
         } else {
-          if (brother._left && brother._left._color === TreeNodeColor.RED) {
-            brother._color = parentNode._color;
-            parentNode._color = TreeNodeColor.BLACK;
-            brother._left._color = TreeNodeColor.BLACK;
+          if (brother.l && brother.l.b === false) {
+            brother.b = parentNode.b;
+            parentNode.b = true;
+            brother.l.b = true;
             if (parentNode === this._root) {
-              this._root = parentNode._rotateRight();
-            } else parentNode._rotateRight();
+              this._root = parentNode.lRotate();
+            } else parentNode.lRotate();
             return;
-          } else if (brother._right && brother._right._color === TreeNodeColor.RED) {
-            brother._color = TreeNodeColor.RED;
-            brother._right._color = TreeNodeColor.BLACK;
-            brother._rotateLeft();
+          } else if (brother.r && brother.r.b === false) {
+            brother.b = false;
+            brother.r.b = true;
+            brother.rRotate();
           } else {
-            brother._color = TreeNodeColor.RED;
+            brother.b = false;
             curNode = parentNode;
           }
         }
@@ -216,37 +216,37 @@ export class SortedMap<K, V> {
       return;
     }
     let swapNode = curNode;
-    while (swapNode._left || swapNode._right) {
-      if (swapNode._right) {
-        swapNode = swapNode._right;
-        while (swapNode._left) swapNode = swapNode._left;
+    while (swapNode.l || swapNode.r) {
+      if (swapNode.r) {
+        swapNode = swapNode.r;
+        while (swapNode.l) swapNode = swapNode.l;
       } else {
-        swapNode = swapNode._left!;
+        swapNode = swapNode.l!;
       }
-      const key = curNode._key;
-      curNode._key = swapNode._key;
-      swapNode._key = key;
-      const value = curNode._value;
-      curNode._value = swapNode._value;
-      swapNode._value = value;
+      const key = curNode.k;
+      curNode.k = swapNode.k;
+      swapNode.k = key;
+      const value = curNode.v;
+      curNode.v = swapNode.v;
+      swapNode.v = value;
       curNode = swapNode;
     }
-    if (this._header._left === swapNode) {
-      this._header._left = swapNode._parent;
-    } else if (this._header._right === swapNode) {
-      this._header._right = swapNode._parent;
+    if (this._header.l === swapNode) {
+      this._header.l = swapNode.p;
+    } else if (this._header.r === swapNode) {
+      this._header.r = swapNode.p;
     }
     this._eraseNodeSelfBalance(swapNode);
-    let _parent = swapNode._parent as TreeNodeEnableIndex<K, V>;
-    if (swapNode === _parent._left) {
-      _parent._left = undefined;
-    } else _parent._right = undefined;
+    let _parent = swapNode.p as TreeNodeEnableIndex<K, V>;
+    if (swapNode === _parent.l) {
+      _parent.l = undefined;
+    } else _parent.r = undefined;
     this._length -= 1;
-    this._root!._color = TreeNodeColor.BLACK;
+    this._root!.b = true;
     if (this.enableIndex) {
       while (_parent !== this._header) {
-        _parent._subTreeSize -= 1;
-        _parent = _parent._parent as TreeNodeEnableIndex<K, V>;
+        _parent._size -= 1;
+        _parent = _parent.p as TreeNodeEnableIndex<K, V>;
       }
     }
   }
@@ -266,14 +266,14 @@ export class SortedMap<K, V> {
     while (stack.length || curNode) {
       if (curNode) {
         stack.push(curNode);
-        curNode = curNode._left;
+        curNode = curNode.l;
       } else {
         curNode = stack.pop()!;
         if (index === pos) return curNode;
         nodeList && nodeList.push(curNode);
         callback && callback(curNode, index, this);
         index += 1;
-        curNode = curNode._right;
+        curNode = curNode.r;
       }
     }
     return nodeList;
@@ -283,96 +283,96 @@ export class SortedMap<K, V> {
    */
   protected _insertNodeSelfBalance(curNode: TreeNode<K, V>) {
     while (true) {
-      const parentNode = curNode._parent!;
-      if (parentNode._color === TreeNodeColor.BLACK) return;
-      const grandParent = parentNode._parent!;
-      if (parentNode === grandParent._left) {
-        const uncle = grandParent._right;
-        if (uncle && uncle._color === TreeNodeColor.RED) {
-          uncle._color = parentNode._color = TreeNodeColor.BLACK;
+      const parentNode = curNode.p!;
+      if (parentNode.b === true) return;
+      const grandParent = parentNode.p!;
+      if (parentNode === grandParent.l) {
+        const uncle = grandParent.r;
+        if (uncle && uncle.b === false) {
+          uncle.b = parentNode.b = true;
           if (grandParent === this._root) return;
-          grandParent._color = TreeNodeColor.RED;
+          grandParent.b = false;
           curNode = grandParent;
           continue;
-        } else if (curNode === parentNode._right) {
-          curNode._color = TreeNodeColor.BLACK;
-          if (curNode._left) {
-            curNode._left._parent = parentNode;
+        } else if (curNode === parentNode.r) {
+          curNode.b = true;
+          if (curNode.l) {
+            curNode.l.p = parentNode;
           }
-          if (curNode._right) {
-            curNode._right._parent = grandParent;
+          if (curNode.r) {
+            curNode.r.p = grandParent;
           }
-          parentNode._right = curNode._left;
-          grandParent._left = curNode._right;
-          curNode._left = parentNode;
-          curNode._right = grandParent;
+          parentNode.r = curNode.l;
+          grandParent.l = curNode.r;
+          curNode.l = parentNode;
+          curNode.r = grandParent;
           if (grandParent === this._root) {
             this._root = curNode;
-            this._header._parent = curNode;
+            this._header.p = curNode;
           } else {
-            const GP = grandParent._parent!;
-            if (GP._left === grandParent) {
-              GP._left = curNode;
-            } else GP._right = curNode;
+            const GP = grandParent.p!;
+            if (GP.l === grandParent) {
+              GP.l = curNode;
+            } else GP.r = curNode;
           }
-          curNode._parent = grandParent._parent;
-          parentNode._parent = curNode;
-          grandParent._parent = curNode;
-          grandParent._color = TreeNodeColor.RED;
+          curNode.p = grandParent.p;
+          parentNode.p = curNode;
+          grandParent.p = curNode;
+          grandParent.b = false;
         } else {
-          parentNode._color = TreeNodeColor.BLACK;
+          parentNode.b = true;
           if (grandParent === this._root) {
-            this._root = grandParent._rotateRight();
-          } else grandParent._rotateRight();
-          grandParent._color = TreeNodeColor.RED;
+            this._root = grandParent.lRotate();
+          } else grandParent.lRotate();
+          grandParent.b = false;
           return;
         }
       } else {
-        const uncle = grandParent._left;
-        if (uncle && uncle._color === TreeNodeColor.RED) {
-          uncle._color = parentNode._color = TreeNodeColor.BLACK;
+        const uncle = grandParent.l;
+        if (uncle && uncle.b === false) {
+          uncle.b = parentNode.b = true;
           if (grandParent === this._root) return;
-          grandParent._color = TreeNodeColor.RED;
+          grandParent.b = false;
           curNode = grandParent;
           continue;
-        } else if (curNode === parentNode._left) {
-          curNode._color = TreeNodeColor.BLACK;
-          if (curNode._left) {
-            curNode._left._parent = grandParent;
+        } else if (curNode === parentNode.l) {
+          curNode.b = true;
+          if (curNode.l) {
+            curNode.l.p = grandParent;
           }
-          if (curNode._right) {
-            curNode._right._parent = parentNode;
+          if (curNode.r) {
+            curNode.r.p = parentNode;
           }
-          grandParent._right = curNode._left;
-          parentNode._left = curNode._right;
-          curNode._left = grandParent;
-          curNode._right = parentNode;
+          grandParent.r = curNode.l;
+          parentNode.l = curNode.r;
+          curNode.l = grandParent;
+          curNode.r = parentNode;
           if (grandParent === this._root) {
             this._root = curNode;
-            this._header._parent = curNode;
+            this._header.p = curNode;
           } else {
-            const GP = grandParent._parent!;
-            if (GP._left === grandParent) {
-              GP._left = curNode;
-            } else GP._right = curNode;
+            const GP = grandParent.p!;
+            if (GP.l === grandParent) {
+              GP.l = curNode;
+            } else GP.r = curNode;
           }
-          curNode._parent = grandParent._parent;
-          parentNode._parent = curNode;
-          grandParent._parent = curNode;
-          grandParent._color = TreeNodeColor.RED;
+          curNode.p = grandParent.p;
+          parentNode.p = curNode;
+          grandParent.p = curNode;
+          grandParent.b = false;
         } else {
-          parentNode._color = TreeNodeColor.BLACK;
+          parentNode.b = true;
           if (grandParent === this._root) {
-            this._root = grandParent._rotateLeft();
-          } else grandParent._rotateLeft();
-          grandParent._color = TreeNodeColor.RED;
+            this._root = grandParent.rRotate();
+          } else grandParent.rRotate();
+          grandParent.b = false;
           return;
         }
       }
       if (this.enableIndex) {
-        (<TreeNodeEnableIndex<K, V>>parentNode)._recount();
-        (<TreeNodeEnableIndex<K, V>>grandParent)._recount();
-        (<TreeNodeEnableIndex<K, V>>curNode)._recount();
+        (<TreeNodeEnableIndex<K, V>>parentNode).compute();
+        (<TreeNodeEnableIndex<K, V>>grandParent).compute();
+        (<TreeNodeEnableIndex<K, V>>curNode).compute();
       }
       return;
     }
@@ -380,58 +380,58 @@ export class SortedMap<K, V> {
   /**
    * @internal
    */
-  protected _set(key: K, value?: V, hint?: OrderedMapIterator<K, V>) {
+  protected _set(key: K, value: V, hint?: OrderedMapIterator<K, V>) {
     if (this._root === undefined) {
       this._length += 1;
-      this._root = new this._TreeNodeClass(key, value, TreeNodeColor.BLACK);
-      this._root._parent = this._header;
-      this._header._parent = this._header._left = this._header._right = this._root;
+      this._root = new this._TreeNodeClass(key, value, true);
+      this._root.p = this._header;
+      this._header.p = this._header.l = this._header.r = this._root;
       return this._length;
     }
     let curNode;
-    const minNode = this._header._left!;
-    const compareToMin = this._cmp(minNode._key!, key);
+    const minNode = this._header.l!;
+    const compareToMin = this._cmp(minNode.k!, key);
     if (compareToMin === 0) {
-      minNode._value = value;
+      minNode.v = value;
       return this._length;
     } else if (compareToMin > 0) {
-      minNode._left = new this._TreeNodeClass(key, value);
-      minNode._left._parent = minNode;
-      curNode = minNode._left;
-      this._header._left = curNode;
+      minNode.l = new this._TreeNodeClass(key, value);
+      minNode.l.p = minNode;
+      curNode = minNode.l;
+      this._header.l = curNode;
     } else {
-      const maxNode = this._header._right!;
-      const compareToMax = this._cmp(maxNode._key!, key);
+      const maxNode = this._header.r!;
+      const compareToMax = this._cmp(maxNode.k!, key);
       if (compareToMax === 0) {
-        maxNode._value = value;
+        maxNode.v = value;
         return this._length;
       } else if (compareToMax < 0) {
-        maxNode._right = new this._TreeNodeClass(key, value);
-        maxNode._right._parent = maxNode;
-        curNode = maxNode._right;
-        this._header._right = curNode;
+        maxNode.r = new this._TreeNodeClass(key, value);
+        maxNode.r.p = maxNode;
+        curNode = maxNode.r;
+        this._header.r = curNode;
       } else {
         if (hint !== undefined) {
           const iterNode = hint._node;
           if (iterNode !== this._header) {
-            const iterCmpRes = this._cmp(iterNode._key!, key);
+            const iterCmpRes = this._cmp(iterNode.k!, key);
             if (iterCmpRes === 0) {
-              iterNode._value = value;
+              iterNode.v = value;
               return this._length;
             } else if (iterCmpRes > 0) {
-              /* istanbul ignore else */ const preNode = iterNode._pre();
-              const preCmpRes = this._cmp(preNode._key!, key);
+              /* istanbul ignore else */ const preNode = iterNode.prev();
+              const preCmpRes = this._cmp(preNode.k!, key);
               if (preCmpRes === 0) {
-                preNode._value = value;
+                preNode.v = value;
                 return this._length;
               } else if (preCmpRes < 0) {
                 curNode = new this._TreeNodeClass(key, value);
-                if (preNode._right === undefined) {
-                  preNode._right = curNode;
-                  curNode._parent = preNode;
+                if (preNode.r === undefined) {
+                  preNode.r = curNode;
+                  curNode.p = preNode;
                 } else {
-                  iterNode._left = curNode;
-                  curNode._parent = iterNode;
+                  iterNode.l = curNode;
+                  curNode.p = iterNode;
                 }
               }
             }
@@ -440,25 +440,25 @@ export class SortedMap<K, V> {
         if (curNode === undefined) {
           curNode = this._root;
           while (true) {
-            const cmpResult = this._cmp(curNode._key!, key);
+            const cmpResult = this._cmp(curNode.k!, key);
             if (cmpResult > 0) {
-              if (curNode._left === undefined) {
-                curNode._left = new this._TreeNodeClass(key, value);
-                curNode._left._parent = curNode;
-                curNode = curNode._left;
+              if (curNode.l === undefined) {
+                curNode.l = new this._TreeNodeClass(key, value);
+                curNode.l.p = curNode;
+                curNode = curNode.l;
                 break;
               }
-              curNode = curNode._left;
+              curNode = curNode.l;
             } else if (cmpResult < 0) {
-              if (curNode._right === undefined) {
-                curNode._right = new this._TreeNodeClass(key, value);
-                curNode._right._parent = curNode;
-                curNode = curNode._right;
+              if (curNode.r === undefined) {
+                curNode.r = new this._TreeNodeClass(key, value);
+                curNode.r.p = curNode;
+                curNode = curNode.r;
                 break;
               }
-              curNode = curNode._right;
+              curNode = curNode.r;
             } else {
-              curNode._value = value;
+              curNode.v = value;
               return this._length;
             }
           }
@@ -466,10 +466,10 @@ export class SortedMap<K, V> {
       }
     }
     if (this.enableIndex) {
-      let parent = curNode._parent as TreeNodeEnableIndex<K, V>;
+      let parent = curNode.p as TreeNodeEnableIndex<K, V>;
       while (parent !== this._header) {
-        parent._subTreeSize += 1;
-        parent = parent._parent as TreeNodeEnableIndex<K, V>;
+        parent._size += 1;
+        parent = parent.p as TreeNodeEnableIndex<K, V>;
       }
     }
     this._insertNodeSelfBalance(curNode);
@@ -481,11 +481,11 @@ export class SortedMap<K, V> {
    */
   protected _getTreeNodeByKey(curNode: TreeNode<K, V> | undefined, key: K) {
     while (curNode) {
-      const cmpResult = this._cmp(curNode._key!, key);
+      const cmpResult = this._cmp(curNode.k!, key);
       if (cmpResult < 0) {
-        curNode = curNode._right;
+        curNode = curNode.r;
       } else if (cmpResult > 0) {
-        curNode = curNode._left;
+        curNode = curNode.l;
       } else return curNode;
     }
     return curNode || this._header;
@@ -493,8 +493,8 @@ export class SortedMap<K, V> {
   clear() {
     this._length = 0;
     this._root = undefined;
-    this._header._parent = undefined;
-    this._header._left = this._header._right = undefined;
+    this._header.p = undefined;
+    this._header.l = this._header.r = undefined;
   }
   /**
    * @description Update node's key by iterator.
@@ -512,27 +512,27 @@ export class SortedMap<K, V> {
       throwIteratorAccessError();
     }
     if (this._length === 1) {
-      node._key = key;
+      node.k = key;
       return true;
     }
-    const nextKey = node._next()._key!;
-    if (node === this._header._left) {
+    const nextKey = node.next().k!;
+    if (node === this._header.l) {
       if (this._cmp(nextKey, key) > 0) {
-        node._key = key;
+        node.k = key;
         return true;
       }
       return false;
     }
-    const preKey = node._pre()._key!;
-    if (node === this._header._right) {
+    const preKey = node.prev().k!;
+    if (node === this._header.r) {
       if (this._cmp(preKey, key) < 0) {
-        node._key = key;
+        node.k = key;
         return true;
       }
       return false;
     }
     if (this._cmp(preKey, key) >= 0 || this._cmp(nextKey, key) <= 0) return false;
-    node._key = key;
+    node.k = key;
     return true;
   }
   eraseElementByPos(pos: number) {
@@ -558,7 +558,7 @@ export class SortedMap<K, V> {
     if (node === this._header) {
       throwIteratorAccessError();
     }
-    const hasNoRight = node._right === undefined;
+    const hasNoRight = node.r === undefined;
     const isNormal = iter.iteratorType === IteratorType.NORMAL;
     // For the normal iterator, the `next` node will be swapped to `this` node when has right.
     if (isNormal) {
@@ -567,7 +567,7 @@ export class SortedMap<K, V> {
     } else {
       // For the reverse iterator, only when it doesn't have right and has left the `next` node will be swapped.
       // So when it has right, or it is a leaf node we should move it to `next`.
-      if (!hasNoRight || node._left === undefined) iter.next();
+      if (!hasNoRight || node.l === undefined) iter.next();
     }
     this._eraseNode(node);
     return iter;
@@ -581,32 +581,32 @@ export class SortedMap<K, V> {
     if (this._length === 0) return 0;
     function traversal(curNode: TreeNode<K, V> | undefined): number {
       if (!curNode) return 0;
-      return Math.max(traversal(curNode._left), traversal(curNode._right)) + 1;
+      return Math.max(traversal(curNode.l), traversal(curNode.r)) + 1;
     }
     return traversal(this._root);
   }
 
   begin() {
-    return new OrderedMapIterator<K, V>(this._header._left || this._header, this._header, this);
+    return new OrderedMapIterator<K, V>(this._header.l || this._header, this._header, this);
   }
   end() {
     return new OrderedMapIterator<K, V>(this._header, this._header, this);
   }
   rBegin() {
-    return new OrderedMapIterator<K, V>(this._header._right || this._header, this._header, this, IteratorType.REVERSE);
+    return new OrderedMapIterator<K, V>(this._header.r || this._header, this._header, this, IteratorType.REVERSE);
   }
   rEnd() {
     return new OrderedMapIterator<K, V>(this._header, this._header, this, IteratorType.REVERSE);
   }
   front() {
     if (this._length === 0) return;
-    const minNode = this._header._left!;
-    return <[K, V]>[minNode._key, minNode._value];
+    const minNode = this._header.l!;
+    return <[K, V]>[minNode.k, minNode.v];
   }
   back() {
     if (this._length === 0) return;
-    const maxNode = this._header._right!;
-    return <[K, V]>[maxNode._key, maxNode._value];
+    const maxNode = this._header.r!;
+    return <[K, V]>[maxNode.k, maxNode.v];
   }
   lowerBound(key: K) {
     const resNode = this._lowerBound(this._root, key);
@@ -626,7 +626,7 @@ export class SortedMap<K, V> {
   }
   forEach(callback: (element: [K, V], index: number, map: SortedMap<K, V>) => void) {
     this._inOrderTraversal(function (node, index, map) {
-      callback(<[K, V]>[node._key, node._value], index, map);
+      callback(<[K, V]>[node.k, node.v], index, map);
     });
   }
   /**
@@ -647,7 +647,7 @@ export class SortedMap<K, V> {
   getElementByPos(pos: number) {
     $checkWithinAccessParams!(pos, 0, this._length - 1);
     const node = this._inOrderTraversal(pos);
-    return <[K, V]>[node._key, node._value];
+    return <[K, V]>[node.k, node.v];
   }
   find(key: K) {
     const curNode = this._getTreeNodeByKey(this._root, key);
@@ -661,7 +661,7 @@ export class SortedMap<K, V> {
    */
   getElementByKey(key: K) {
     const curNode = this._getTreeNodeByKey(this._root, key);
-    return curNode._value;
+    return curNode.v;
   }
   union(other: SortedMap<K, V>) {
     const self = this;
@@ -675,7 +675,7 @@ export class SortedMap<K, V> {
     const nodeList = this._inOrderTraversal();
     for (let i = 0; i < length; ++i) {
       const node = nodeList[i];
-      yield <[K, V]>[node._key, node._value];
+      yield <[K, V]>[node.k, node.v];
     }
   }
 }

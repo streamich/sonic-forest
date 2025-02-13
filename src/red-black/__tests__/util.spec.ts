@@ -1,80 +1,7 @@
-import {find, first, next, size} from '../../util';
-import {IRbTreeNode, RbHeadlessNode} from '../types';
-import {insert, remove, print} from '../util';
-
-const node = <K, V>(k: K, v: V, black: boolean = false): IRbTreeNode<K, V> => ({
-  k,
-  v,
-  b: black,
-  p: undefined,
-  l: undefined,
-  r: undefined,
-});
-const n = (val: number, black: boolean = false) => node(val, '' + val, black);
-const linkLeft = <K, V>(parent: IRbTreeNode<K, V>, child: IRbTreeNode<K, V>) => {
-  parent.l = child;
-  child.p = parent;
-};
-const linkRight = <K, V>(parent: IRbTreeNode<K, V>, child: IRbTreeNode<K, V>) => {
-  parent.r = child;
-  child.p = parent;
-};
-const comparator = (a: number, b: number) => a - b;
-const setup = () => {
-  const root: {root: IRbTreeNode<number, string> | undefined} = {root: undefined};
-  const ins = (...vals: number[]) => {
-    vals.forEach((val) => (root.root = insert(root.root, n(val), comparator)));
-    assertRedBlackTree(root.root);
-  };
-  const del = (val: number) => {
-    const node = find(root.root!, val, comparator) as IRbTreeNode<number, string>;
-    if (!node) return;
-    root.root = remove(root.root, node);
-    assertRedBlackTree(root.root);
-  };
-  return {root, ins, del};
-};
-
-const assertTreeBlackHeight = (node: RbHeadlessNode): number => {
-  const {l, r} = node;
-  if (!l && !r) return node.b ? 1 : 0;
-  const lh = l ? assertTreeBlackHeight(l) : 0;
-  const rh = r ? assertTreeBlackHeight(r) : 0;
-  expect(lh).toBe(rh);
-  return lh + (node.b ? 1 : 0);
-};
-
-const assertRedBlackTree = (root?: RbHeadlessNode): void => {
-  if (!root) return;
-  if (!root.b) {
-    // tslint:disable-next-line: no-console
-    console.log('root:\n\n' + print(root));
-    throw new Error('Root is not black');
-  }
-  assertTreeBlackHeight(root);
-  let curr = first(root);
-  while (curr) {
-    const {b, l, r, p} = curr;
-    if (!b) {
-      if (p && !p.b) {
-        // tslint:disable-next-line: no-console
-        console.log('at node:\n\n' + print(curr));
-        throw new Error('Red node has red parent');
-      }
-      if (l && !l.b) {
-        // tslint:disable-next-line: no-console
-        console.log('at node:\n\n' + print(curr));
-        throw new Error('Red node has red left child');
-      }
-      if (r && !r.b) {
-        // tslint:disable-next-line: no-console
-        console.log('at node:\n\n' + print(curr));
-        throw new Error('Red node has red right child');
-      }
-    }
-    curr = next(curr);
-  }
-};
+import {find, size} from '../../util';
+import {IRbTreeNode} from '../types';
+import {print, remove} from '../util';
+import {assertRedBlackTree, comparator, linkLeft, linkRight, n, setup} from './utils';
 
 describe('inserts', () => {
   test('can insert into empty tree', () => {
@@ -170,10 +97,28 @@ describe('deletes', () => {
     expect(node.k).toBe(15);
     expect(node.v).toBe('15');
     expect(size(root.root)).toBe(2);
-    root.root = remove(root.root, node);
+    root.root = remove(root.root!, node);
     assertRedBlackTree(root.root);
     expect(size(root.root)).toBe(1);
     expect(root.root!.k).toBe(10);
+  });
+
+  test('delete root node', () => {
+    const n148 = n(148, true);
+    const n149 = n(149, true);
+    const n150 = n(150, false);
+    const n49 = n(-49, false);
+    const n50 = n(-50, true);
+    const n48 = n(-48, true);
+    let root: typeof n148 | undefined = n148;
+    linkLeft(root, n49);
+    linkRight(root, n149);
+    linkLeft(n49, n50);
+    linkRight(n49, n48);
+    linkRight(n149, n150);
+    assertRedBlackTree(root);
+    root = remove(root, n148);
+    assertRedBlackTree(root);
   });
 
   test('single red child', () => {
@@ -209,11 +154,13 @@ describe('deletes', () => {
       linkLeft(n60, n50);
       linkRight(n60, n80);
       assertRedBlackTree(root);
+      // console.log(print(root));
       expect(size(root)).toBe(9);
       root = remove(root, n10)!;
       expect(size(root)).toBe(8);
-      // console.log(print(root));
       assertRedBlackTree(root);
+      expect(root).not.toBe(n10);
+      // console.log(print(root));
       expect(!!find(root, 10, comparator)).toBe(false);
       expect(!!find(root, -20, comparator)).toBe(true);
       expect(!!find(root, -10, comparator)).toBe(true);

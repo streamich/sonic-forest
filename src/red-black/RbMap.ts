@@ -1,10 +1,7 @@
-import {insert, insertLeft, insertRight, print} from './util';
-import {printTree} from '../print/printTree';
-import {findOrNextLower, first, next} from '../util';
-import type {Comparator, HeadlessNode} from '../types';
+import {insert, insertLeft, insertRight, remove, print} from './util';
+import {createMap} from '../data-types/map';
+import type {Comparator, HeadlessNode, ITreeNode, SonicMap} from '../types';
 import type {IRbTreeNode} from './types';
-import type {AvlNodeReference} from '../avl/types';
-import type {Printable} from '../print/types';
 
 export class RbNode<K, V> implements IRbTreeNode<K, V> {
   public p: RbNode<K, V> | undefined = undefined;
@@ -17,72 +14,13 @@ export class RbNode<K, V> implements IRbTreeNode<K, V> {
   ) {}
 }
 
-const defaultComparator = (a: unknown, b: unknown) => (a === b ? 0 : (a as any) < (b as any) ? -1 : 1);
+export const RbMap = createMap(
+  RbNode,
+  insert as <K, N extends ITreeNode<K, unknown>>(root: N | undefined, node: N, comparator: Comparator<K>) => N,
+  insertLeft as <K, N extends ITreeNode<K, unknown>>(root: N, node: N, parent: N) => N,
+  insertRight as <K, N extends ITreeNode<K, unknown>>(root: N, node: N, parent: N) => N,
+  remove as <K, N extends ITreeNode<K, unknown>>(root: N | undefined, n: N) => N | undefined,
+  print as <K, V>(node: undefined | HeadlessNode | ITreeNode<K, V>, tab?: string) => string,
+);
 
-export class RbMap<K, V> implements Printable {
-  public root: RbNode<K, V> | undefined = undefined;
-  public readonly comparator: Comparator<K>;
-
-  constructor(comparator?: Comparator<K>) {
-    this.comparator = comparator || defaultComparator;
-  }
-
-  public insert(k: K, v: V): AvlNodeReference<RbNode<K, V>> {
-    const item = new RbNode<K, V>(k, v);
-    this.root = insert(this.root, item, this.comparator);
-    return item;
-  }
-
-  public set(k: K, v: V): AvlNodeReference<RbNode<K, V>> {
-    const root = this.root;
-    if (!root) return this.insert(k, v);
-    const comparator = this.comparator;
-    let next: RbNode<K, V> | undefined = root,
-      curr: RbNode<K, V> | undefined = next;
-    let cmp: number = 0;
-    do {
-      curr = next;
-      cmp = comparator(k, curr.k);
-      if (cmp === 0) return (curr.v = v), curr;
-    } while ((next = cmp < 0 ? (curr.l as RbNode<K, V>) : (curr.r as RbNode<K, V>)));
-    const node = new RbNode<K, V>(k, v);
-    this.root =
-      cmp < 0 ? (insertLeft(root, node, curr) as RbNode<K, V>) : (insertRight(root, node, curr) as RbNode<K, V>);
-    return node;
-  }
-
-  public find(k: K): AvlNodeReference<RbNode<K, V>> | undefined {
-    const comparator = this.comparator;
-    let curr: RbNode<K, V> | undefined = this.root;
-    while (curr) {
-      const cmp = comparator(k, curr.k);
-      if (cmp === 0) return curr;
-      curr = cmp < 0 ? (curr.l as RbNode<K, V>) : (curr.r as RbNode<K, V>);
-    }
-    return undefined;
-  }
-
-  public get(k: K): V | undefined {
-    return this.find(k)?.v;
-  }
-
-  public has(k: K): boolean {
-    return !!this.find(k);
-  }
-
-  public getOrNextLower(k: K): RbNode<K, V> | undefined {
-    return (findOrNextLower(this.root, k, this.comparator) as RbNode<K, V>) || undefined;
-  }
-
-  public forEach(fn: (node: RbNode<K, V>) => void): void {
-    const root = this.root;
-    if (!root) return;
-    let curr = first(root);
-    do fn(curr!);
-    while ((curr = next(curr as HeadlessNode) as RbNode<K, V> | undefined));
-  }
-
-  public toString(tab: string): string {
-    return this.constructor.name + printTree(tab, [(tab) => print(this.root, tab)]);
-  }
-}
+export type RbMap<K, V> = SonicMap<K, V, RbNode<K, V>>;

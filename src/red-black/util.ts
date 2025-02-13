@@ -1,9 +1,9 @@
-import {printBinary} from '../print/printBinary';
-import {first} from '../util/first';
+import {swap} from '../util/swap';
+import {print} from '../util/print';
 import type {Comparator} from '../types';
 import type {IRbTreeNode, RbHeadlessNode} from './types';
 
-const stringify = JSON.stringify;
+export {print};
 
 export const insert = <K, N extends IRbTreeNode<K>>(root: N | undefined, n: N, comparator: Comparator<K>): N => {
   if (!root) return (n.b = true), n;
@@ -34,38 +34,42 @@ export const insertLeft = (root: RbHeadlessNode, n: RbHeadlessNode, p: RbHeadles
 };
 
 const rRebalance = (n: RbHeadlessNode, p: RbHeadlessNode, g: RbHeadlessNode): RbHeadlessNode => {
-  const u = g.l === p ? g.r : g.l;
+  const gl = g.l;
+  const zigzag = gl === p;
+  const u = zigzag ? g.r : gl;
   const uncleIsBlack = !u || u.b;
   if (uncleIsBlack) {
-    const zigzag = g.l === p;
     g.b = false;
     if (zigzag) {
+      lrRotate(g, p, n);
+      // rRotate(p, n);
+      // lRotate(g, n);
       n.b = true;
-      rrRotate(p, n);
-      llRotate(g, n);
       return n;
     }
     p.b = true;
-    rrRotate(g, p);
+    rRotate(g, p);
     return p;
   }
   return recolor(p, g, u);
 };
 
 const lRebalance = (n: RbHeadlessNode, p: RbHeadlessNode, g: RbHeadlessNode): RbHeadlessNode => {
-  const u = g.l === p ? g.r : g.l;
+  const gr = g.r;
+  const zigzag = gr === p;
+  const u = zigzag ? g.l : gr;
   const uncleIsBlack = !u || u.b;
   if (uncleIsBlack) {
-    const zigzag = g.r === p;
     g.b = false;
     if (zigzag) {
+      rlRotate(g, p, n);
+      // lRotate(p, n);
+      // rRotate(g, n);
       n.b = true;
-      llRotate(p, n);
-      rrRotate(g, n);
       return n;
     }
     p.b = true;
-    llRotate(g, p);
+    lRotate(g, p);
     return p;
   }
   return recolor(p, g, u);
@@ -73,154 +77,181 @@ const lRebalance = (n: RbHeadlessNode, p: RbHeadlessNode, g: RbHeadlessNode): Rb
 
 const recolor = (p: RbHeadlessNode, g: RbHeadlessNode, u?: RbHeadlessNode): RbHeadlessNode => {
   p.b = true;
-  g.b = false;
   if (u) u.b = true;
   const gg = g.p;
-  if (!gg) return (g.b = true), g;
-  if (gg.b) return g;
+  if (gg) {
+    g.b = false;
+    if (gg.b) return g;
+  } else {
+    g.b = true;
+    return g;
+  }
   const ggg = gg.p;
-  if (!ggg) return (gg.b = true), gg;
+  if (!ggg) return gg;
   return gg.l === g ? lRebalance(g, gg, ggg) : rRebalance(g, gg, ggg);
 };
 
-const llRotate = (n: RbHeadlessNode, nl: RbHeadlessNode): void => {
+const lRotate = (n: RbHeadlessNode, nl: RbHeadlessNode): void => {
   const p = n.p;
   const nlr = nl.r;
-  nl.p = p;
-  nl.r = n;
-  n.p = nl;
-  n.l = nlr;
-  nlr && (nlr.p = n);
-  p && (p.l === n ? (p.l = nl) : (p.r = nl));
+  ((nl.r = n).l = nlr) && (nlr.p = n);
+  ((n.p = nl).p = p) && (p.l === n ? (p.l = nl) : (p.r = nl));
 };
 
-const rrRotate = (n: RbHeadlessNode, nr: RbHeadlessNode): void => {
+const rRotate = (n: RbHeadlessNode, nr: RbHeadlessNode): void => {
   const p = n.p;
   const nrl = nr.l;
-  nr.p = p;
-  nr.l = n;
-  n.p = nr;
-  n.r = nrl;
-  nrl && (nrl.p = n);
-  p && (p.l === n ? (p.l = nr) : (p.r = nr));
+  ((nr.l = n).r = nrl) && (nrl.p = n);
+  ((n.p = nr).p = p) && (p.l === n ? (p.l = nr) : (p.r = nr));
 };
 
-export const remove = <K, N extends IRbTreeNode<K>>(root: N | undefined, n: N): N | undefined => {
-  if (!root) return;
-  const l = n.l;
-  const r = n.r;
-  const p = n.p as N | undefined;
-  if (!p || (l && r)) {
-    const inOrderSuccessor = first(r) as N | undefined;
-    if (!inOrderSuccessor) return;
-    n.k = inOrderSuccessor.k;
-    n.v = inOrderSuccessor.v;
-    return remove(root, inOrderSuccessor);
+const lrRotate = (g: RbHeadlessNode, p: RbHeadlessNode, n: RbHeadlessNode): void => {
+  const gg = g.p;
+  const nl = n.l;
+  const nr = n.r;
+  gg && (gg.l === g ? (gg.l = n) : (gg.r = n));
+  n.p = gg;
+  n.l = p;
+  n.r = g;
+  p.p = g.p = n;
+  (p.r = nl) && (nl.p = p);
+  (g.l = nr) && (nr.p = g);
+};
+
+const rlRotate = (g: RbHeadlessNode, p: RbHeadlessNode, n: RbHeadlessNode): void => {
+  const gg = g.p;
+  const nl = n.l;
+  const nr = n.r;
+  gg && (gg.l === g ? (gg.l = n) : (gg.r = n));
+  n.p = gg;
+  n.l = g;
+  n.r = p;
+  g.p = p.p = n;
+  (g.r = nl) && (nl.p = g);
+  (p.l = nr) && (nr.p = p);
+};
+
+export const remove = <K, N extends IRbTreeNode<K>>(root: N, n: N): N | undefined => {
+  const originalNode = n;
+  const r = n.r as N | undefined;
+  const l = n.l as N | undefined;
+  let child: N | undefined;
+  if (r) {
+    let inOrderSuccessor = r as N;
+    if (inOrderSuccessor)
+      while (true) {
+        const next = inOrderSuccessor.l as N | undefined;
+        if (next) inOrderSuccessor = next;
+        else break;
+      }
+    n = inOrderSuccessor;
+    child = n.r as N | undefined;
+  } else if (!n.p) {
+    if (l) {
+      l.b = true;
+      l.p = undefined;
+    }
+    return l;
+  } else {
+    child = r || l;
   }
-  const child = (l || r) as N | undefined;
+  if (n !== originalNode) {
+    originalNode.k = n.k;
+    originalNode.v = n.v;
+    const b = n.b;
+    n.b = originalNode.b;
+    originalNode.b = b;
+    root = swap(root, originalNode, n);
+    n = originalNode;
+  }
   if (child) {
+    const p = n.p! as N;
     child.p = p;
     if (p.l === n) p.l = child;
     else p.r = child;
-    const b = n.b;
-    if (b && !child.b) child.b = true;
-    else root = removeCase1(root, child);
+    if (!child.b) child.b = true;
+    else root = correctDoubleBlack(root, child);
   } else {
-    if (n.b) root = removeCase1(root, n);
+    if (n.b) root = correctDoubleBlack(root, n);
     const p2 = n.p as N;
-    if (p2)
-      if (n === p2.l) p2.l = void 0;
-      else p2.r = void 0;
+    if (p2) {
+      if (n === p2.l) p2.l = undefined;
+      else p2.r = undefined;
+    } else {
+      n.b = true;
+      return n;
+    }
   }
   return root;
 };
 
-const removeCase1 = <K, N extends IRbTreeNode<K>>(root: N, n: N): N => {
-  // console.log('case 1');
-  return !n.p ? n : removeCase2(root, n);
-};
-
-const removeCase2 = <K, N extends IRbTreeNode<K>>(root: N, n: N): N => {
-  // console.log('case 2');
-  const p = n.p! as N;
-  const s = (n === p.l ? p.r : p.l) as N;
-  if (s && !s.b && (!s.l || s.l.b) && (!s.r || s.r.b)) {
-    if (n === p.l) rrRotate(p, s);
-    else llRotate(p, s);
-    p.b = false;
-    s.b = true;
-    if (!s.p) root = s;
-  }
-  return removeCase3(root, n);
-};
-
-const removeCase3 = <K, N extends IRbTreeNode<K>>(root: N, n: N): N => {
-  // console.log('case 3');
-  const p = n.p! as N;
-  const s = (n === p.l ? p.r : p.l) as N;
-  if (p.b && s.b && (!s.l || s.l.b) && (!s.r || s.r.b)) {
-    s.b = false;
-    return removeCase1(root, p);
-  }
-  return removeCase4(root, n);
-};
-
-const removeCase4 = <K, N extends IRbTreeNode<K>>(root: N, n: N): N => {
-  // console.log('case 4');
-  const p = n.p! as N;
-  const s = (n === p.l ? p.r : p.l) as N;
-  if (!p.b && s.b && (!s.l || s.l.b) && (!s.r || s.r.b)) {
-    s.b = false;
-    p.b = true;
-    return root;
-  }
-  return removeCase5(root, n);
-};
-
-const removeCase5 = <K, N extends IRbTreeNode<K>>(root: N, n: N): N => {
-  // console.log('case 5');
-  const p = n.p! as N;
-  const s = (n === p.l ? p.r : p.l) as N;
-  if (s.b) {
-    if (n === p.l && (!s.r || s.r.b) && s.l && !s.l.b) {
-      s.l.b = true;
-      s.b = false;
-      llRotate(s, s.l);
-    } else if (n === p.r && (!s.l || s.l.b) && s.r && !s.r.b) {
-      s.r.b = true;
-      s.b = false;
-      rrRotate(s, s.r);
+const correctDoubleBlack = <K, N extends IRbTreeNode<K>>(root: N, n: N): N => {
+  LOOP: while (true) {
+    const p = n.p as N | undefined;
+    if (!p) return n;
+    const pl = p.l;
+    const isLeftChild = n === pl;
+    let s = (isLeftChild ? p.r : pl) as N;
+    const sl = s.l;
+    if (s && !s.b && (!sl || sl.b)) {
+      const sr = s.r;
+      if (!sr || sr.b) {
+        if (isLeftChild) rRotate(p, s);
+        else lRotate(p, s);
+        p.b = false;
+        s.b = true;
+        if (!s.p) root = s;
+      }
     }
-    if (!s.p) return s;
+    if (p.b && s.b && (!sl || sl.b)) {
+      const sr = s.r;
+      if (!sr || sr.b) {
+        s.b = false;
+        n = p;
+        continue LOOP;
+      }
+    }
+    if (!p.b) {
+      const pl = p.l;
+      s = (n === pl ? p.r : pl) as N;
+      const sl = s.l;
+      if (s.b && (!sl || sl.b)) {
+        const sr = s.r;
+        if (!sr || sr.b) {
+          const sr = s.r;
+          if (!sr || sr.b) {
+            s.b = false;
+            p.b = true;
+            return root;
+          }
+        }
+      }
+    }
+    if (s.b) {
+      const sl = s.l;
+      const sr = s.r;
+      if (n === p.l && (!sr || sr.b) && sl && !sl.b) {
+        sl.b = true;
+        s.b = false;
+        lRotate(s, sl);
+      } else if (n === p.r && (!sl || sl.b) && sr && !sr.b) {
+        sr.b = true;
+        s.b = false;
+        rRotate(s, sr);
+      }
+      if (!s.p) return s;
+      const pl = p.l;
+      s = (n === pl ? p.r : pl) as N;
+    }
+    s.b = p.b;
+    p.b = true;
+    if (n === p.l) {
+      s.r!.b = true;
+      rRotate(p, s);
+    } else {
+      s.l!.b = true;
+      lRotate(p, s);
+    }
+    return s.p ? root : s;
   }
-  return removeCase6(root, n);
-};
-
-const removeCase6 = <K, N extends IRbTreeNode<K>>(root: N, n: N): N => {
-  // console.log('case 6');
-  const p = n.p! as N;
-  const s = (n === p.l ? p.r : p.l) as N;
-  s.b = p.b;
-  p.b = true;
-  if (n === p.l) {
-    s.r!.b = true;
-    rrRotate(p, s);
-  } else {
-    s.l!.b = true;
-    llRotate(p, s);
-  }
-  return s.p ? root : s;
-};
-
-export const print = (node: undefined | RbHeadlessNode | IRbTreeNode, tab: string = ''): string => {
-  if (!node) return '∅';
-  const {b, l, r, k, v} = node as IRbTreeNode;
-  const content = k !== undefined ? ` { ${stringify(k)} = ${stringify(v)} }` : '';
-  const bfFormatted = !b ? ` [red]` : '';
-  return (
-    node.constructor.name +
-    `${bfFormatted}` +
-    content +
-    printBinary(tab, [l ? (tab) => print(l, tab) : null, r ? (tab) => print(r, tab) : null])
-  );
 };

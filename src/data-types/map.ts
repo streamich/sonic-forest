@@ -34,13 +34,6 @@ export const createMap = (
       this.comparator = comparator || defaultComparator;
     }
 
-    public insert(k: K, v: V): SonicNodePublicReference<ITreeNode<K, V>> {
-      const item = new Node<K, V>(k, v);
-      this.root = insert(this.root, item, this.comparator);
-      this._size++;
-      return item;
-    }
-
     public set(k: K, v: V): SonicNodePublicReference<ITreeNode<K, V>> {
       const root = this.root;
       if (root === undefined) {

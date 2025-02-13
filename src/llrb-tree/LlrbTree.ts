@@ -31,29 +31,6 @@ export class LlrbTree<K, V> implements SonicMap<K, V, LlrbNode<K, V>> {
 
   constructor(public readonly comparator: Comparator<K> = defaultComparator) {}
 
-  public insert(k: K, v: V): LlrbNode<K, V> {
-    // const root = this.root;
-    // if (!root) {
-    //   const item = new LlrbNode<K, V>(k, v, 1);
-    //   this.min = this.max = this.root = item;
-    //   return item;
-    // }
-    // const comparator = this.comparator;
-    // const cmp = comparator(k, root.k);
-    // if (cmp < 0) {
-    //   const min = this.min!;
-    //   const cmp2 = comparator(k, min.k);
-    //   if (cmp2 < 0) {
-    //     const item = new LlrbNode<K, V>(k, v, 1);
-    //     item.l = this.min;
-    //     this.min = item;
-    //     return item;
-    //   }
-
-    // }
-    throw new Error('Method not implemented.');
-  }
-
   public set(k: K, v: V): LlrbNode<K, V> {
     const root = this.root;
     if (!root) {

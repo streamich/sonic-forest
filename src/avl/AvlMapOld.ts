@@ -25,16 +25,14 @@ export class AvlMap<K, V> implements SonicMap<K, V, AvlNode<K, V>> {
     this.comparator = comparator || defaultComparator;
   }
 
-  public insert(k: K, v: V): AvlNodeReference<AvlNode<K, V>> {
-    const item = new AvlNode<K, V>(k, v);
-    this.root = insert(this.root, item, this.comparator);
-    this._size++;
-    return item;
-  }
-
   public set(k: K, v: V): AvlNodeReference<AvlNode<K, V>> {
     const root = this.root;
-    if (!root) return this.insert(k, v);
+    if (!root) {
+      const item = new AvlNode<K, V>(k, v);
+      this.root = insert(this.root, item, this.comparator);
+      this._size++;
+      return item;
+    }
     const comparator = this.comparator;
     let next: AvlNode<K, V> | undefined = root,
       curr: AvlNode<K, V> | undefined = next;

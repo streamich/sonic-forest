@@ -35,7 +35,7 @@ export const setup = () => {
   const del = (val: number) => {
     const node = find(root.root!, val, comparator) as IRbTreeNode<number, string>;
     if (!node) return;
-    root.root = remove(root.root, node);
+    root.root = remove(root.root!, node);
     assertRedBlackTree(root.root);
   };
   return {root, ins, del};

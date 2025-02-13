@@ -97,7 +97,7 @@ describe('deletes', () => {
     expect(node.k).toBe(15);
     expect(node.v).toBe('15');
     expect(size(root.root)).toBe(2);
-    root.root = remove(root.root, node);
+    root.root = remove(root.root!, node);
     assertRedBlackTree(root.root);
     expect(size(root.root)).toBe(1);
     expect(root.root!.k).toBe(10);

@@ -131,8 +131,7 @@ const rlRotate = (g: RbHeadlessNode, p: RbHeadlessNode, n: RbHeadlessNode): void
   (p.l = nr) && (nr.p = p);
 };
 
-export const remove = <K, N extends IRbTreeNode<K>>(root: N | undefined, n: N): N | undefined => {
-  if (!root) return; // TODO: This line is not necessary...?
+export const remove = <K, N extends IRbTreeNode<K>>(root: N, n: N): N | undefined => {
   const originalNode = n;
   let r = n.r as N | undefined;
   const l = n.l as N | undefined;

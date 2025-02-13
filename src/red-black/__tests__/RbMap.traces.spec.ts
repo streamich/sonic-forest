@@ -355,8 +355,8 @@ test('trace 4', () => {
 test('trace 5', () => {
   const map = new RbMap<number, number>();
   const replay = new TraceReplay(trace5, (step) => {
-    console.log(step);
-    console.log(map + '');
+    // console.log(step);
+    // console.log(map + '');
     assertRedBlackTree(map.root as any);
   });
   replay.run(map);

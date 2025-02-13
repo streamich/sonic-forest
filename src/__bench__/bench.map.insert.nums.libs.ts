@@ -8,11 +8,14 @@ import * as payloads from './payloads';
 import BTree from 'sorted-btree';
 import {OrderedMap} from 'js-sdsl';
 import {AvlMap} from '../avl/AvlMap';
+import {AvlMap as AvlMapOld} from '../avl/AvlMapOld';
 import {RbMap} from '../red-black/RbMap';
+import {LlrbTree} from '../llrb-tree/LlrbTree';
+import {SortedMap} from '../SortedMap/SortedMap';
 
 const benchmark: IBenchmark = {
   name: 'Numeric inserts into maps',
-  warmup: 1000,
+  warmup: 100,
   payloads: payloads.numbers,
   runners: [
     {
@@ -20,6 +23,20 @@ const benchmark: IBenchmark = {
       setup: () => {
         return (num: unknown) => {
           const map = new AvlBstNumNumMap();
+          const numbers = num as number[];
+          const length = numbers.length;
+          for (let i = 0; i < length; i++) {
+            const key = numbers[i];
+            map.set(key, key);
+          }
+        };
+      },
+    },
+    {
+      name: 'json-joy AvlMapOld<number, number>',
+      setup: () => {
+        return (num: unknown) => {
+          const map = new AvlMapOld<number, number>();
           const numbers = num as number[];
           const length = numbers.length;
           for (let i = 0; i < length; i++) {
@@ -58,10 +75,10 @@ const benchmark: IBenchmark = {
       },
     },
     {
-      name: 'json-joy Tree<number, number>',
+      name: 'json-joy LlrbTree<number, number>',
       setup: () => {
         return (num: unknown) => {
-          const map = new Tree<number, number>();
+          const map = new LlrbTree<number, number>();
           const numbers = num as number[];
           const length = numbers.length;
           for (let i = 0; i < length; i++) {
@@ -72,33 +89,61 @@ const benchmark: IBenchmark = {
       },
     },
     {
-      name: 'json-joy RadixTree',
+      name: 'json-joy SortedMap<number, number>',
       setup: () => {
         return (num: unknown) => {
-          const map = new RadixTree();
+          const map = new SortedMap<number, number>();
           const numbers = num as number[];
           const length = numbers.length;
           for (let i = 0; i < length; i++) {
             const key = numbers[i];
-            map.set('' + key, key);
+            map.setElement(key, key);
           }
         };
       },
     },
-    {
-      name: 'sorted-btree BTree<number, number>',
-      setup: () => {
-        return (num: unknown) => {
-          const map = new BTree<number, number>();
-          const numbers = num as number[];
-          const length = numbers.length;
-          for (let i = 0; i < length; i++) {
-            const key = numbers[i];
-            map.set(key, key);
-          }
-        };
-      },
-    },
+    // {
+    //   name: 'json-joy Tree<number, number>',
+    //   setup: () => {
+    //     return (num: unknown) => {
+    //       const map = new Tree<number, number>();
+    //       const numbers = num as number[];
+    //       const length = numbers.length;
+    //       for (let i = 0; i < length; i++) {
+    //         const key = numbers[i];
+    //         map.set(key, key);
+    //       }
+    //     };
+    //   },
+    // },
+    // {
+    //   name: 'json-joy RadixTree',
+    //   setup: () => {
+    //     return (num: unknown) => {
+    //       const map = new RadixTree();
+    //       const numbers = num as number[];
+    //       const length = numbers.length;
+    //       for (let i = 0; i < length; i++) {
+    //         const key = numbers[i];
+    //         map.set('' + key, key);
+    //       }
+    //     };
+    //   },
+    // },
+    // {
+    //   name: 'sorted-btree BTree<number, number>',
+    //   setup: () => {
+    //     return (num: unknown) => {
+    //       const map = new BTree<number, number>();
+    //       const numbers = num as number[];
+    //       const length = numbers.length;
+    //       for (let i = 0; i < length; i++) {
+    //         const key = numbers[i];
+    //         map.set(key, key);
+    //       }
+    //     };
+    //   },
+    // },
     {
       name: 'js-sdsl OrderedMap<number, number>',
       setup: () => {

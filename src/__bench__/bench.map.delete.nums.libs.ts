@@ -1,70 +1,35 @@
-// npx ts-node src/__bench__/bench.map.insert.nums.native.ts
+// npx ts-node src/__bench__/bench.map.delete.nums.libs.ts
 
 import {runBenchmark, IBenchmark} from './runBenchmark';
 import {Tree} from '../Tree';
-import {AvlBstNumNumMap} from '../avl/AvlBstNumNumMap';
-import {AvlMap} from '../avl/AvlMap';
-import {RbMap} from '../red-black/RbMap';
 import {RadixTree} from '../radix/RadixTree';
 import * as payloads from './payloads';
+import BTree from 'sorted-btree';
+import {OrderedMap} from 'js-sdsl';
+import {AvlMap} from '../avl/AvlMap';
+import {AvlMap as AvlMapOld} from '../avl/AvlMapOld';
+import {RbMap} from '../red-black/RbMap';
+import {SortedMap} from '../SortedMap/SortedMap';
 
 const benchmark: IBenchmark = {
-  name: 'Numeric inserts into maps',
-  warmup: 1000,
+  name: 'Numeric deletes from maps',
+  warmup: 100,
   payloads: payloads.numbers,
   runners: [
     {
-      name: 'Array[number]<number>',
+      name: 'json-joy AvlMapOld<number, number>',
       setup: () => {
         return (num: unknown) => {
-          const map: Array<number> = [];
-          const numbers = num as number[];
-          const length = numbers.length;
-          for (let i = 0; i < length; i++) {
-            const key = numbers[i];
-            map[key] = key;
-          }
-        };
-      },
-    },
-    {
-      name: 'Record<number, number>',
-      setup: () => {
-        return (num: unknown) => {
-          const map: Record<number, number> = {};
-          const numbers = num as number[];
-          const length = numbers.length;
-          for (let i = 0; i < length; i++) {
-            const key = numbers[i];
-            map[key] = key;
-          }
-        };
-      },
-    },
-    {
-      name: 'Map<number, number>',
-      setup: () => {
-        return (num: unknown) => {
-          const map = new Map<number, number>();
+          const map = new AvlMapOld<number, number>();
           const numbers = num as number[];
           const length = numbers.length;
           for (let i = 0; i < length; i++) {
             const key = numbers[i];
             map.set(key, key);
           }
-        };
-      },
-    },
-    {
-      name: 'json-joy AvlBstNumNumMap',
-      setup: () => {
-        return (num: unknown) => {
-          const map = new AvlBstNumNumMap();
-          const numbers = num as number[];
-          const length = numbers.length;
           for (let i = 0; i < length; i++) {
             const key = numbers[i];
-            map.set(key, key);
+            map.del(key);
           }
         };
       },
@@ -80,6 +45,10 @@ const benchmark: IBenchmark = {
             const key = numbers[i];
             map.set(key, key);
           }
+          for (let i = 0; i < length; i++) {
+            const key = numbers[i];
+            map.del(key);
+          }
         };
       },
     },
@@ -93,6 +62,28 @@ const benchmark: IBenchmark = {
           for (let i = 0; i < length; i++) {
             const key = numbers[i];
             map.set(key, key);
+          }
+          for (let i = 0; i < length; i++) {
+            const key = numbers[i];
+            map.del(key);
+          }
+        };
+      },
+    },
+    {
+      name: 'json-joy SortedMap<number, number>',
+      setup: () => {
+        return (num: unknown) => {
+          const map = new SortedMap<number, number>();
+          const numbers = num as number[];
+          const length = numbers.length;
+          for (let i = 0; i < length; i++) {
+            const key = numbers[i];
+            map.setElement(key, key);
+          }
+          for (let i = 0; i < length; i++) {
+            const key = numbers[i];
+            map.eraseElementByKey(key);
           }
         };
       },
@@ -108,6 +99,10 @@ const benchmark: IBenchmark = {
             const key = numbers[i];
             map.set(key, key);
           }
+          for (let i = 0; i < length; i++) {
+            const key = numbers[i];
+            map.delete(key);
+          }
         };
       },
     },
@@ -121,6 +116,46 @@ const benchmark: IBenchmark = {
           for (let i = 0; i < length; i++) {
             const key = numbers[i];
             map.set('' + key, key);
+          }
+          for (let i = 0; i < length; i++) {
+            const key = numbers[i];
+            map.delete('' + key);
+          }
+        };
+      },
+    },
+    {
+      name: 'sorted-btree BTree<number, number>',
+      setup: () => {
+        return (num: unknown) => {
+          const map = new BTree<number, number>();
+          const numbers = num as number[];
+          const length = numbers.length;
+          for (let i = 0; i < length; i++) {
+            const key = numbers[i];
+            map.set(key, key);
+          }
+          for (let i = 0; i < length; i++) {
+            const key = numbers[i];
+            map.delete(key);
+          }
+        };
+      },
+    },
+    {
+      name: 'js-sdsl OrderedMap<number, number>',
+      setup: () => {
+        return (num: unknown) => {
+          const map = new OrderedMap<number, number>();
+          const numbers = num as number[];
+          const length = numbers.length;
+          for (let i = 0; i < length; i++) {
+            const key = numbers[i];
+            map.setElement(key, key);
+          }
+          for (let i = 0; i < length; i++) {
+            const key = numbers[i];
+            map.eraseElementByKey(key);
           }
         };
       },

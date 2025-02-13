@@ -18,34 +18,34 @@ const benchmark: IBenchmark = {
   warmup: 100,
   payloads: payloads.numbers,
   runners: [
-    {
-      name: 'json-joy AvlBstNumNumMap',
-      setup: () => {
-        return (num: unknown) => {
-          const map = new AvlBstNumNumMap();
-          const numbers = num as number[];
-          const length = numbers.length;
-          for (let i = 0; i < length; i++) {
-            const key = numbers[i];
-            map.set(key, key);
-          }
-        };
-      },
-    },
-    {
-      name: 'json-joy AvlMapOld<number, number>',
-      setup: () => {
-        return (num: unknown) => {
-          const map = new AvlMapOld<number, number>();
-          const numbers = num as number[];
-          const length = numbers.length;
-          for (let i = 0; i < length; i++) {
-            const key = numbers[i];
-            map.set(key, key);
-          }
-        };
-      },
-    },
+    // {
+    //   name: 'json-joy AvlBstNumNumMap',
+    //   setup: () => {
+    //     return (num: unknown) => {
+    //       const map = new AvlBstNumNumMap();
+    //       const numbers = num as number[];
+    //       const length = numbers.length;
+    //       for (let i = 0; i < length; i++) {
+    //         const key = numbers[i];
+    //         map.set(key, key);
+    //       }
+    //     };
+    //   },
+    // },
+    // {
+    //   name: 'json-joy AvlMapOld<number, number>',
+    //   setup: () => {
+    //     return (num: unknown) => {
+    //       const map = new AvlMapOld<number, number>();
+    //       const numbers = num as number[];
+    //       const length = numbers.length;
+    //       for (let i = 0; i < length; i++) {
+    //         const key = numbers[i];
+    //         map.set(key, key);
+    //       }
+    //     };
+    //   },
+    // },
     {
       name: 'json-joy AvlMap<number, number>',
       setup: () => {
@@ -74,20 +74,20 @@ const benchmark: IBenchmark = {
         };
       },
     },
-    {
-      name: 'json-joy LlrbTree<number, number>',
-      setup: () => {
-        return (num: unknown) => {
-          const map = new LlrbTree<number, number>();
-          const numbers = num as number[];
-          const length = numbers.length;
-          for (let i = 0; i < length; i++) {
-            const key = numbers[i];
-            map.set(key, key);
-          }
-        };
-      },
-    },
+    // {
+    //   name: 'json-joy LlrbTree<number, number>',
+    //   setup: () => {
+    //     return (num: unknown) => {
+    //       const map = new LlrbTree<number, number>();
+    //       const numbers = num as number[];
+    //       const length = numbers.length;
+    //       for (let i = 0; i < length; i++) {
+    //         const key = numbers[i];
+    //         map.set(key, key);
+    //       }
+    //     };
+    //   },
+    // },
     {
       name: 'json-joy SortedMap<number, number>',
       setup: () => {

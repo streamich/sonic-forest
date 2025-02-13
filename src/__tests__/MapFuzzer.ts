@@ -37,6 +37,7 @@ export class MapFuzzer {
     try {
       assertMapContents(this.map, this.twin);
     } catch (error) {
+      // tslint:disable-next-line no-console
       console.log('Trace:', JSON.stringify(this.trace));
       throw error;
     }

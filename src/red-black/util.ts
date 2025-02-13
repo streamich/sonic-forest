@@ -133,7 +133,7 @@ const rlRotate = (g: RbHeadlessNode, p: RbHeadlessNode, n: RbHeadlessNode): void
 
 export const remove = <K, N extends IRbTreeNode<K>>(root: N, n: N): N | undefined => {
   const originalNode = n;
-  let r = n.r as N | undefined;
+  const r = n.r as N | undefined;
   const l = n.l as N | undefined;
   let child: N | undefined;
   if (r) {
@@ -187,7 +187,7 @@ export const remove = <K, N extends IRbTreeNode<K>>(root: N, n: N): N | undefine
 
 const correctDoubleBlack = <K, N extends IRbTreeNode<K>>(root: N, n: N): N => {
   LOOP: while (true) {
-    let p = n.p as N | undefined;
+    const p = n.p as N | undefined;
     if (!p) return n;
     const pl = p.l;
     const isLeftChild = n === pl;

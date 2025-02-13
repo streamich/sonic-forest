@@ -1,21 +1,5 @@
 import {SortedMap} from '../SortedMap';
 
-it('OrderedMap find function test', () => {
-  const myOrderedMap = new SortedMap<number, number>();
-  expect(myOrderedMap.find(0).equals(myOrderedMap.end())).toBe(true);
-  expect(myOrderedMap.find(1).equals(myOrderedMap.end())).toBe(true);
-  expect(myOrderedMap.find(2).equals(myOrderedMap.end())).toBe(true);
-  myOrderedMap.setElement(1, 1);
-  expect(myOrderedMap.find(0).equals(myOrderedMap.end())).toBe(true);
-  expect(myOrderedMap.find(1).equals(myOrderedMap.begin())).toBe(true);
-  expect(myOrderedMap.find(2).equals(myOrderedMap.end())).toBe(true);
-  myOrderedMap.setElement(2, 2);
-  myOrderedMap.eraseElementByKey(1);
-  expect(myOrderedMap.find(0).equals(myOrderedMap.end())).toBe(true);
-  expect(myOrderedMap.find(1).equals(myOrderedMap.end())).toBe(true);
-  expect(myOrderedMap.find(2).equals(myOrderedMap.begin())).toBe(true);
-});
-
 test('numbers from 0 to 100', () => {
   const map = new SortedMap<number, number>();
   for (let i = 0; i <= 100; i++) {

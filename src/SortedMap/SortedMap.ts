@@ -1,11 +1,14 @@
+import {printTree} from '../print/printTree';
 import {IteratorType} from './constants';
 import {OrderedMapIterator} from './SortedMapIterator';
 import {TreeNode} from './SortedMapNode';
 import {TreeNodeEnableIndex} from './SortedMapNode';
-import {throwIteratorAccessError, $checkWithinAccessParams} from './util';
-import type {initContainer} from './types';
+import {throwIteratorAccessError} from './util';
+import {next} from '../util';
+import {print} from '../red-black/util/print';
+import type {Comparator, SonicMap, SonicNodePublicReference} from '../types';
 
-export class SortedMap<K, V> {
+export class SortedMap<K, V> implements SonicMap<K, V, TreeNode<K, V>> {
   enableIndex: boolean;
   /**
    * @internal
@@ -15,33 +18,21 @@ export class SortedMap<K, V> {
    * @internal
    */
   protected _root: TreeNode<K, V> | undefined = undefined;
-  /**
-   * @internal
-   */
-  protected readonly _cmp: (x: K, y: K) => number;
+
+
   /**
    * @internal
    */
   protected readonly _TreeNodeClass: typeof TreeNode | typeof TreeNodeEnableIndex;
 
   constructor(
-    container: initContainer<[K, V]> = [],
-    cmp: (x: K, y: K) => number = (x: K, y: K) => {
-      if (x < y) return -1;
-      if (x > y) return 1;
-      return 0;
-    },
+    comparator?: Comparator<K>,
     enableIndex: boolean = false,
   ) {
-    this._cmp = cmp;
+    this.comparator = comparator || ((a: unknown, b: unknown) => (a === b ? 0 : (a as any) < (b as any) ? -1 : 1));
     this.enableIndex = enableIndex;
     this._TreeNodeClass = enableIndex ? TreeNodeEnableIndex : TreeNode;
     this._header = new this._TreeNodeClass<undefined, undefined>(undefined, undefined) as TreeNode<K, V>;
-
-    const self = this;
-    container.forEach((el) => {
-      self.setElement(el[0], el[1]);
-    });
   }
 
   /**
@@ -58,15 +49,7 @@ export class SortedMap<K, V> {
   get length() {
     return this._length;
   }
-  /**
-   * @returns The size of the container.
-   * @example
-   * const container = new Vector([1, 2]);
-   * console.log(container.size()); // 2
-   */
-  size() {
-    return this._length;
-  }
+
   /**
    * @returns Whether the container is empty.
    * @example
@@ -83,7 +66,7 @@ export class SortedMap<K, V> {
   protected _lowerBound(curNode: TreeNode<K, V> | undefined, key: K) {
     let resNode = this._header;
     while (curNode) {
-      const cmpResult = this._cmp(curNode.k!, key);
+      const cmpResult = this.comparator(curNode.k!, key);
       if (cmpResult < 0) {
         curNode = curNode.r;
       } else if (cmpResult > 0) {
@@ -99,7 +82,7 @@ export class SortedMap<K, V> {
   protected _upperBound(curNode: TreeNode<K, V> | undefined, key: K) {
     let resNode = this._header;
     while (curNode) {
-      const cmpResult = this._cmp(curNode.k!, key);
+      const cmpResult = this.comparator(curNode.k!, key);
       if (cmpResult <= 0) {
         curNode = curNode.r;
       } else {
@@ -115,7 +98,7 @@ export class SortedMap<K, V> {
   protected _reverseLowerBound(curNode: TreeNode<K, V> | undefined, key: K) {
     let resNode = this._header;
     while (curNode) {
-      const cmpResult = this._cmp(curNode.k!, key);
+      const cmpResult = this.comparator(curNode.k!, key);
       if (cmpResult < 0) {
         resNode = curNode;
         curNode = curNode.r;
@@ -131,7 +114,7 @@ export class SortedMap<K, V> {
   protected _reverseUpperBound(curNode: TreeNode<K, V> | undefined, key: K) {
     let resNode = this._header;
     while (curNode) {
-      const cmpResult = this._cmp(curNode.k!, key);
+      const cmpResult = this.comparator(curNode.k!, key);
       if (cmpResult < 0) {
         resNode = curNode;
         curNode = curNode.r;
@@ -250,37 +233,8 @@ export class SortedMap<K, V> {
       }
     }
   }
-  protected _inOrderTraversal(): TreeNode<K, V>[];
-  protected _inOrderTraversal(pos: number): TreeNode<K, V>;
-  protected _inOrderTraversal(callback: (node: TreeNode<K, V>, index: number, map: this) => void): TreeNode<K, V>;
-  /**
-   * @internal
-   */
-  protected _inOrderTraversal(param?: number | ((node: TreeNode<K, V>, index: number, map: this) => void)) {
-    const pos = typeof param === 'number' ? param : undefined;
-    const callback = typeof param === 'function' ? param : undefined;
-    const nodeList = typeof param === 'undefined' ? <TreeNode<K, V>[]>[] : undefined;
-    let index = 0;
-    let curNode = this._root;
-    const stack: TreeNode<K, V>[] = [];
-    while (stack.length || curNode) {
-      if (curNode) {
-        stack.push(curNode);
-        curNode = curNode.l;
-      } else {
-        curNode = stack.pop()!;
-        if (index === pos) return curNode;
-        nodeList && nodeList.push(curNode);
-        callback && callback(curNode, index, this);
-        index += 1;
-        curNode = curNode.r;
-      }
-    }
-    return nodeList;
-  }
-  /**
-   * @internal
-   */
+  
+  /** @internal */
   protected _insertNodeSelfBalance(curNode: TreeNode<K, V>) {
     while (true) {
       const parentNode = curNode.p!;
@@ -377,9 +331,8 @@ export class SortedMap<K, V> {
       return;
     }
   }
-  /**
-   * @internal
-   */
+
+  /** @internal */
   protected _set(key: K, value: V, hint?: OrderedMapIterator<K, V>) {
     if (this._root === undefined) {
       this._length += 1;
@@ -390,7 +343,7 @@ export class SortedMap<K, V> {
     }
     let curNode;
     const minNode = this._header.l!;
-    const compareToMin = this._cmp(minNode.k!, key);
+    const compareToMin = this.comparator(minNode.k!, key);
     if (compareToMin === 0) {
       minNode.v = value;
       return this._length;
@@ -401,7 +354,7 @@ export class SortedMap<K, V> {
       this._header.l = curNode;
     } else {
       const maxNode = this._header.r!;
-      const compareToMax = this._cmp(maxNode.k!, key);
+      const compareToMax = this.comparator(maxNode.k!, key);
       if (compareToMax === 0) {
         maxNode.v = value;
         return this._length;
@@ -414,13 +367,13 @@ export class SortedMap<K, V> {
         if (hint !== undefined) {
           const iterNode = hint._node;
           if (iterNode !== this._header) {
-            const iterCmpRes = this._cmp(iterNode.k!, key);
+            const iterCmpRes = this.comparator(iterNode.k!, key);
             if (iterCmpRes === 0) {
               iterNode.v = value;
               return this._length;
             } else if (iterCmpRes > 0) {
               /* istanbul ignore else */ const preNode = iterNode.prev();
-              const preCmpRes = this._cmp(preNode.k!, key);
+              const preCmpRes = this.comparator(preNode.k!, key);
               if (preCmpRes === 0) {
                 preNode.v = value;
                 return this._length;
@@ -440,7 +393,7 @@ export class SortedMap<K, V> {
         if (curNode === undefined) {
           curNode = this._root;
           while (true) {
-            const cmpResult = this._cmp(curNode.k!, key);
+            const cmpResult = this.comparator(curNode.k!, key);
             if (cmpResult > 0) {
               if (curNode.l === undefined) {
                 curNode.l = new this._TreeNodeClass(key, value);
@@ -481,7 +434,7 @@ export class SortedMap<K, V> {
    */
   protected _getTreeNodeByKey(curNode: TreeNode<K, V> | undefined, key: K) {
     while (curNode) {
-      const cmpResult = this._cmp(curNode.k!, key);
+      const cmpResult = this.comparator(curNode.k!, key);
       if (cmpResult < 0) {
         curNode = curNode.r;
       } else if (cmpResult > 0) {
@@ -490,12 +443,7 @@ export class SortedMap<K, V> {
     }
     return curNode || this._header;
   }
-  clear() {
-    this._length = 0;
-    this._root = undefined;
-    this._header.p = undefined;
-    this._header.l = this._header.r = undefined;
-  }
+
   /**
    * @description Update node's key by iterator.
    * @param iter - The iterator you want to change.
@@ -517,7 +465,7 @@ export class SortedMap<K, V> {
     }
     const nextKey = node.next().k!;
     if (node === this._header.l) {
-      if (this._cmp(nextKey, key) > 0) {
+      if (this.comparator(nextKey, key) > 0) {
         node.k = key;
         return true;
       }
@@ -525,21 +473,22 @@ export class SortedMap<K, V> {
     }
     const preKey = node.prev().k!;
     if (node === this._header.r) {
-      if (this._cmp(preKey, key) < 0) {
+      if (this.comparator(preKey, key) < 0) {
         node.k = key;
         return true;
       }
       return false;
     }
-    if (this._cmp(preKey, key) >= 0 || this._cmp(nextKey, key) <= 0) return false;
+    if (this.comparator(preKey, key) >= 0 || this.comparator(nextKey, key) <= 0) return false;
     node.k = key;
     return true;
   }
   eraseElementByPos(pos: number) {
-    $checkWithinAccessParams!(pos, 0, this._length - 1);
-    const node = this._inOrderTraversal(pos);
-    this._eraseNode(node);
-    return this._length;
+    throw new Error('Method not implemented.');
+    // $checkWithinAccessParams!(pos, 0, this._length - 1);
+    // const node = this._inOrderTraversal(pos);
+    // this._eraseNode(node);
+    // return this._length;
   }
   /**
    * @description Remove the element of the specified key.
@@ -624,11 +573,7 @@ export class SortedMap<K, V> {
     const resNode = this._reverseUpperBound(this._root, key);
     return new OrderedMapIterator<K, V>(resNode, this._header, this);
   }
-  forEach(callback: (element: [K, V], index: number, map: SortedMap<K, V>) => void) {
-    this._inOrderTraversal(function (node, index, map) {
-      callback(<[K, V]>[node.k, node.v], index, map);
-    });
-  }
+
   /**
    * @description Insert a key-value pair or set value by the given key.
    * @param key - The key want to insert.
@@ -645,14 +590,12 @@ export class SortedMap<K, V> {
     return this._set(key, value, hint);
   }
   getElementByPos(pos: number) {
-    $checkWithinAccessParams!(pos, 0, this._length - 1);
-    const node = this._inOrderTraversal(pos);
-    return <[K, V]>[node.k, node.v];
+    throw new Error('Method not implemented.');
+    // $checkWithinAccessParams!(pos, 0, this._length - 1);
+    // const node = this._inOrderTraversal(pos);
+    // return <[K, V]>[node.k, node.v];
   }
-  find(key: K) {
-    const curNode = this._getTreeNodeByKey(this._root, key);
-    return new OrderedMapIterator<K, V>(curNode, this._header, this);
-  }
+
   /**
    * @description Get the value of the element of the specified key.
    * @param key - The specified key you want to get.
@@ -663,19 +606,128 @@ export class SortedMap<K, V> {
     const curNode = this._getTreeNodeByKey(this._root, key);
     return curNode.v;
   }
-  union(other: SortedMap<K, V>) {
-    const self = this;
-    other.forEach(function (el) {
-      self.setElement(el[0], el[1]);
-    });
+
+
+
+
+
+
+  /**
+   * Minimum node. The node with the smallest key in the tree.
+   */
+  public min: TreeNode<K, V> | undefined = undefined;
+  /**
+   * Root node. Typically approximates the middle of the tree.
+   */
+  public root: TreeNode<K, V> | undefined = undefined;
+  /**
+   * Maximum node. The node with the largest key in the tree.
+   */
+  public max: TreeNode<K, V> | undefined = undefined;
+  /**
+   * Comparator function. Used to relatively compare keys.
+   */
+  public readonly comparator: Comparator<K>;
+
+  public set(k: K, v: V): SonicNodePublicReference<TreeNode<K, V>> {
+    throw new Error('Method not implemented.');
+  }
+
+  public find(k: K): SonicNodePublicReference<TreeNode<K, V>> | undefined {
+    throw new Error('Method not implemented.');
+    // const curNode = this._getTreeNodeByKey(this._root, key);
+    // return new OrderedMapIterator<K, V>(curNode, this._header, this);
+  }
+
+  public get(k: K): V | undefined {
+    throw new Error('Method not implemented.');
+  }
+
+  public del(k: K): boolean {
+    throw new Error('Method not implemented.');
+  }
+
+  public clear(): void {
+    this._length = 0;
+    this._root = undefined;
+    this._header.p = undefined;
+    this._header.l = this._header.r = undefined;
+  }
+
+  public has(k: K): boolean {
+    return !!this.find(k);
+  }
+
+  public _size: number = 0;
+
+  public size(): number {
     return this._length;
   }
-  *[Symbol.iterator]() {
-    const length = this._length;
-    const nodeList = this._inOrderTraversal();
-    for (let i = 0; i < length; ++i) {
-      const node = nodeList[i];
-      yield <[K, V]>[node.k, node.v];
-    }
+
+  public isEmpty(): boolean {
+    return !this.min;
+  }
+
+  public getOrNextLower(k: K): TreeNode<K, V> | undefined {
+    // return (findOrNextLower(this.root, k, this.comparator) as TreeNode<K, V>) || undefined;
+    throw new Error('Method not implemented.');
+  }
+
+  public forEach(fn: (node: TreeNode<K, V>) => void): void {
+    // let curr = this.first();
+    // if (!curr) return;
+    // do fn(curr!);
+    // while ((curr = next(curr as HeadlessNode) as TreeNode<K, V> | undefined));
+    throw new Error('Method not implemented.');
+
+  }
+  // forEach(callback: (element: [K, V], index: number, map: SortedMap<K, V>) => void) {
+  //   this._inOrderTraversal(function (node, index, map) {
+  //     callback(<[K, V]>[node.k, node.v], index, map);
+  //   });
+  // }
+
+  public first(): TreeNode<K, V> | undefined {
+    // return this.min;
+    throw new Error('Method not implemented.');
+  }
+
+  public last(): TreeNode<K, V> | undefined {
+    // return this.max;
+    throw new Error('Method not implemented.');
+  }
+
+  public readonly next = next;
+
+  public iterator0(): () => undefined | TreeNode<K, V> {
+    throw new Error('Method not implemented.');
+    // let curr = this.first();
+    // return () => {
+    //   if (!curr) return;
+    //   const value = curr;
+    //   curr = next(curr as HeadlessNode) as TreeNode<K, V> | undefined;
+    //   return value;
+    // };
+  }
+
+  public iterator(): Iterator<TreeNode<K, V>> {
+    throw new Error('Method not implemented.');
+    // const iterator = this.iterator0();
+    // return {
+    //   next: () => {
+    //     const value = iterator();
+    //     const res = <IteratorResult<TreeNode<K, V>>>{value, done: !value};
+    //     return res;
+    //   },
+    // };
+  }
+
+  public entries(): IterableIterator<TreeNode<K, V>> {
+    // return <any>{[Symbol.iterator]: () => this.iterator()};
+    throw new Error('Method not implemented.');
+  }
+
+  public toString(tab: string): string {
+    return this.constructor.name + printTree(tab, [(tab) => print(this.root, tab)]);
   }
 }

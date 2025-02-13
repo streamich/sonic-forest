@@ -1,9 +1,11 @@
-import {printBinary} from '../print/printBinary';
-import type {Comparator} from '../types';
 import {swap} from '../util/swap';
+import {print} from '../util/print';
+import type {Comparator} from '../types';
 import type {IRbTreeNode, RbHeadlessNode} from './types';
 
-const stringify = JSON.stringify;
+export {
+  print,
+};
 
 export const insert = <K, N extends IRbTreeNode<K>>(root: N | undefined, n: N, comparator: Comparator<K>): N => {
   if (!root) return (n.b = true), n;
@@ -253,17 +255,4 @@ const correctDoubleBlack = <K, N extends IRbTreeNode<K>>(root: N, n: N): N => {
     }
     return s.p ? root : s;
   }
-};
-
-export const print = (node: undefined | RbHeadlessNode | IRbTreeNode, tab: string = ''): string => {
-  if (!node) return '∅';
-  const {b, l, r, k, v} = node as IRbTreeNode;
-  const content = k !== undefined ? ` { ${stringify(k)} = ${stringify(v)} }` : '';
-  const bfFormatted = !b ? ` [red]` : '';
-  return (
-    node.constructor.name +
-    `${bfFormatted}` +
-    content +
-    printBinary(tab, [l ? (tab) => print(l, tab) : null, r ? (tab) => print(r, tab) : null])
-  );
 };

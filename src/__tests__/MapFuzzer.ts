@@ -5,14 +5,12 @@ export class MapFuzzer {
   public readonly twin: Map<number, number> = new Map();
   public readonly trace: Trace = [];
 
-  constructor(
-    public readonly map: FuzzerSonicMap,
-  ) {}
+  constructor(public readonly map: FuzzerSonicMap) {}
 
   public runStep(): void {
-    const insertCount = Math.random() < .5 ? 0 : Math.round(Math.random() * 10);
-    const deleteCount = Math.random() < .5 ? Math.round(Math.random() * 40) : Math.round(Math.random() * 10);
-    const doClear = Math.random() < .1;
+    const insertCount = Math.random() < 0.5 ? 0 : Math.round(Math.random() * 10);
+    const deleteCount = Math.random() < 0.5 ? Math.round(Math.random() * 40) : Math.round(Math.random() * 10);
+    const doClear = Math.random() < 0.1;
     for (let i = 0; i < insertCount; i++) {
       const number = Math.round(Math.random() * 100);
       this.map.set(number, number);

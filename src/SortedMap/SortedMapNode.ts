@@ -5,7 +5,11 @@ export class TreeNode<K, V> implements IRbTreeNode<K, V> {
   r: TreeNode<K, V> | undefined = undefined;
   p: TreeNode<K, V> | undefined = undefined;
 
-  constructor(public k: K, public v: V, public b = false) {}
+  constructor(
+    public k: K,
+    public v: V,
+    public b = false,
+  ) {}
 
   prev() {
     let prev: TreeNode<K, V> = this;

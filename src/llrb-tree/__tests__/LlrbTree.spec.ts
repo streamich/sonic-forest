@@ -28,21 +28,7 @@ describe('.put()', () => {
 
   test('can insert specific numbers', () => {
     const tree = new LlrbTree<number, number>();
-    const nums = [
-      88,
-      13,
-      30,
-      18,
-      35,
-      98,
-      51,
-      76,
-      96,
-      72,
-      94,
-      59,
-      92,
-    ];
+    const nums = [88, 13, 30, 18, 35, 98, 51, 76, 96, 72, 94, 59, 92];
     for (const num of nums) {
       tree.set(num, num);
       assertRedBlackTree(tree.root);

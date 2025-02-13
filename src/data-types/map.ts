@@ -39,7 +39,7 @@ export const createMap = (
       if (root === undefined) {
         this._size = 1;
         const node = new Node<K, V>(k, v);
-        return this.root = this.min = this.max = insert(void 0, node, this.comparator) as ITreeNode<K, V>
+        return (this.root = this.min = this.max = insert(void 0, node, this.comparator) as ITreeNode<K, V>);
       }
       const comparator = this.comparator;
       let cmp: number;
@@ -47,7 +47,7 @@ export const createMap = (
       cmp = comparator(k, max.k);
       if (cmp === 0) return (max.v = v), max;
       else if (cmp > 0) {
-        const node = this.max = new Node<K, V>(k, v);
+        const node = (this.max = new Node<K, V>(k, v));
         this.root = insertRight(root, node, max) as ITreeNode<K, V>;
         this._size++;
         return node;
@@ -56,7 +56,7 @@ export const createMap = (
       cmp = comparator(k, min.k);
       if (cmp === 0) return (min.v = v), min;
       else if (cmp < 0) {
-        const node = this.min = new Node<K, V>(k, v);
+        const node = (this.min = new Node<K, V>(k, v));
         this.root = insertLeft(root, node, min) as ITreeNode<K, V>;
         this._size++;
         return node;

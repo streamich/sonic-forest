@@ -3,9 +3,7 @@ import {print} from '../util/print';
 import type {Comparator} from '../types';
 import type {IRbTreeNode, RbHeadlessNode} from './types';
 
-export {
-  print,
-};
+export {print};
 
 export const insert = <K, N extends IRbTreeNode<K>>(root: N | undefined, n: N, comparator: Comparator<K>): N => {
   if (!root) return (n.b = true), n;
@@ -140,7 +138,8 @@ export const remove = <K, N extends IRbTreeNode<K>>(root: N, n: N): N | undefine
   let child: N | undefined;
   if (r) {
     let inOrderSuccessor = r as N;
-    if (inOrderSuccessor) while (true) {
+    if (inOrderSuccessor)
+      while (true) {
         const next = inOrderSuccessor.l as N | undefined;
         if (next) inOrderSuccessor = next;
         else break;

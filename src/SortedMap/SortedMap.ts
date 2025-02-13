@@ -19,16 +19,12 @@ export class SortedMap<K, V> implements SonicMap<K, V, TreeNode<K, V>> {
    */
   protected _root: TreeNode<K, V> | undefined = undefined;
 
-
   /**
    * @internal
    */
   protected readonly _TreeNodeClass: typeof TreeNode | typeof TreeNodeEnableIndex;
 
-  constructor(
-    comparator?: Comparator<K>,
-    enableIndex: boolean = false,
-  ) {
+  constructor(comparator?: Comparator<K>, enableIndex: boolean = false) {
     this.comparator = comparator || ((a: unknown, b: unknown) => (a === b ? 0 : (a as any) < (b as any) ? -1 : 1));
     this.enableIndex = enableIndex;
     this._TreeNodeClass = enableIndex ? TreeNodeEnableIndex : TreeNode;
@@ -233,7 +229,7 @@ export class SortedMap<K, V> implements SonicMap<K, V, TreeNode<K, V>> {
       }
     }
   }
-  
+
   /** @internal */
   protected _insertNodeSelfBalance(curNode: TreeNode<K, V>) {
     while (true) {
@@ -607,11 +603,6 @@ export class SortedMap<K, V> implements SonicMap<K, V, TreeNode<K, V>> {
     return curNode.v;
   }
 
-
-
-
-
-
   /**
    * Minimum node. The node with the smallest key in the tree.
    */
@@ -679,7 +670,6 @@ export class SortedMap<K, V> implements SonicMap<K, V, TreeNode<K, V>> {
     // do fn(curr!);
     // while ((curr = next(curr as HeadlessNode) as TreeNode<K, V> | undefined));
     throw new Error('Method not implemented.');
-
   }
   // forEach(callback: (element: [K, V], index: number, map: SortedMap<K, V>) => void) {
   //   this._inOrderTraversal(function (node, index, map) {

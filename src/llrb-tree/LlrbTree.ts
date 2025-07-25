@@ -2,6 +2,7 @@ import {first, last, next} from '../util';
 import {printTree} from '../print/printTree';
 import {print} from '../red-black';
 import type {Comparator, SonicMap} from '../types';
+import {colorFlip, rotateLeft, rotateRight} from './util';
 
 export class LlrbNode<K, V> {
   /** Parent. */
@@ -176,61 +177,21 @@ export class LlrbTree<K, V> implements SonicMap<K, V, LlrbNode<K, V>> {
   }
 
   // Helper methods for LLRB deletion
-  private _isRed(node: LlrbNode<K, V> | undefined): boolean {
-    return node ? !node.b : false;
-  }
-
   private _rotateLeft(node: LlrbNode<K, V>): LlrbNode<K, V> {
-    const x = node.r!;
-    node.r = x.l;
-    if (x.l) x.l.p = node;
-    x.l = node;
-    x.p = node.p;
-    node.p = x;
-    
-    // Update parent's child pointer
-    if (x.p) {
-      if (x.p.l === node) x.p.l = x;
-      else x.p.r = x;
-    } else {
-      this.root = x;
-    }
-    
-    x.b = node.b;
-    node.b = false;
-    return x;
+    return rotateLeft(node, (newRoot) => { this.root = newRoot; });
   }
 
   private _rotateRight(node: LlrbNode<K, V>): LlrbNode<K, V> {
-    const x = node.l!;
-    node.l = x.r;
-    if (x.r) x.r.p = node;
-    x.r = node;
-    x.p = node.p;
-    node.p = x;
-    
-    // Update parent's child pointer
-    if (x.p) {
-      if (x.p.l === node) x.p.l = x;
-      else x.p.r = x;
-    } else {
-      this.root = x;
-    }
-    
-    x.b = node.b;
-    node.b = false;
-    return x;
+    return rotateRight(node, (newRoot) => { this.root = newRoot; });
   }
 
   private _colorFlip(node: LlrbNode<K, V>): void {
-    node.b = !node.b;
-    if (node.l) node.l.b = !node.l.b;
-    if (node.r) node.r.b = !node.r.b;
+    colorFlip(node);
   }
 
   private _moveRedLeft(node: LlrbNode<K, V>): LlrbNode<K, V> {
     this._colorFlip(node);
-    if (node.r && this._isRed(node.r.l)) {
+    if (node.r && (node.r.l ? !node.r.l.b : false)) {
       node.r = this._rotateRight(node.r);
       node = this._rotateLeft(node);
       this._colorFlip(node);
@@ -240,7 +201,7 @@ export class LlrbTree<K, V> implements SonicMap<K, V, LlrbNode<K, V>> {
 
   private _moveRedRight(node: LlrbNode<K, V>): LlrbNode<K, V> {
     this._colorFlip(node);
-    if (node.l && this._isRed(node.l.l)) {
+    if (node.l && (node.l.l ? !node.l.l.b : false)) {
       node = this._rotateRight(node);
       this._colorFlip(node);
     }
@@ -248,13 +209,13 @@ export class LlrbTree<K, V> implements SonicMap<K, V, LlrbNode<K, V>> {
   }
 
   private _balance(node: LlrbNode<K, V>): LlrbNode<K, V> {
-    if (this._isRed(node.r)) {
+    if (node.r ? !node.r.b : false) {
       node = this._rotateLeft(node);
     }
-    if (this._isRed(node.l) && node.l && this._isRed(node.l.l)) {
+    if ((node.l ? !node.l.b : false) && node.l && (node.l.l ? !node.l.l.b : false)) {
       node = this._rotateRight(node);
     }
-    if (this._isRed(node.l) && this._isRed(node.r)) {
+    if ((node.l ? !node.l.b : false) && (node.r ? !node.r.b : false)) {
       this._colorFlip(node);
     }
     return node;
@@ -264,7 +225,7 @@ export class LlrbTree<K, V> implements SonicMap<K, V, LlrbNode<K, V>> {
     if (!node.l) {
       return undefined;
     }
-    if (!this._isRed(node.l) && node.l && !this._isRed(node.l.l)) {
+    if (!(node.l ? !node.l.b : false) && node.l && !(node.l.l ? !node.l.l.b : false)) {
       node = this._moveRedLeft(node);
     }
     node.l = this._deleteMin(node.l!);
@@ -286,13 +247,13 @@ export class LlrbTree<K, V> implements SonicMap<K, V, LlrbNode<K, V>> {
     
     if (cmp < 0) {
       if (!node.l) return node;
-      if (!this._isRed(node.l) && node.l && !this._isRed(node.l.l)) {
+      if (!(node.l ? !node.l.b : false) && node.l && !(node.l.l ? !node.l.l.b : false)) {
         node = this._moveRedLeft(node);
       }
       node.l = this._delete(node.l!, k);
       if (node.l) node.l.p = node;
     } else {
-      if (this._isRed(node.l)) {
+      if (node.l ? !node.l.b : false) {
         node = this._rotateRight(node);
       }
       
@@ -301,7 +262,7 @@ export class LlrbTree<K, V> implements SonicMap<K, V, LlrbNode<K, V>> {
       }
       
       if (!node.r) return node;
-      if (!this._isRed(node.r) && !this._isRed(node.r.l)) {
+      if (!(node.r ? !node.r.b : false) && !(node.r.l ? !node.r.l.b : false)) {
         node = this._moveRedRight(node);
       }
       
@@ -356,14 +317,11 @@ export class LlrbTree<K, V> implements SonicMap<K, V, LlrbNode<K, V>> {
     if (!this.root) {
       this.min = this.max = undefined;
     } else {
-      // Update min - find leftmost node
       let curr = this.root;
       while (curr.l) {
         curr = curr.l;
       }
       this.min = curr;
-      
-      // Update max - find rightmost node
       curr = this.root;
       while (curr.r) {
         curr = curr.r;

@@ -13,7 +13,7 @@ export class LlrbNode<K, V> {
 
   constructor(
     /** Node key. */
-    public readonly k: K,
+    public k: K,
     /** Node value. */
     public v: V,
     /** Whether the node is "black". */
@@ -175,6 +175,151 @@ export class LlrbTree<K, V> implements SonicMap<K, V, LlrbNode<K, V>> {
     }
   }
 
+  // Helper methods for LLRB deletion
+  private _isRed(node: LlrbNode<K, V> | undefined): boolean {
+    return node ? !node.b : false;
+  }
+
+  private _rotateLeft(node: LlrbNode<K, V>): LlrbNode<K, V> {
+    const x = node.r!;
+    node.r = x.l;
+    if (x.l) x.l.p = node;
+    x.l = node;
+    x.p = node.p;
+    node.p = x;
+    
+    // Update parent's child pointer
+    if (x.p) {
+      if (x.p.l === node) x.p.l = x;
+      else x.p.r = x;
+    } else {
+      this.root = x;
+    }
+    
+    x.b = node.b;
+    node.b = false;
+    return x;
+  }
+
+  private _rotateRight(node: LlrbNode<K, V>): LlrbNode<K, V> {
+    const x = node.l!;
+    node.l = x.r;
+    if (x.r) x.r.p = node;
+    x.r = node;
+    x.p = node.p;
+    node.p = x;
+    
+    // Update parent's child pointer
+    if (x.p) {
+      if (x.p.l === node) x.p.l = x;
+      else x.p.r = x;
+    } else {
+      this.root = x;
+    }
+    
+    x.b = node.b;
+    node.b = false;
+    return x;
+  }
+
+  private _colorFlip(node: LlrbNode<K, V>): void {
+    node.b = !node.b;
+    if (node.l) node.l.b = !node.l.b;
+    if (node.r) node.r.b = !node.r.b;
+  }
+
+  private _moveRedLeft(node: LlrbNode<K, V>): LlrbNode<K, V> {
+    this._colorFlip(node);
+    if (node.r && this._isRed(node.r.l)) {
+      node.r = this._rotateRight(node.r);
+      node = this._rotateLeft(node);
+      this._colorFlip(node);
+    }
+    return node;
+  }
+
+  private _moveRedRight(node: LlrbNode<K, V>): LlrbNode<K, V> {
+    this._colorFlip(node);
+    if (node.l && this._isRed(node.l.l)) {
+      node = this._rotateRight(node);
+      this._colorFlip(node);
+    }
+    return node;
+  }
+
+  private _balance(node: LlrbNode<K, V>): LlrbNode<K, V> {
+    if (this._isRed(node.r)) {
+      node = this._rotateLeft(node);
+    }
+    if (this._isRed(node.l) && node.l && this._isRed(node.l.l)) {
+      node = this._rotateRight(node);
+    }
+    if (this._isRed(node.l) && this._isRed(node.r)) {
+      this._colorFlip(node);
+    }
+    return node;
+  }
+
+  private _deleteMin(node: LlrbNode<K, V>): LlrbNode<K, V> | undefined {
+    if (!node.l) {
+      return undefined;
+    }
+    if (!this._isRed(node.l) && node.l && !this._isRed(node.l.l)) {
+      node = this._moveRedLeft(node);
+    }
+    node.l = this._deleteMin(node.l!);
+    if (node.l) node.l.p = node;
+    return this._balance(node);
+  }
+
+  private _min(node: LlrbNode<K, V>): LlrbNode<K, V> {
+    while (node.l) {
+      node = node.l;
+    }
+    return node;
+  }
+
+  private _delete(node: LlrbNode<K, V> | undefined, k: K): LlrbNode<K, V> | undefined {
+    if (!node) return undefined;
+
+    const cmp = this.comparator(k, node.k);
+    
+    if (cmp < 0) {
+      if (!node.l) return node;
+      if (!this._isRed(node.l) && node.l && !this._isRed(node.l.l)) {
+        node = this._moveRedLeft(node);
+      }
+      node.l = this._delete(node.l!, k);
+      if (node.l) node.l.p = node;
+    } else {
+      if (this._isRed(node.l)) {
+        node = this._rotateRight(node);
+      }
+      
+      if (cmp === 0 && !node.r) {
+        return undefined;
+      }
+      
+      if (!node.r) return node;
+      if (!this._isRed(node.r) && !this._isRed(node.r.l)) {
+        node = this._moveRedRight(node);
+      }
+      
+      if (this.comparator(k, node.k) === 0) {
+        const min = this._min(node.r!);
+        node.k = min.k;
+        node.v = min.v;
+        node.r = this._deleteMin(node.r!);
+        if (node.r) node.r.p = node;
+      } else {
+        node.r = this._delete(node.r, k);
+        if (node.r) node.r.p = node;
+      }
+    }
+    
+    return this._balance(node);
+  }
+
   public find(k: K): LlrbNode<K, V> | undefined {
     const comparator = this.comparator;
     let curr: LlrbNode<K, V> | undefined = this.root;
@@ -191,12 +336,40 @@ export class LlrbTree<K, V> implements SonicMap<K, V, LlrbNode<K, V>> {
   }
 
   public del(k: K): boolean {
-    // const node = this.find(k);
-    // if (!node) return false;
-    // this.root = remove(this.root, node as ITreeNode<K, V>);
-    // this._size--;
-    // return true;
-    throw new Error('Method not implemented.');
+    const node = this.find(k);
+    if (!node) return false;
+    
+    this.root = this._delete(this.root, k);
+    if (this.root) {
+      this.root.b = true; // Root is always black
+      this.root.p = undefined; // Root has no parent
+    }
+    this._size--;
+    
+    // Update min/max pointers
+    this._updateMinMax();
+    
+    return true;
+  }
+
+  private _updateMinMax(): void {
+    if (!this.root) {
+      this.min = this.max = undefined;
+    } else {
+      // Update min - find leftmost node
+      let curr = this.root;
+      while (curr.l) {
+        curr = curr.l;
+      }
+      this.min = curr;
+      
+      // Update max - find rightmost node
+      curr = this.root;
+      while (curr.r) {
+        curr = curr.r;
+      }
+      this.max = curr;
+    }
   }
 
   public clear(): void {

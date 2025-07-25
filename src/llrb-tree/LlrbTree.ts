@@ -2,6 +2,17 @@ import {first, last, next} from '../util';
 import {printTree} from '../print/printTree';
 import {print} from '../red-black';
 import type {Comparator, SonicMap} from '../types';
+import {
+  colorFlip,
+  rotateLeft,
+  rotateRight,
+  moveRedLeft,
+  moveRedRight,
+  balance,
+  deleteMin,
+  min,
+  deleteNode,
+} from './util';
 
 export class LlrbNode<K, V> {
   /** Parent. */
@@ -13,7 +24,7 @@ export class LlrbNode<K, V> {
 
   constructor(
     /** Node key. */
-    public readonly k: K,
+    public k: K,
     /** Node value. */
     public v: V,
     /** Whether the node is "black". */
@@ -175,6 +186,25 @@ export class LlrbTree<K, V> implements SonicMap<K, V, LlrbNode<K, V>> {
     }
   }
 
+  // Helper methods for LLRB deletion have been moved to util.ts
+
+  private updateMinMax(): void {
+    if (!this.root) {
+      this.min = this.max = undefined;
+    } else {
+      let curr = this.root;
+      while (curr.l) {
+        curr = curr.l;
+      }
+      this.min = curr;
+      curr = this.root;
+      while (curr.r) {
+        curr = curr.r;
+      }
+      this.max = curr;
+    }
+  }
+
   public find(k: K): LlrbNode<K, V> | undefined {
     const comparator = this.comparator;
     let curr: LlrbNode<K, V> | undefined = this.root;
@@ -191,12 +221,20 @@ export class LlrbTree<K, V> implements SonicMap<K, V, LlrbNode<K, V>> {
   }
 
   public del(k: K): boolean {
-    // const node = this.find(k);
-    // if (!node) return false;
-    // this.root = remove(this.root, node as ITreeNode<K, V>);
-    // this._size--;
-    // return true;
-    throw new Error('Method not implemented.');
+    const node = this.find(k);
+    if (!node) return false;
+
+    this.root = deleteNode(this.root, k, this.comparator);
+    if (this.root) {
+      this.root.b = true; // Root is always black
+      this.root.p = undefined; // Root has no parent
+    }
+    this._size--;
+
+    // Update min/max pointers
+    this.updateMinMax();
+
+    return true;
   }
 
   public clear(): void {

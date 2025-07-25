@@ -1,6 +1,7 @@
 import {assertRedBlackTree} from '../../red-black/__tests__/utils';
 import {assertLlrbTree} from './llrb-utils';
 import {LlrbTree} from '../LlrbTree';
+import {next} from '../../util';
 
 const randomInt = (max: number) => Math.floor(Math.random() * max);
 
@@ -61,19 +62,7 @@ describe('LlrbTree fuzzing', () => {
             expect(shadowMap.has(current.k)).toBe(true);
             expect(shadowMap.get(current.k)).toBe(current.v);
             treeSize++;
-
-            // Move to next node
-            if (current.r) {
-              current = current.r;
-              while (current.l) {
-                current = current.l;
-              }
-            } else {
-              while (current.p && current === current.p.r) {
-                current = current.p;
-              }
-              current = current.p;
-            }
+            current = next(current);
           }
           expect(treeSize).toBe(shadowMap.size);
         }

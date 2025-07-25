@@ -174,5 +174,3 @@ export function deleteNode<K, V>(
 
   return balance(node);
 }
-
-

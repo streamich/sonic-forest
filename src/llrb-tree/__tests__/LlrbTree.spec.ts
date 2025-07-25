@@ -144,19 +144,21 @@ describe('.del()', () => {
     tree.set(1, 1);
     tree.set(3, 3);
     assertRedBlackTree(tree.root);
-    
+
     expect(tree.del(1)).toBe(true);
     expect(tree.size()).toBe(2);
     expect(tree.get(1)).toBeUndefined();
     expect(tree.get(2)).toBe(2);
     expect(tree.get(3)).toBe(3);
     assertRedBlackTree(tree.root);
-    
+    assertLlrbTree(tree.root);
+
     expect(tree.del(3)).toBe(true);
     expect(tree.size()).toBe(1);
     expect(tree.get(3)).toBeUndefined();
     expect(tree.get(2)).toBe(2);
     assertRedBlackTree(tree.root);
+    assertLlrbTree(tree.root);
   });
 
   test('can delete nodes with one child', () => {
@@ -167,20 +169,23 @@ describe('.del()', () => {
     tree.set(1, 1);
     tree.set(9, 9);
     assertRedBlackTree(tree.root);
-    
+    assertLlrbTree(tree.root);
+
     // Delete node with left child
     expect(tree.del(3)).toBe(true);
     expect(tree.size()).toBe(4);
     expect(tree.get(3)).toBeUndefined();
     expect(tree.get(1)).toBe(1);
     assertRedBlackTree(tree.root);
-    
+    assertLlrbTree(tree.root);
+
     // Delete node with right child
     expect(tree.del(7)).toBe(true);
     expect(tree.size()).toBe(3);
     expect(tree.get(7)).toBeUndefined();
     expect(tree.get(9)).toBe(9);
     assertRedBlackTree(tree.root);
+    assertLlrbTree(tree.root);
   });
 
   test('can delete nodes with two children', () => {
@@ -193,31 +198,35 @@ describe('.del()', () => {
     tree.set(6, 6);
     tree.set(9, 9);
     assertRedBlackTree(tree.root);
-    
+    assertLlrbTree(tree.root);
+
     expect(tree.del(3)).toBe(true);
     expect(tree.size()).toBe(6);
     expect(tree.get(3)).toBeUndefined();
     expect(tree.get(1)).toBe(1);
     expect(tree.get(4)).toBe(4);
     assertRedBlackTree(tree.root);
-    
+    assertLlrbTree(tree.root);
+
     expect(tree.del(5)).toBe(true); // Delete root with two children
     expect(tree.size()).toBe(5);
     expect(tree.get(5)).toBeUndefined();
     assertRedBlackTree(tree.root);
+    assertLlrbTree(tree.root);
   });
 
   test('can delete all elements', () => {
     const tree = new LlrbTree<number, number>();
     const nums = [5, 3, 7, 1, 4, 6, 9, 2, 8];
-    
+
     // Insert all numbers
     for (const num of nums) {
       tree.set(num, num);
       assertRedBlackTree(tree.root);
+      assertLlrbTree(tree.root);
     }
     expect(tree.size()).toBe(nums.length);
-    
+
     // Delete all numbers
     for (const num of nums) {
       expect(tree.del(num)).toBe(true);
@@ -225,7 +234,7 @@ describe('.del()', () => {
       assertRedBlackTree(tree.root);
       assertLlrbTree(tree.root);
     }
-    
+
     expect(tree.size()).toBe(0);
     expect(tree.root).toBeUndefined();
   });
@@ -233,53 +242,60 @@ describe('.del()', () => {
   test('maintains min/max correctly during deletions', () => {
     const tree = new LlrbTree<number, number>();
     const nums = [5, 3, 7, 1, 4, 6, 9];
-    
+
     for (const num of nums) {
       tree.set(num, num);
+      assertLlrbTree(tree.root);
     }
-    
+
     expect(tree.min?.k).toBe(1);
     expect(tree.max?.k).toBe(9);
-    
+
     // Delete min
     tree.del(1);
+    assertLlrbTree(tree.root);
     expect(tree.min?.k).toBe(3);
     expect(tree.max?.k).toBe(9);
-    
+
     // Delete max
     tree.del(9);
+    assertLlrbTree(tree.root);
     expect(tree.min?.k).toBe(3);
     expect(tree.max?.k).toBe(7);
-    
+
     // Delete current min
     tree.del(3);
+    assertLlrbTree(tree.root);
     expect(tree.min?.k).toBe(4);
-    
+
     // Delete current max
     tree.del(7);
+    assertLlrbTree(tree.root);
     expect(tree.max?.k).toBe(6);
   });
 
   test('handles complex deletion patterns', () => {
     const tree = new LlrbTree<number, number>();
     const nums = [88, 13, 30, 18, 35, 98, 51, 76, 96, 72, 94, 59, 92];
-    
+
     // Insert all
     for (const num of nums) {
       tree.set(num, num);
       assertRedBlackTree(tree.root);
+      assertLlrbTree(tree.root);
     }
-    
+
     // Delete some elements in different order
     const toDelete = [13, 98, 30, 76, 88];
     for (const num of toDelete) {
       expect(tree.del(num)).toBe(true);
       expect(tree.get(num)).toBeUndefined();
       assertRedBlackTree(tree.root);
+      assertLlrbTree(tree.root);
     }
-    
+
     // Verify remaining elements
-    const remaining = nums.filter(n => !toDelete.includes(n));
+    const remaining = nums.filter((n) => !toDelete.includes(n));
     expect(tree.size()).toBe(remaining.length);
     for (const num of remaining) {
       expect(tree.get(num)).toBe(num);
@@ -289,25 +305,28 @@ describe('.del()', () => {
   test('can delete and re-insert same elements', () => {
     const tree = new LlrbTree<string, string>();
     const chars = ['S', 'E', 'A', 'R', 'C', 'H'];
-    
+
     // Insert
     for (const char of chars) {
       tree.set(char, char);
       assertRedBlackTree(tree.root);
+      assertLlrbTree(tree.root);
     }
-    
+
     // Delete half
     for (let i = 0; i < chars.length / 2; i++) {
       tree.del(chars[i]);
       assertRedBlackTree(tree.root);
+      assertLlrbTree(tree.root);
     }
-    
+
     // Re-insert deleted ones
     for (let i = 0; i < chars.length / 2; i++) {
       tree.set(chars[i], chars[i]);
       assertRedBlackTree(tree.root);
+      assertLlrbTree(tree.root);
     }
-    
+
     // Verify all are present
     expect(tree.size()).toBe(chars.length);
     for (const char of chars) {
@@ -317,19 +336,21 @@ describe('.del()', () => {
 
   test('delete from tree with sequential inserts and deletes', () => {
     const tree = new LlrbTree<number, number>();
-    
+
     // Insert 1-10
     for (let i = 1; i <= 10; i++) {
       tree.set(i, i);
       assertRedBlackTree(tree.root);
+      assertLlrbTree(tree.root);
     }
-    
+
     // Delete even numbers
     for (let i = 2; i <= 10; i += 2) {
       expect(tree.del(i)).toBe(true);
       assertRedBlackTree(tree.root);
+      assertLlrbTree(tree.root);
     }
-    
+
     // Verify odd numbers remain
     for (let i = 1; i <= 10; i++) {
       if (i % 2 === 1) {
@@ -338,7 +359,7 @@ describe('.del()', () => {
         expect(tree.get(i)).toBeUndefined();
       }
     }
-    
+
     expect(tree.size()).toBe(5);
   });
 
@@ -347,35 +368,37 @@ describe('.del()', () => {
     tree.set(1, 1);
     tree.set(2, 2);
     tree.set(3, 3);
-    
+
     // First deletion should succeed
     expect(tree.del(2)).toBe(true);
     expect(tree.size()).toBe(2);
-    
+
     // Second deletion of same key should fail
     expect(tree.del(2)).toBe(false);
     expect(tree.size()).toBe(2);
-    
+
     assertRedBlackTree(tree.root);
+    assertLlrbTree(tree.root);
   });
 
   test('handles large deletions', () => {
     const tree = new LlrbTree<number, number>();
     const size = 100;
-    
+
     // Insert 1-100
     for (let i = 1; i <= size; i++) {
       tree.set(i, i);
     }
-    
+
     // Delete all odd numbers
     for (let i = 1; i <= size; i += 2) {
       expect(tree.del(i)).toBe(true);
       assertRedBlackTree(tree.root);
+      assertLlrbTree(tree.root);
     }
-    
+
     expect(tree.size()).toBe(size / 2);
-    
+
     // Verify even numbers remain
     for (let i = 2; i <= size; i += 2) {
       expect(tree.get(i)).toBe(i);

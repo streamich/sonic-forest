@@ -178,11 +178,15 @@ export class LlrbTree<K, V> implements SonicMap<K, V, LlrbNode<K, V>> {
 
   // Helper methods for LLRB deletion
   private _rotateLeft(node: LlrbNode<K, V>): LlrbNode<K, V> {
-    return rotateLeft(node, (newRoot) => { this.root = newRoot; });
+    return rotateLeft(node, (newRoot) => {
+      this.root = newRoot;
+    });
   }
 
   private _rotateRight(node: LlrbNode<K, V>): LlrbNode<K, V> {
-    return rotateRight(node, (newRoot) => { this.root = newRoot; });
+    return rotateRight(node, (newRoot) => {
+      this.root = newRoot;
+    });
   }
 
   private _colorFlip(node: LlrbNode<K, V>): void {
@@ -244,7 +248,7 @@ export class LlrbTree<K, V> implements SonicMap<K, V, LlrbNode<K, V>> {
     if (!node) return undefined;
 
     const cmp = this.comparator(k, node.k);
-    
+
     if (cmp < 0) {
       if (!node.l) return node;
       if (!(node.l ? !node.l.b : false) && node.l && !(node.l.l ? !node.l.l.b : false)) {
@@ -256,16 +260,16 @@ export class LlrbTree<K, V> implements SonicMap<K, V, LlrbNode<K, V>> {
       if (node.l ? !node.l.b : false) {
         node = this._rotateRight(node);
       }
-      
+
       if (cmp === 0 && !node.r) {
         return undefined;
       }
-      
+
       if (!node.r) return node;
       if (!(node.r ? !node.r.b : false) && !(node.r.l ? !node.r.l.b : false)) {
         node = this._moveRedRight(node);
       }
-      
+
       if (this.comparator(k, node.k) === 0) {
         const min = this._min(node.r!);
         node.k = min.k;
@@ -277,7 +281,7 @@ export class LlrbTree<K, V> implements SonicMap<K, V, LlrbNode<K, V>> {
         if (node.r) node.r.p = node;
       }
     }
-    
+
     return this._balance(node);
   }
 
@@ -299,17 +303,17 @@ export class LlrbTree<K, V> implements SonicMap<K, V, LlrbNode<K, V>> {
   public del(k: K): boolean {
     const node = this.find(k);
     if (!node) return false;
-    
+
     this.root = this._delete(this.root, k);
     if (this.root) {
       this.root.b = true; // Root is always black
       this.root.p = undefined; // Root has no parent
     }
     this._size--;
-    
+
     // Update min/max pointers
     this._updateMinMax();
-    
+
     return true;
   }
 

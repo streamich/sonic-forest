@@ -20,17 +20,14 @@ export function colorFlip<K, V>(node: LlrbNode<K, V>): void {
  * Rotate left with parent pointer updates.
  * The rootSetter callback is called if the rotated node becomes the new root.
  */
-export function rotateLeft<K, V>(
-  node: LlrbNode<K, V>, 
-  rootSetter: (newRoot: LlrbNode<K, V>) => void
-): LlrbNode<K, V> {
+export function rotateLeft<K, V>(node: LlrbNode<K, V>, rootSetter: (newRoot: LlrbNode<K, V>) => void): LlrbNode<K, V> {
   const x = node.r!;
   node.r = x.l;
   if (x.l) x.l.p = node;
   x.l = node;
   x.p = node.p;
   node.p = x;
-  
+
   // Update parent's child pointer
   if (x.p) {
     if (x.p.l === node) x.p.l = x;
@@ -38,7 +35,7 @@ export function rotateLeft<K, V>(
   } else {
     rootSetter(x);
   }
-  
+
   x.b = node.b;
   node.b = false;
   return x;
@@ -48,17 +45,14 @@ export function rotateLeft<K, V>(
  * Rotate right with parent pointer updates.
  * The rootSetter callback is called if the rotated node becomes the new root.
  */
-export function rotateRight<K, V>(
-  node: LlrbNode<K, V>, 
-  rootSetter: (newRoot: LlrbNode<K, V>) => void
-): LlrbNode<K, V> {
+export function rotateRight<K, V>(node: LlrbNode<K, V>, rootSetter: (newRoot: LlrbNode<K, V>) => void): LlrbNode<K, V> {
   const x = node.l!;
   node.l = x.r;
   if (x.r) x.r.p = node;
   x.r = node;
   x.p = node.p;
   node.p = x;
-  
+
   // Update parent's child pointer
   if (x.p) {
     if (x.p.l === node) x.p.l = x;
@@ -66,7 +60,7 @@ export function rotateRight<K, V>(
   } else {
     rootSetter(x);
   }
-  
+
   x.b = node.b;
   node.b = false;
   return x;

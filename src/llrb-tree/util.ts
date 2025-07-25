@@ -175,26 +175,4 @@ export function deleteNode<K, V>(
   return balance(node);
 }
 
-/**
- * Update min and max pointers for the tree.
- */
-export function updateMinMax<K, V>(tree: {
-  root: LlrbNode<K, V> | undefined;
-  min: LlrbNode<K, V> | undefined;
-  max: LlrbNode<K, V> | undefined;
-}): void {
-  if (!tree.root) {
-    tree.min = tree.max = undefined;
-  } else {
-    let curr = tree.root;
-    while (curr.l) {
-      curr = curr.l;
-    }
-    tree.min = curr;
-    curr = tree.root;
-    while (curr.r) {
-      curr = curr.r;
-    }
-    tree.max = curr;
-  }
-}
+

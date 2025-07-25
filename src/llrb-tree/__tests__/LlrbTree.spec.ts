@@ -144,6 +144,7 @@ describe('.del()', () => {
     tree.set(1, 1);
     tree.set(3, 3);
     assertRedBlackTree(tree.root);
+    assertLlrbTree(tree.root);
 
     expect(tree.del(1)).toBe(true);
     expect(tree.size()).toBe(2);

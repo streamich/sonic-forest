@@ -12,7 +12,6 @@ import {
   deleteMin,
   min,
   deleteNode,
-  updateMinMax,
 } from './util';
 
 export class LlrbNode<K, V> {
@@ -189,6 +188,23 @@ export class LlrbTree<K, V> implements SonicMap<K, V, LlrbNode<K, V>> {
 
   // Helper methods for LLRB deletion have been moved to util.ts
 
+  private updateMinMax(): void {
+    if (!this.root) {
+      this.min = this.max = undefined;
+    } else {
+      let curr = this.root;
+      while (curr.l) {
+        curr = curr.l;
+      }
+      this.min = curr;
+      curr = this.root;
+      while (curr.r) {
+        curr = curr.r;
+      }
+      this.max = curr;
+    }
+  }
+
   public find(k: K): LlrbNode<K, V> | undefined {
     const comparator = this.comparator;
     let curr: LlrbNode<K, V> | undefined = this.root;
@@ -216,7 +232,7 @@ export class LlrbTree<K, V> implements SonicMap<K, V, LlrbNode<K, V>> {
     this._size--;
 
     // Update min/max pointers
-    updateMinMax(this);
+    this.updateMinMax();
 
     return true;
   }

@@ -16,11 +16,11 @@ import {
 
 /**
  * Left-Leaning Red-Black (LLRB) tree node implementation.
- * 
+ *
  * An LLRB node stores key-value pairs and maintains color information
  * following the Left-Leaning Red-Black tree variant, which simplifies
  * the implementation while maintaining Red-Black tree performance.
- * 
+ *
  * @template K - The type of the key
  * @template V - The type of the value
  */
@@ -34,7 +34,7 @@ export class LlrbNode<K, V> {
 
   /**
    * Creates a new LLRB tree node.
-   * 
+   *
    * @param k - The immutable key for this node
    * @param v - The mutable value for this node
    * @param b - The color flag: false = red, true = black
@@ -53,29 +53,29 @@ const defaultComparator = (a: unknown, b: unknown) => (a === b ? 0 : (a as any) 
 
 /**
  * Left-Leaning Red-Black (LLRB) tree implementation.
- * 
+ *
  * The LLRB tree is a simplified variant of Red-Black trees that maintains
  * the same performance guarantees while being easier to implement and understand.
  * It enforces the constraint that red links lean left, reducing the number
  * of cases that need to be handled during insertion and deletion.
- * 
+ *
  * Key properties:
  * - All red links lean left
  * - No node has two red links
  * - Perfect black balance (same number of black links on every path)
  * - O(log n) guaranteed performance for all operations
- * 
+ *
  * @example
  * ```typescript
  * const tree = new LlrbTree<number, string>();
  * const nodeRef = tree.set(5, 'five');
  * tree.set(3, 'three');
  * tree.set(7, 'seven');
- * 
+ *
  * console.log(tree.get(5)); // 'five'
  * console.log(tree.size()); // 3
  * ```
- * 
+ *
  * @template K - The type of keys stored in the tree
  * @template V - The type of values stored in the tree
  */
@@ -91,7 +91,7 @@ export class LlrbTree<K, V> implements SonicMap<K, V, LlrbNode<K, V>> {
 
   /**
    * Creates a new LLRB tree instance.
-   * 
+   *
    * @param comparator - Function to compare keys. Defaults to natural ordering.
    */
   constructor(public readonly comparator: Comparator<K> = defaultComparator) {}

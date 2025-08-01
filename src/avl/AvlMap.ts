@@ -5,10 +5,10 @@ import type {IAvlTreeNode} from './types';
 
 /**
  * AVL tree node implementation with balance factor tracking.
- * 
+ *
  * An AVL node stores key-value pairs and maintains balance information
  * to ensure the tree remains height-balanced for optimal performance.
- * 
+ *
  * @template K - The type of the key
  * @template V - The type of the value
  */
@@ -21,10 +21,10 @@ export class AvlNode<K, V> implements IAvlTreeNode<K, V> {
   public r: AvlNode<K, V> | undefined = undefined;
   /** Balance factor: height(right) - height(left), must be -1, 0, or 1 for AVL property */
   public bf: number = 0;
-  
+
   /**
    * Creates a new AVL tree node.
-   * 
+   *
    * @param k - The immutable key for this node
    * @param v - The mutable value for this node
    */
@@ -36,11 +36,11 @@ export class AvlNode<K, V> implements IAvlTreeNode<K, V> {
 
 /**
  * High-performance AVL tree-based sorted map implementation.
- * 
+ *
  * This AVL map provides O(log n) insertion, deletion, and lookup operations
  * while maintaining tree balance through automatic rotations. It's optimized
  * for scenarios requiring fast insertions and stable node references.
- * 
+ *
  * @example
  * ```typescript
  * const map = new AvlMap<number, string>();
@@ -49,7 +49,7 @@ export class AvlNode<K, V> implements IAvlTreeNode<K, V> {
  * nodeRef.v = 'ONE'; // Direct mutation of node value
  * console.log(map.get(1)); // 'ONE'
  * ```
- * 
+ *
  * @template K - The type of keys stored in the map
  * @template V - The type of values stored in the map
  */

@@ -6,7 +6,7 @@ export {first, next};
 
 /**
  * Finds the rightmost (maximum) node in a binary tree.
- * 
+ *
  * @template N - The node type extending HeadlessNode
  * @param root - The root node to search from
  * @returns The rightmost node, or undefined if tree is empty
@@ -21,7 +21,7 @@ export const last = <N extends HeadlessNode>(root: N | undefined): N | undefined
 
 /**
  * Finds the in-order predecessor of a given node in a binary tree.
- * 
+ *
  * @template N - The node type extending HeadlessNode
  * @param curr - The node to find the predecessor of
  * @returns The predecessor node, or undefined if none exists
@@ -48,7 +48,7 @@ const size_ = <N extends HeadlessNode>(root: N): number => {
 
 /**
  * Calculates the total number of nodes in a binary tree.
- * 
+ *
  * @template N - The node type extending HeadlessNode
  * @param root - The root node of the tree
  * @returns The total number of nodes in the tree
@@ -59,7 +59,7 @@ export const size = <N extends HeadlessNode>(root: N | undefined): number => {
 
 /**
  * Searches for a node with the given key in a binary search tree.
- * 
+ *
  * @template K - The key type
  * @template V - The value type
  * @param root - The root node to search from
@@ -84,7 +84,7 @@ export const find = <K = unknown, V = unknown>(
 /**
  * Finds the node with the given key, or the largest key smaller than the given key.
  * This is useful for range queries and finding the "floor" of a key.
- * 
+ *
  * @template K - The key type
  * @template V - The value type
  * @param root - The root node to search from

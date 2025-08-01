@@ -3,7 +3,7 @@
 <html lang="en">
 
 <head>
-    <title>Code coverage report for src/util/swap.ts</title>
+    <title>Code coverage report for src/radix/BinaryTrieNode.ts</title>
     <meta charset="utf-8" />
     <link rel="stylesheet" href="../../prettify.css" />
     <link rel="stylesheet" href="../../base.css" />
@@ -19,34 +19,34 @@
 <body>
 <div class='wrapper'>
     <div class='pad1'>
-        <h1><a href="../../index.html">All files</a> / <a href="index.html">src/util</a> swap.ts</h1>
+        <h1><a href="../../index.html">All files</a> / <a href="index.html">src/radix</a> BinaryTrieNode.ts</h1>
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">84.9% </span>
+                <span class="strong">64.28% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>45/53</span>
+                <span class='fraction'>27/42</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">75% </span>
+                <span class="strong">35.29% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>24/32</span>
+                <span class='fraction'>6/17</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">100% </span>
+                <span class="strong">50% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>1/1</span>
+                <span class='fraction'>3/6</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">84.9% </span>
+                <span class="strong">65.85% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>45/53</span>
+                <span class='fraction'>27/41</span>
             </div>
         
             
@@ -61,7 +61,7 @@
             </div>
         </template>
     </div>
-    <div class='status-line high'></div>
+    <div class='status-line medium'></div>
     <pre><table class="coverage">
 <tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
 <a name='L2'></a><a href='#L2'>2</a>
@@ -129,156 +129,138 @@
 <a name='L64'></a><a href='#L64'>64</a>
 <a name='L65'></a><a href='#L65'>65</a>
 <a name='L66'></a><a href='#L66'>66</a>
-<a name='L67'></a><a href='#L67'>67</a>
-<a name='L68'></a><a href='#L68'>68</a>
-<a name='L69'></a><a href='#L69'>69</a>
-<a name='L70'></a><a href='#L70'>70</a>
-<a name='L71'></a><a href='#L71'>71</a>
-<a name='L72'></a><a href='#L72'>72</a>
-<a name='L73'></a><a href='#L73'>73</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
+<a name='L67'></a><a href='#L67'>67</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">161x</span>
+<span class="cline-any cline-yes">161x</span>
+<span class="cline-any cline-yes">161x</span>
+<span class="cline-any cline-yes">161x</span>
+<span class="cline-any cline-yes">161x</span>
+<span class="cline-any cline-yes">161x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">28576x</span>
-<span class="cline-any cline-yes">28576x</span>
-<span class="cline-any cline-yes">28576x</span>
-<span class="cline-any cline-yes">28576x</span>
-<span class="cline-any cline-yes">28576x</span>
-<span class="cline-any cline-yes">28576x</span>
-<span class="cline-any cline-yes">28576x</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">28576x</span>
-<span class="cline-any cline-yes">28576x</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">28576x</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">28576x</span>
-<span class="cline-any cline-yes">28576x</span>
-<span class="cline-any cline-yes">3860x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">28576x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">28574x</span>
-<span class="cline-any cline-yes">28574x</span>
-<span class="cline-any cline-yes">23758x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">28576x</span>
-<span class="cline-any cline-yes">16765x</span>
-<span class="cline-any cline-yes">16765x</span>
+<span class="cline-any cline-yes">56x</span>
+<span class="cline-any cline-yes">12x</span>
+<span class="cline-any cline-yes">56x</span>
+<span class="cline-any cline-yes">56x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">41x</span>
+<span class="cline-any cline-yes">41x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">11811x</span>
-<span class="cline-any cline-yes">11811x</span>
-<span class="cline-any cline-yes">11809x</span>
+<span class="cline-any cline-yes">56x</span>
+<span class="cline-any cline-yes">56x</span>
+<span class="cline-any cline-yes">44x</span>
+<span class="cline-any cline-yes">44x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">28576x</span>
-<span class="cline-any cline-yes">5524x</span>
-<span class="cline-any cline-yes">5524x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">23052x</span>
-<span class="cline-any cline-yes">23052x</span>
-<span class="cline-any cline-yes">23052x</span>
-<span class="cline-any cline-yes">23052x</span>
-<span class="cline-any cline-yes">11461x</span>
+<span class="cline-any cline-yes">56x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">11591x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">28576x</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">28576x</span></td><td class="text"><pre class="prettyprint lang-js">import type {HeadlessNode} from '../types';
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import {Slice} from './Slice';
+import {Printable} from '../print/types';
+import type {ITreeNode} from '../types';
+import {first, next} from '../util';
 &nbsp;
-/**
- * Swaps two node positions in a binary tree.
- *
- * @param x Node to swap
- * @param y Another node to swap
- * @returns New root node
- */
-export const swap = &lt;N extends HeadlessNode&gt;(root: N, x: N, y: N): N =&gt; {
-  const xp = x.p;
-  const xl = x.l;
-  const xr = x.r;
-  const yp = y.p;
-  const yl = y.l;
-  const yr = y.r;
-  if (yl === x) {
-    <span class="missing-if-branch" title="if path not taken" >I</span>x.l = y;
-    y.p <span class="cstat-no" title="statement not covered" >= x;</span>
-  } else<span class="cstat-no" title="statement not covered" > {</span>
-    x.l = yl;
-    if (yl) yl.p = x;
-  }
-  if (yr<span class="missing-if-branch" title="if path not taken" >I</span> === x) {
-    x.r = y;<span class="cstat-no" title="statement not covered" ></span>
-    y.p = x;
-  } <span class="missing-if-branch" title="if path not taken" >I</span>else {
-    x.r <span class="cstat-no" title="statement not covered" >= yr;</span>
-    if (<span class="cstat-no" title="statement not covered" >yr) yr.p </span>= x;
-  }
-  if (xl === y) {
-    y.l = x;
-    x.p = y;
-  } else {
-    y.l = xl;
-    if (xl) xl.p = y;
-  }
-  if (xr === y) {
-    y.r = x;
-    x.p = y;
-  } else {
-    y.r = xr;
-    if (xr) xr.p = y;
-  }
-  if (!xp) {
-    root = y;
-    y.p = undefined;
-  } else if (xp !== y) {
-    y.p = xp;
-    if (xp) {
-      if (xp.l === x) {
-        xp.l = y;
-      } else {
-        xp.r = y;
-      }
+export class BinaryTrieNode&lt;V = unknown&gt; implements ITreeNode&lt;Slice, unknown&gt;, Printable {
+  public p: BinaryTrieNode&lt;V&gt; | undefined = undefined;
+  public l: BinaryTrieNode&lt;V&gt; | undefined = undefined;
+  public r: BinaryTrieNode&lt;V&gt; | undefined = undefined;
+  public children: BinaryTrieNode&lt;V&gt; | undefined = undefined;
+&nbsp;
+  constructor(
+    public k: Slice,
+    public v: V,
+  ) {}
+&nbsp;
+  public forChildren(callback: (child: BinaryTrieNode&lt;V&gt;, index: number) =&gt; void): void {
+    let child = first(this.children);
+    let i = 0;
+    while (child) {
+      callback(child, i);
+      i++;
+      child = next(child);
     }
   }
-  if (!yp<span class="missing-if-branch" title="else path not taken" >E</span>) {
-    root = x;
-    x.p <span class="missing-if-branch" title="else path not taken" >E</span>= undefined;
-  } else if (yp !== x) {
-    x.p = yp;
-    if (yp) {
-      if (yp.l === y) {
-        yp.l = x;
-      } else {
-        yp.r = x;
-      }
-    <span class="missing-if-branch" title="if path not taken" >I</span>}
+&nbsp;
+  public toRecord(prefix?: Uint8Array, record?: Record&lt;string, unknown&gt;): Record&lt;string, unknown&gt; {
+    if (!record) record = {};
+    const currentPrefix = prefix ? new Uint8Array([...prefix, ...this.k.toUint8Array()]) : this.k.toUint8Array();
+&nbsp;
+    if (this.v !== undefined) {
+      // Convert Uint8Array to string representation for record key
+      const key = Array.from(currentPrefix).join(',');
+      record[key] = this.v;
+    }
+&nbsp;
+    let child = first(this.children);
+    while (child) {
+<span class="fstat-no" title="function not covered" ></span>      child.toRecor<span class="branch-0 cbranch-no" title="branch not covered" >d(c</span>urrentPrefix, record);
+      child = next(chi<span class="cstat-no" title="statement not covered" >ld);</span>
+    }<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
+    return record;<span class="cstat-no" title="statement not covered" ></span>
   }<span class="cstat-no" title="statement not covered" ></span>
-  return<span class="cstat-no" title="statement not covered" > root;</span>
-};
+<span class="cstat-no" title="statement not covered" ></span>
+  public toS<span class="cstat-no" title="statement not covered" >tring(tab: string = ''<span class="fstat-no" title="function not covered" >):</span> string {</span>
+    const value = this.v === un<span class="cstat-no" title="statement not covered" >defined ? '' : ` = ${JSON.stringify</span>(this.v)}`;
+    const childrenNodes: Binary<span class="cstat-no" title="statement not covered" >TrieNode&lt;V&gt;[] = [];</span>
+    this.forChildren((child) =&gt; c<span class="cstat-no" title="statement not covered" >hildrenNodes.push(child));</span>
+<span class="cstat-no" title="statement not covered" ></span>
+    let result =<span class="cstat-no" title="statement not covered" > `${this.constructor.name} ${this.k.toString()}${value}`;</span>
+<span class="cstat-no" title="statement not covered" ></span>
+    if (childrenNodes.length &gt; 0) {
+      result += '\n';
+      ch<span class="cstat-no" title="statement not covered" >ildrenNodes.for</span>Each((child, index) =&gt; {
+        const isLast = index === childrenNodes.length - 1;
+        const prefix = isLast ? '└── ' : '├── ';
+        const childTab = tab + (isLast ? '    ' : '│   ');
+        result += tab + prefix + child.toString(childTab).replace(/\n/g, '\n' + childTab);
+        if (!isLast) result += '\n';
+      });
+    }
+&nbsp;
+    return result;
+  }
+}
 &nbsp;</pre></td></tr></table></pre>
 
                 <div class='push'></div><!-- for sticky footer -->

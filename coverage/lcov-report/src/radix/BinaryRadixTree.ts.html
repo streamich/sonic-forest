@@ -3,7 +3,7 @@
 <html lang="en">
 
 <head>
-    <title>Code coverage report for src/red-black/types.ts</title>
+    <title>Code coverage report for src/radix/BinaryRadixTree.ts</title>
     <meta charset="utf-8" />
     <link rel="stylesheet" href="../../prettify.css" />
     <link rel="stylesheet" href="../../base.css" />
@@ -19,34 +19,34 @@
 <body>
 <div class='wrapper'>
     <div class='pad1'>
-        <h1><a href="../../index.html">All files</a> / <a href="index.html">src/red-black</a> types.ts</h1>
+        <h1><a href="../../index.html">All files</a> / <a href="index.html">src/radix</a> BinaryRadixTree.ts</h1>
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>1/1</span>
+                <span class='fraction'>15/15</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/0</span>
+                <span class='fraction'>4/4</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/0</span>
+                <span class='fraction'>4/4</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>1/1</span>
+                <span class='fraction'>15/15</span>
             </div>
         
             
@@ -90,83 +90,59 @@
 <a name='L25'></a><a href='#L25'>25</a>
 <a name='L26'></a><a href='#L26'>26</a>
 <a name='L27'></a><a href='#L27'>27</a>
-<a name='L28'></a><a href='#L28'>28</a>
-<a name='L29'></a><a href='#L29'>29</a>
-<a name='L30'></a><a href='#L30'>30</a>
-<a name='L31'></a><a href='#L31'>31</a>
-<a name='L32'></a><a href='#L32'>32</a>
-<a name='L33'></a><a href='#L33'>33</a>
-<a name='L34'></a><a href='#L34'>34</a>
-<a name='L35'></a><a href='#L35'>35</a>
-<a name='L36'></a><a href='#L36'>36</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L28'></a><a href='#L28'>28</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">23x</span>
+<span class="cline-any cline-yes">23x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">104x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">103x</span>
+<span class="cline-any cline-yes">103x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">11x</span>
+<span class="cline-any cline-yes">11x</span>
+<span class="cline-any cline-yes">8x</span>
+<span class="cline-any cline-yes">11x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">export interface IRbTreeNode&lt;K = unknown, V = unknown&gt; {
-  /** Parent. */
-  p: IRbTreeNode&lt;K, V&gt; | undefined;
-  /** Left. */
-  l: IRbTreeNode&lt;K, V&gt; | undefined;
-  /** Right. */
-  r: IRbTreeNode&lt;K, V&gt; | undefined;
-  /** Node key. */
-  k: K;
-  /** Node value. */
-  v: V;
-  /** Whether the node is "black". */
-  b: boolean;
-}
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import {Printable} from '../print/types';
+import {BinaryTrieNode} from './BinaryTrieNode';
+import {Slice} from './Slice';
+import {insert, find, remove} from './binaryRadix';
 &nbsp;
-export interface RbHeadlessNode {
-  p: RbHeadlessNode | undefined;
-  l: RbHeadlessNode | undefined;
-  r: RbHeadlessNode | undefined;
-  /** Whether the node is "black". */
-  b: boolean;
-}
+export class BinaryRadixTree&lt;V = unknown&gt; extends BinaryTrieNode&lt;V&gt; implements Printable {
+  public size: number = 0;
 &nbsp;
-export interface RbNodeReference&lt;N extends IRbTreeNode&gt; {
-  /**
-   * Immutable read-only key of the node.
-   */
-  readonly k: N['k'];
+  constructor() {
+    super(new Slice(new Uint8Array(), 0, 0), undefined as any as V);
+  }
 &nbsp;
-  /**
-   * Mutable value of the node. The fastest way to update mutate tree nodes
-   * is to get hold of ${@link RbNodeReference} and update this value directly.
-   */
-  v: N['v'];
+  public set(key: Uint8Array, value: V): void {
+    this.size += insert(this, key, value);
+  }
+&nbsp;
+  public get(key: Uint8Array): V | undefined {
+    const node = find(this, key) as BinaryTrieNode&lt;V&gt; | undefined;
+    return node &amp;&amp; node.v;
+  }
+&nbsp;
+  public delete(key: Uint8Array): boolean {
+    const removed = remove(this, key);
+    if (removed) this.size--;
+    return removed;
+  }
 }
 &nbsp;</pre></td></tr></table></pre>
 

@@ -3,7 +3,7 @@
 <html lang="en">
 
 <head>
-    <title>Code coverage report for src/avl/AvlBstNumNumMap.ts</title>
+    <title>Code coverage report for src/radix/Slice.ts</title>
     <meta charset="utf-8" />
     <link rel="stylesheet" href="../../prettify.css" />
     <link rel="stylesheet" href="../../base.css" />
@@ -19,34 +19,34 @@
 <body>
 <div class='wrapper'>
     <div class='pad1'>
-        <h1><a href="../../index.html">All files</a> / <a href="index.html">src/avl</a> AvlBstNumNumMap.ts</h1>
+        <h1><a href="../../index.html">All files</a> / <a href="index.html">src/radix</a> Slice.ts</h1>
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">88.23% </span>
+                <span class="strong">91.42% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>45/51</span>
+                <span class='fraction'>32/35</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">62.5% </span>
+                <span class="strong">88.88% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>10/16</span>
+                <span class='fraction'>16/18</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">66.66% </span>
+                <span class="strong">88.88% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>8/12</span>
+                <span class='fraction'>8/9</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">89.58% </span>
+                <span class="strong">90.9% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>43/48</span>
+                <span class='fraction'>30/33</span>
             </div>
         
             
@@ -142,162 +142,198 @@
 <a name='L77'></a><a href='#L77'>77</a>
 <a name='L78'></a><a href='#L78'>78</a>
 <a name='L79'></a><a href='#L79'>79</a>
-<a name='L80'></a><a href='#L80'>80</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">5x</span>
-<span class="cline-any cline-yes">5x</span>
-<span class="cline-any cline-yes">5x</span>
-<span class="cline-any cline-yes">5x</span>
-<span class="cline-any cline-yes">5x</span>
-<span class="cline-any cline-yes">5x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">12x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">6x</span>
-<span class="cline-any cline-yes">6x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">5x</span>
-<span class="cline-any cline-yes">5x</span>
-<span class="cline-any cline-yes">5x</span>
-<span class="cline-any cline-yes">9x</span>
-<span class="cline-any cline-yes">9x</span>
-<span class="cline-any cline-yes">9x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">4x</span>
+<a name='L80'></a><a href='#L80'>80</a>
+<a name='L81'></a><a href='#L81'>81</a>
+<a name='L82'></a><a href='#L82'>82</a>
+<a name='L83'></a><a href='#L83'>83</a>
+<a name='L84'></a><a href='#L84'>84</a>
+<a name='L85'></a><a href='#L85'>85</a>
+<a name='L86'></a><a href='#L86'>86</a>
+<a name='L87'></a><a href='#L87'>87</a>
+<a name='L88'></a><a href='#L88'>88</a>
+<a name='L89'></a><a href='#L89'>89</a>
+<a name='L90'></a><a href='#L90'>90</a>
+<a name='L91'></a><a href='#L91'>91</a>
+<a name='L92'></a><a href='#L92'>92</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">4x</span>
 <span class="cline-any cline-yes">4x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">3x</span>
-<span class="cline-any cline-yes">3x</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">646x</span>
+<span class="cline-any cline-yes">646x</span>
+<span class="cline-any cline-yes">646x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2200x</span>
 <span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2198x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">347x</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">347x</span>
+<span class="cline-any cline-yes">347x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">6x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-yes">13x</span>
+<span class="cline-any cline-yes">13x</span>
+<span class="cline-any cline-yes">13x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">61x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import {insert, insertLeft, insertRight, print} from './util';
-import {printTree} from '../print/printTree';
-import {findOrNextLower, first, next} from '../util';
-import type {Printable} from '../print/types';
-import type {HeadlessNode} from '../types';
-import type {AvlNodeReference, IAvlTreeNode} from './types';
-&nbsp;
-export class NumNumItem implements IAvlTreeNode&lt;number, number&gt; {
-  public p: NumNumItem | undefined = undefined;
-  public l: NumNumItem | undefined = undefined;
-  public r: NumNumItem | undefined = undefined;
-  public bf: number = 0;
+<span class="cline-any cline-yes">110x</span>
+<span class="cline-any cline-yes">110x</span>
+<span class="cline-any cline-yes">110x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">110x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">271x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">/**
+ * Efficient slice reference to a portion of a Uint8Array without copying data.
+ * This avoids creating new Uint8Array instances for every node in the radix tree.
+ */
+export class Slice {
   constructor(
-    public readonly k: number,
-    public v: number,
+    public readonly data: Uint8Array,
+    public readonly start: number,
+    public readonly length: number,
   ) {}
-}
 &nbsp;
-const comparator = (a: number, b: number) =&gt; a - b;
-&nbsp;
-export class AvlBstNumNumMap implements Printable {
-  public root: NumNumItem | undefined = undefined;
-&nbsp;
-  public insert(k: number, v: number): AvlNodeReference&lt;NumNumItem&gt; {
-    const item = new NumNumItem(k, v);
-    this.root = insert(this.root, item, comparator);
-    return item;
+  /**
+   * Get byte at the given index within this slice.
+   */
+  public at(index: number): number {
+    if (index &lt; 0 || index &gt;= this.length) {
+      throw new Error(`Index ${index} out of bounds for slice of length ${this.length}`);
+    }
+    return this.data[this.start + index];
   }
 &nbsp;
-  public set(k: number, v: number): AvlNodeReference&lt;NumNumItem&gt; {
-    const root = this.root;
-    if (!root) return this.insert(k, v);
-    let next: NumNumItem | undefined = root,
-      curr: NumNumItem | undefined = next;
-    let cmp: number = 0;
-    do {
-      curr = next;
-      cmp = comparator(k, curr.k);
-      if (cmp === 0) return (curr.v<span class="branch-0 cbranch-no" title="branch not covered" > = v), </span>curr;
-    } while ((next = cmp &lt; 0 ? ((curr as any).l as NumNumItem) : ((curr as any).r as NumNumItem)));
-    const node = new NumNumIte<span class="branch-0 cbranch-no" title="branch not covered" >m(k, v);</span>
-    this.root = cmp &lt; 0 ? (insertLeft(root, node, curr) as NumNumItem) : (insertRight(root, node, curr) as NumNumItem);
-    return node;
-  }
-&nbsp;
-  public find(k: number): AvlNodeReference&lt;NumNumItem&gt; | undefined {
-    let curr: NumNumItem | undefined = this.root;
-    while (curr) {
-      const cmp = comparator(k, curr.k);
-      if (cmp === 0) return c<span class="branch-0 cbranch-no" title="branch not covered" >urr;</span>
-      curr = cmp &lt; 0 ? ((curr as any).l as NumNumItem) : ((curr as any).r as NumNumItem);
+  /**
+   * Create a new slice that represents a substring of this slice.
+   */
+  public substring(start: number, length?: number): Slice {
+    if (start &lt; 0 || start &gt; this.length) {
+      th<span class="missing-if-branch" title="if path not taken" >I</span>row new Error(`Start ${start} out of bounds for slice of length ${this.length}`);
     }<span class="cstat-no" title="statement not covered" ></span>
-    return undefined;
+    const newLength = length !== undefined ? Math.min(length, this.length - start) : this.length - start;
+    return new Slice(this.data, this.start + start, newLength);
   }
 &nbsp;
-  public get(k: number): number | undefined {
-<span class="fstat-no" title="function not covered" >    re</span>turn this.find(k)?.v;
-  }<span class="cstat-no" title="statement not covered" ></span>
-&nbsp;
-  pu<span class="fstat-no" title="function not covered" >bl</span>ic has(k: number): boolean {
-    retu<span class="cstat-no" title="statement not covered" >rn !!this.find(k);</span>
+  /**
+   * Compare this slice with another slice for equality.
+   */
+  public equals(other: Slice): boolean {
+    if (<span class="missing-if-branch" title="if path not taken" >I</span>this.length !== other.length) return false;
+    for (let<span class="cstat-no" title="statement not covered" > i = 0; i &lt; th</span>is.length; i++) {
+      if (this.at(i) !== other.at(i)) return false;
+    }
+    return true;
   }
 &nbsp;
-  public getOrNextLower(k: number): NumNumItem | undefined {
-    retu<span class="missing-if-branch" title="if path not taken" >I</span>rn (findOrNextLower(this.root, k, comparator) as NumNumItem) || undefined;
-  }<span class="cstat-no" title="statement not covered" ></span>
-&nbsp;
-  public forEach(fn: (node: NumNumItem) =&gt; void): void {
-    const root = this.root;
-    if (!root) return;
-    let curr = first(root);
-<span class="fstat-no" title="function not covered" >    do</span> fn(curr!);
-    whil<span class="cstat-no" title="statement not covered" >e ((curr = next(curr as HeadlessNode) as NumNumItem | undefined)<span class="fstat-no" title="function not covered" >);<span class="cstat-no" title="statement not covered" ></span></span></span>
+  /**
+   * Compare this slice with another slice lexicographically.
+   * Returns negative if this &lt; other, positive if this &gt; other, 0 if equal.
+   */
+  public compare(other: Slice): number {
+    const minLength = Math.min(this.length, other.length);
+    for (let i = 0; i &lt; minLength; i++) {
+      const thisByte = this.at(i);
+      const otherByte = other.at(i);
+      if (thisByte !== otherByte) {
+        return thisByte - otherByte;
+      }
+    }
+    return this.length - other.length;
   }
 &nbsp;
-  public toString(tab: string): string {
-    return this.constructor.name + printTree(tab, [(tab) =&gt; print(this.root, tab)]);
+  /**
+   * Create a new Uint8Array containing the data from this slice.
+   * Use sparingly as this creates a copy.
+   */
+  public toUint8Array(): Uint8Array {
+    return this.data.slice(this.start, this.start + this.length);
+  }
+&nbsp;
+  /**
+   * Get string representation for debugging.
+   *<span class="fstat-no" title="function not covered" >/</span>
+  public<span class="cstat-no" title="statement not covered" > toString(): string {</span>
+    return `Slice(${Array.from(this.toUint8Array()).join(',')})`;
+  }
+&nbsp;
+  /**
+   * Find the length of common prefix between this slice and another slice.
+   */
+  public getCommonPrefixLength(other: Slice): number {
+    const len = Math.min(this.length, other.length);
+    let i = 0;
+    for (; i &lt; len &amp;&amp; this.at(i) === other.at(i); i++);
+    return i;
+  }
+&nbsp;
+  /**
+   * Create a slice from a Uint8Array.
+   */
+  public static fromUint8Array(data: Uint8Array): Slice {
+    return new Slice(data, 0, data.length);
   }
 }
 &nbsp;</pre></td></tr></table></pre>

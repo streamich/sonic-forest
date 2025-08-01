@@ -5,21 +5,69 @@ import type {Printable} from '../print/types';
 import type {Comparator, HeadlessNode} from '../types';
 import type {AvlNodeReference, IAvlTreeNode} from './types';
 
+/**
+ * AVL tree node for set implementation (stores only values, no separate keys).
+ *
+ * @template V - The type of values stored in the set
+ */
 export class AvlSetNode<V> implements IAvlTreeNode<V, void> {
+  /** Parent node reference */
   public p: AvlSetNode<V> | undefined = undefined;
+  /** Left child node reference */
   public l: AvlSetNode<V> | undefined = undefined;
+  /** Right child node reference */
   public r: AvlSetNode<V> | undefined = undefined;
+  /** Balance factor: height(right) - height(left) */
   public bf: number = 0;
+  /** Value is undefined for set nodes (key serves as both key and value) */
   public v: undefined = undefined;
+
+  /**
+   * Creates a new AVL set node.
+   *
+   * @param k - The value to store (serves as both key and value)
+   */
   constructor(public readonly k: V) {}
 }
 
 const defaultComparator = (a: unknown, b: unknown) => (a === b ? 0 : (a as any) < (b as any) ? -1 : 1);
 
+/**
+ * High-performance AVL tree-based sorted set implementation.
+ *
+ * This set maintains elements in sorted order and ensures no duplicates.
+ * All operations (add, remove, has) are O(log n) due to the self-balancing
+ * nature of AVL trees.
+ *
+ * @example
+ * ```typescript
+ * const set = new AvlSet<number>();
+ * set.add(3);
+ * set.add(1);
+ * set.add(2);
+ *
+ * console.log(set.has(2)); // true
+ * console.log(set.size); // 3
+ *
+ * // Iterate in sorted order
+ * for (const node of set) {
+ *   console.log(node.k); // 1, 2, 3
+ * }
+ * ```
+ *
+ * @template V - The type of values stored in the set
+ */
 export class AvlSet<V> implements Printable {
+  /** Root node of the AVL tree */
   public root: AvlSetNode<V> | undefined = undefined;
+  /** Comparator function for ordering values */
   public readonly comparator: Comparator<V>;
 
+  /**
+   * Creates a new AVL set instance.
+   *
+   * @param comparator - Function to compare values. Defaults to natural ordering.
+   */
   constructor(comparator?: Comparator<V>) {
     this.comparator = comparator || defaultComparator;
   }
@@ -30,6 +78,12 @@ export class AvlSet<V> implements Printable {
     return item;
   }
 
+  /**
+   * Adds a value to the set if it doesn't already exist.
+   *
+   * @param value - The value to add to the set
+   * @returns Reference to the node containing the value (existing or newly created)
+   */
   public add(value: V): AvlNodeReference<AvlSetNode<V>> {
     const root = this.root;
     if (!root) return this.insert(value);

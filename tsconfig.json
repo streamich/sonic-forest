@@ -40,7 +40,17 @@
   "typedocOptions": {
     "entryPoints": [
       "src/avl/index.ts",
-      "src/red-black/index.ts"
+      "src/red-black/index.ts",
+      "src/radix/index.ts",
+      "src/util/index.ts",
+      "src/SortedMap/index.ts",
+      "src/llrb-tree/index.ts",
+      "src/splay/index.ts",
+      "src/trie/index.ts",
+      "src/print/index.ts",
+      "src/data-types/index.ts",
+      "src/types.ts",
+      "src/types2.ts"
     ],
     "out": "typedocs"
   }

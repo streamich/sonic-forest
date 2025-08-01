@@ -4,6 +4,13 @@ import type {Comparator, HeadlessNode, ITreeNode} from '../types';
 
 export {first, next};
 
+/**
+ * Finds the rightmost (maximum) node in a binary tree.
+ * 
+ * @template N - The node type extending HeadlessNode
+ * @param root - The root node to search from
+ * @returns The rightmost node, or undefined if tree is empty
+ */
 export const last = <N extends HeadlessNode>(root: N | undefined): N | undefined => {
   let curr = root;
   while (curr)
@@ -12,6 +19,13 @@ export const last = <N extends HeadlessNode>(root: N | undefined): N | undefined
   return curr;
 };
 
+/**
+ * Finds the in-order predecessor of a given node in a binary tree.
+ * 
+ * @template N - The node type extending HeadlessNode
+ * @param curr - The node to find the predecessor of
+ * @returns The predecessor node, or undefined if none exists
+ */
 export const prev = <N extends HeadlessNode>(curr: N): N | undefined => {
   if (curr.l) {
     curr = curr.l as N;
@@ -32,10 +46,27 @@ const size_ = <N extends HeadlessNode>(root: N): number => {
   return 1 + (l ? size_(l) : 0) + (r ? size_(r) : 0);
 };
 
+/**
+ * Calculates the total number of nodes in a binary tree.
+ * 
+ * @template N - The node type extending HeadlessNode
+ * @param root - The root node of the tree
+ * @returns The total number of nodes in the tree
+ */
 export const size = <N extends HeadlessNode>(root: N | undefined): number => {
   return root ? size_(root) : 0;
 };
 
+/**
+ * Searches for a node with the given key in a binary search tree.
+ * 
+ * @template K - The key type
+ * @template V - The value type
+ * @param root - The root node to search from
+ * @param key - The key to search for
+ * @param comparator - Function to compare keys
+ * @returns The node containing the key, or undefined if not found
+ */
 export const find = <K = unknown, V = unknown>(
   root: ITreeNode<K, V> | undefined,
   key: K,
@@ -50,6 +81,17 @@ export const find = <K = unknown, V = unknown>(
   return curr;
 };
 
+/**
+ * Finds the node with the given key, or the largest key smaller than the given key.
+ * This is useful for range queries and finding the "floor" of a key.
+ * 
+ * @template K - The key type
+ * @template V - The value type
+ * @param root - The root node to search from
+ * @param key - The key to search for
+ * @param comparator - Function to compare keys
+ * @returns The node with the key or the next lower node, or undefined if none exists
+ */
 export const findOrNextLower = <K = unknown, V = unknown>(
   root: ITreeNode<K, V> | undefined,
   key: K,

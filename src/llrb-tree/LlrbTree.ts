@@ -14,14 +14,31 @@ import {
   deleteNode,
 } from './util';
 
+/**
+ * Left-Leaning Red-Black (LLRB) tree node implementation.
+ * 
+ * An LLRB node stores key-value pairs and maintains color information
+ * following the Left-Leaning Red-Black tree variant, which simplifies
+ * the implementation while maintaining Red-Black tree performance.
+ * 
+ * @template K - The type of the key
+ * @template V - The type of the value
+ */
 export class LlrbNode<K, V> {
-  /** Parent. */
+  /** Parent node reference */
   public p: LlrbNode<K, V> | undefined = undefined;
-  /** Left. */
+  /** Left child node reference */
   public l: LlrbNode<K, V> | undefined = undefined;
-  /** Right. */
+  /** Right child node reference */
   public r: LlrbNode<K, V> | undefined = undefined;
 
+  /**
+   * Creates a new LLRB tree node.
+   * 
+   * @param k - The immutable key for this node
+   * @param v - The mutable value for this node
+   * @param b - The color flag: false = red, true = black
+   */
   constructor(
     /** Node key. */
     public k: K,
@@ -34,12 +51,49 @@ export class LlrbNode<K, V> {
 
 const defaultComparator = (a: unknown, b: unknown) => (a === b ? 0 : (a as any) < (b as any) ? -1 : 1);
 
+/**
+ * Left-Leaning Red-Black (LLRB) tree implementation.
+ * 
+ * The LLRB tree is a simplified variant of Red-Black trees that maintains
+ * the same performance guarantees while being easier to implement and understand.
+ * It enforces the constraint that red links lean left, reducing the number
+ * of cases that need to be handled during insertion and deletion.
+ * 
+ * Key properties:
+ * - All red links lean left
+ * - No node has two red links
+ * - Perfect black balance (same number of black links on every path)
+ * - O(log n) guaranteed performance for all operations
+ * 
+ * @example
+ * ```typescript
+ * const tree = new LlrbTree<number, string>();
+ * const nodeRef = tree.set(5, 'five');
+ * tree.set(3, 'three');
+ * tree.set(7, 'seven');
+ * 
+ * console.log(tree.get(5)); // 'five'
+ * console.log(tree.size()); // 3
+ * ```
+ * 
+ * @template K - The type of keys stored in the tree
+ * @template V - The type of values stored in the tree
+ */
 export class LlrbTree<K, V> implements SonicMap<K, V, LlrbNode<K, V>> {
+  /** Minimum node in the tree (leftmost) */
   public min: LlrbNode<K, V> | undefined = undefined;
+  /** Root node of the tree */
   public root: LlrbNode<K, V> | undefined = undefined;
+  /** Maximum node in the tree (rightmost) */
   public max: LlrbNode<K, V> | undefined = undefined;
+  /** Internal size counter */
   protected _size: number = 0;
 
+  /**
+   * Creates a new LLRB tree instance.
+   * 
+   * @param comparator - Function to compare keys. Defaults to natural ordering.
+   */
   constructor(public readonly comparator: Comparator<K> = defaultComparator) {}
 
   public set(k: K, v: V): LlrbNode<K, V> {

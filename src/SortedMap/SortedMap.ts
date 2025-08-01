@@ -8,7 +8,43 @@ import {next} from '../util';
 import {print} from '../red-black/util/print';
 import type {Comparator, SonicMap, SonicNodePublicReference} from '../types';
 
+/**
+ * High-performance sorted map implementation with optional indexing support.
+ * 
+ * This sorted map provides a complete implementation with support for ordered
+ * iteration, range queries, and optional O(log n) index-based access. It's
+ * designed for applications that need both key-based and positional access
+ * to sorted data.
+ * 
+ * Features:
+ * - O(log n) insertion, deletion, and lookup
+ * - Ordered iteration in sorted key order
+ * - Optional index-based access when enableIndex is true
+ * - Range queries and nearest neighbor searches
+ * - Iterator support for for...of loops
+ * 
+ * @example
+ * ```typescript
+ * const map = new SortedMap<number, string>();
+ * map.set(3, 'three');
+ * map.set(1, 'one');
+ * map.set(2, 'two');
+ * 
+ * // Iteration in sorted order
+ * for (const node of map) {
+ *   console.log(node.k, node.v); // 1 'one', 2 'two', 3 'three'
+ * }
+ * 
+ * // With indexing enabled
+ * const indexedMap = new SortedMap<number, string>(undefined, true);
+ * // Now supports O(log n) access by position
+ * ```
+ * 
+ * @template K - The type of keys stored in the map
+ * @template V - The type of values stored in the map
+ */
 export class SortedMap<K, V> implements SonicMap<K, V, TreeNode<K, V>> {
+  /** Whether index-based access is enabled */
   enableIndex: boolean;
   /**
    * @internal
@@ -24,6 +60,12 @@ export class SortedMap<K, V> implements SonicMap<K, V, TreeNode<K, V>> {
    */
   protected readonly _TreeNodeClass: typeof TreeNode | typeof TreeNodeEnableIndex;
 
+  /**
+   * Creates a new sorted map instance.
+   * 
+   * @param comparator - Function to compare keys. Defaults to natural ordering.
+   * @param enableIndex - Whether to enable O(log n) index-based access. Defaults to false.
+   */
   constructor(comparator?: Comparator<K>, enableIndex: boolean = false) {
     this.comparator = comparator || ((a: unknown, b: unknown) => (a === b ? 0 : (a as any) < (b as any) ? -1 : 1));
     this.enableIndex = enableIndex;

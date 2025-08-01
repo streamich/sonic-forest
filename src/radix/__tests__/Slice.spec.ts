@@ -1,4 +1,4 @@
-import {Slice, getCommonPrefixLength} from '../Slice';
+import {Slice} from '../Slice';
 
 describe('Slice', () => {
   test('can create slice from Uint8Array', () => {
@@ -48,11 +48,11 @@ describe('Slice', () => {
     const data1 = new Uint8Array([1, 2, 3]);
     const data2 = new Uint8Array([1, 2, 3]);
     const data3 = new Uint8Array([1, 2, 4]);
-    
+
     const slice1 = Slice.fromUint8Array(data1);
     const slice2 = Slice.fromUint8Array(data2);
     const slice3 = Slice.fromUint8Array(data3);
-    
+
     expect(slice1.equals(slice2)).toBe(true);
     expect(slice1.equals(slice3)).toBe(false);
   });
@@ -62,7 +62,7 @@ describe('Slice', () => {
     const slice2 = Slice.fromUint8Array(new Uint8Array([1, 2, 3]));
     const slice3 = Slice.fromUint8Array(new Uint8Array([1, 2, 4]));
     const slice4 = Slice.fromUint8Array(new Uint8Array([1, 2]));
-    
+
     expect(slice1.compare(slice2)).toBe(0);
     expect(slice1.compare(slice3)).toBeLessThan(0);
     expect(slice3.compare(slice1)).toBeGreaterThan(0);
@@ -74,7 +74,7 @@ describe('Slice', () => {
     const data = new Uint8Array([1, 2, 3]);
     const slice = Slice.fromUint8Array(data);
     const copy = slice.toUint8Array();
-    
+
     expect(copy).toEqual(data);
     expect(copy).not.toBe(data); // Different object
   });
@@ -84,7 +84,7 @@ describe('Slice', () => {
     const slice = Slice.fromUint8Array(data);
     const sub = slice.substring(1, 3);
     const subArray = sub.toUint8Array();
-    
+
     expect(subArray).toEqual(new Uint8Array([2, 3, 4]));
   });
 });
@@ -93,30 +93,30 @@ describe('getCommonPrefixLength', () => {
   test('finds common prefix of identical slices', () => {
     const slice1 = Slice.fromUint8Array(new Uint8Array([1, 2, 3]));
     const slice2 = Slice.fromUint8Array(new Uint8Array([1, 2, 3]));
-    expect(getCommonPrefixLength(slice1, slice2)).toBe(3);
+    expect(slice1.getCommonPrefixLength(slice2)).toBe(3);
   });
 
   test('finds common prefix of different slices', () => {
     const slice1 = Slice.fromUint8Array(new Uint8Array([1, 2, 3, 4]));
     const slice2 = Slice.fromUint8Array(new Uint8Array([1, 2, 5, 6]));
-    expect(getCommonPrefixLength(slice1, slice2)).toBe(2);
+    expect(slice1.getCommonPrefixLength(slice2)).toBe(2);
   });
 
   test('finds common prefix with different lengths', () => {
     const slice1 = Slice.fromUint8Array(new Uint8Array([1, 2, 3]));
     const slice2 = Slice.fromUint8Array(new Uint8Array([1, 2]));
-    expect(getCommonPrefixLength(slice1, slice2)).toBe(2);
+    expect(slice1.getCommonPrefixLength(slice2)).toBe(2);
   });
 
   test('handles no common prefix', () => {
     const slice1 = Slice.fromUint8Array(new Uint8Array([1, 2, 3]));
     const slice2 = Slice.fromUint8Array(new Uint8Array([4, 5, 6]));
-    expect(getCommonPrefixLength(slice1, slice2)).toBe(0);
+    expect(slice1.getCommonPrefixLength(slice2)).toBe(0);
   });
 
   test('handles empty slices', () => {
     const slice1 = Slice.fromUint8Array(new Uint8Array([]));
     const slice2 = Slice.fromUint8Array(new Uint8Array([1, 2, 3]));
-    expect(getCommonPrefixLength(slice1, slice2)).toBe(0);
+    expect(slice1.getCommonPrefixLength(slice2)).toBe(0);
   });
 });

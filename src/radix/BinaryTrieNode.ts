@@ -27,19 +27,19 @@ export class BinaryTrieNode<V = unknown> implements ITreeNode<Slice, unknown>, P
   public toRecord(prefix?: Uint8Array, record?: Record<string, unknown>): Record<string, unknown> {
     if (!record) record = {};
     const currentPrefix = prefix ? new Uint8Array([...prefix, ...this.k.toUint8Array()]) : this.k.toUint8Array();
-    
+
     if (this.v !== undefined) {
       // Convert Uint8Array to string representation for record key
       const key = Array.from(currentPrefix).join(',');
       record[key] = this.v;
     }
-    
+
     let child = first(this.children);
     while (child) {
       child.toRecord(currentPrefix, record);
       child = next(child);
     }
-    
+
     return record;
   }
 
@@ -47,9 +47,9 @@ export class BinaryTrieNode<V = unknown> implements ITreeNode<Slice, unknown>, P
     const value = this.v === undefined ? '' : ` = ${JSON.stringify(this.v)}`;
     const childrenNodes: BinaryTrieNode<V>[] = [];
     this.forChildren((child) => childrenNodes.push(child));
-    
+
     let result = `${this.constructor.name} ${this.k.toString()}${value}`;
-    
+
     if (childrenNodes.length > 0) {
       result += '\n';
       childrenNodes.forEach((child, index) => {
@@ -60,7 +60,7 @@ export class BinaryTrieNode<V = unknown> implements ITreeNode<Slice, unknown>, P
         if (!isLast) result += '\n';
       });
     }
-    
+
     return result;
   }
 }

@@ -196,24 +196,24 @@ describe('BinaryRadixTree', () => {
       const tree = new BinaryRadixTree();
       // Simulate HTTP-like binary protocol headers
       tree.set(new Uint8Array([0x47, 0x45, 0x54, 0x20]), 'GET '); // "GET "
-      tree.set(new Uint8Array([0x50, 0x4F, 0x53, 0x54]), 'POST'); // "POST"
+      tree.set(new Uint8Array([0x50, 0x4f, 0x53, 0x54]), 'POST'); // "POST"
       tree.set(new Uint8Array([0x50, 0x55, 0x54, 0x20]), 'PUT '); // "PUT "
-      
+
       expect(tree.get(new Uint8Array([0x47, 0x45, 0x54, 0x20]))).toBe('GET ');
-      expect(tree.get(new Uint8Array([0x50, 0x4F, 0x53, 0x54]))).toBe('POST');
+      expect(tree.get(new Uint8Array([0x50, 0x4f, 0x53, 0x54]))).toBe('POST');
       expect(tree.get(new Uint8Array([0x50, 0x55, 0x54, 0x20]))).toBe('PUT ');
       expect(tree.size).toBe(3);
     });
 
     test('can handle arbitrary byte sequences', () => {
       const tree = new BinaryRadixTree();
-      tree.set(new Uint8Array([0x00, 0xFF, 0x80]), 'binary1');
-      tree.set(new Uint8Array([0x00, 0xFF, 0x81]), 'binary2');
-      tree.set(new Uint8Array([0x00, 0xFF]), 'prefix');
-      
-      expect(tree.get(new Uint8Array([0x00, 0xFF, 0x80]))).toBe('binary1');
-      expect(tree.get(new Uint8Array([0x00, 0xFF, 0x81]))).toBe('binary2');
-      expect(tree.get(new Uint8Array([0x00, 0xFF]))).toBe('prefix');
+      tree.set(new Uint8Array([0x00, 0xff, 0x80]), 'binary1');
+      tree.set(new Uint8Array([0x00, 0xff, 0x81]), 'binary2');
+      tree.set(new Uint8Array([0x00, 0xff]), 'prefix');
+
+      expect(tree.get(new Uint8Array([0x00, 0xff, 0x80]))).toBe('binary1');
+      expect(tree.get(new Uint8Array([0x00, 0xff, 0x81]))).toBe('binary2');
+      expect(tree.get(new Uint8Array([0x00, 0xff]))).toBe('prefix');
     });
   });
 });

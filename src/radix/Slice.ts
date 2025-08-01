@@ -73,19 +73,19 @@ export class Slice {
   }
 
   /**
+   * Find the length of common prefix between this slice and another slice.
+   */
+  public getCommonPrefixLength(other: Slice): number {
+    const len = Math.min(this.length, other.length);
+    let i = 0;
+    for (; i < len && this.at(i) === other.at(i); i++);
+    return i;
+  }
+
+  /**
    * Create a slice from a Uint8Array.
    */
   public static fromUint8Array(data: Uint8Array): Slice {
     return new Slice(data, 0, data.length);
   }
 }
-
-/**
- * Find the length of common prefix between two slices.
- */
-export const getCommonPrefixLength = (a: Slice, b: Slice): number => {
-  const len = Math.min(a.length, b.length);
-  let i = 0;
-  for (; i < len && a.at(i) === b.at(i); i++);
-  return i;
-};

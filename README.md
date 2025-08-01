@@ -7,9 +7,9 @@ High performance (binary) tree and sorted map implementation for JavaScript in T
 - AVL tree implementation
 - AVL sorted map implementation
 - AVL sorted set implementation
-- Red-black tree implementation
-- Red-black tree sorted map implementation
-- Left-leaning Red-black tree insertion implementation
+- Red-black (RB) tree implementation
+- Red-black (RB) tree sorted map implementation
+- Left-leaning Red-black (LLRB) tree implementation
 - Radix tree implementation (string keys)
 - Binary radix tree implementation (Uint8Array keys)
 - Splay tree implementation

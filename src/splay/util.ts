@@ -1,31 +1,33 @@
 import type {HeadlessNode} from '../types';
 
 export const splay = <N extends HeadlessNode>(root: N, node: N, repeat: number): N => {
-  const p = node.p;
-  if (!p) return root;
-  const pp = p.p;
-  const l2 = p.l === node;
-  if (!pp) {
-    if (l2) rSplay<N>(node, p as N);
-    else lSplay<N>(node, p as N);
-    return node;
-  }
-  const l1 = pp.l === p;
-  if (l1) {
-    if (l2) {
-      root = llSplay<N>(root, node, p as N, pp as N);
-    } else {
-      root = lrSplay<N>(root, node, p as N, pp as N);
+  for (;;) {
+    const p = node.p;
+    if (!p) return root;
+    const pp = p.p;
+    const l2 = p.l === node;
+    if (!pp) {
+      if (l2) rSplay<N>(node, p as N);
+      else lSplay<N>(node, p as N);
+      return node;
     }
-  } else {
-    if (l2) {
-      root = rlSplay<N>(root, node, p as N, pp as N);
+    const l1 = pp.l === p;
+    if (l1) {
+      if (l2) {
+        root = llSplay<N>(root, node, p as N, pp as N);
+      } else {
+        root = lrSplay<N>(root, node, p as N, pp as N);
+      }
     } else {
-      root = rrSplay<N>(root, node, p as N, pp as N);
+      if (l2) {
+        root = rlSplay<N>(root, node, p as N, pp as N);
+      } else {
+        root = rrSplay<N>(root, node, p as N, pp as N);
+      }
     }
+    if (!(repeat > 1)) return root;
+    repeat--;
   }
-  if (repeat > 1) return splay(root, node, repeat - 1);
-  return root;
 };
 
 export const rSplay = <N extends HeadlessNode>(c2: N, c1: N): void => {

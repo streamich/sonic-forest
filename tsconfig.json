@@ -47,6 +47,7 @@
       "src/llrb-tree/index.ts",
       "src/splay/index.ts",
       "src/trie/index.ts",
+      "src/r-tree/index.ts",
       "src/print/index.ts",
       "src/data-types/index.ts",
       "src/types.ts",

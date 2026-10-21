@@ -13,6 +13,7 @@ High performance (binary) tree and sorted map implementation for JavaScript in T
 - Radix tree implementation (string keys)
 - Binary radix tree implementation (Uint8Array keys)
 - Splay tree implementation
+- R-tree spatial index (2D rectangles, k-nearest), see [`src/r-tree`](src/r-tree/README.md)
 - Various utility methods for binary trees
 
 This package implements the fastest insertion into self-balancing binary tree out of any

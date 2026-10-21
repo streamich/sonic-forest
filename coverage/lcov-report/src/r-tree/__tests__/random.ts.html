@@ -1,0 +1,262 @@
+
+<!doctype html>
+<html lang="en">
+
+<head>
+    <title>Code coverage report for src/r-tree/__tests__/random.ts</title>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="../../../prettify.css" />
+    <link rel="stylesheet" href="../../../base.css" />
+    <link rel="shortcut icon" type="image/x-icon" href="../../../favicon.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <style type='text/css'>
+        .coverage-summary .sorter {
+            background-image: url(../../../sort-arrow-sprite.png);
+        }
+    </style>
+</head>
+    
+<body>
+<div class='wrapper'>
+    <div class='pad1'>
+        <h1><a href="../../../index.html">All files</a> / <a href="index.html">src/r-tree/__tests__</a> random.ts</h1>
+        <div class='clearfix'>
+            
+            <div class='fl pad1y space-right2'>
+                <span class="strong">78.57% </span>
+                <span class="quiet">Statements</span>
+                <span class='fraction'>44/56</span>
+            </div>
+        
+            
+            <div class='fl pad1y space-right2'>
+                <span class="strong">68.75% </span>
+                <span class="quiet">Branches</span>
+                <span class='fraction'>22/32</span>
+            </div>
+        
+            
+            <div class='fl pad1y space-right2'>
+                <span class="strong">83.33% </span>
+                <span class="quiet">Functions</span>
+                <span class='fraction'>5/6</span>
+            </div>
+        
+            
+            <div class='fl pad1y space-right2'>
+                <span class="strong">78.18% </span>
+                <span class="quiet">Lines</span>
+                <span class='fraction'>43/55</span>
+            </div>
+        
+            
+        </div>
+        <p class="quiet">
+            Press <em>n</em> or <em>j</em> to go to the next uncovered block, <em>b</em>, <em>p</em> or <em>k</em> for the previous block.
+        </p>
+        <template id="filterTemplate">
+            <div class="quiet">
+                Filter:
+                <input type="search" id="fileSearch">
+            </div>
+        </template>
+    </div>
+    <div class='status-line medium'></div>
+    <pre><table class="coverage">
+<tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
+<a name='L2'></a><a href='#L2'>2</a>
+<a name='L3'></a><a href='#L3'>3</a>
+<a name='L4'></a><a href='#L4'>4</a>
+<a name='L5'></a><a href='#L5'>5</a>
+<a name='L6'></a><a href='#L6'>6</a>
+<a name='L7'></a><a href='#L7'>7</a>
+<a name='L8'></a><a href='#L8'>8</a>
+<a name='L9'></a><a href='#L9'>9</a>
+<a name='L10'></a><a href='#L10'>10</a>
+<a name='L11'></a><a href='#L11'>11</a>
+<a name='L12'></a><a href='#L12'>12</a>
+<a name='L13'></a><a href='#L13'>13</a>
+<a name='L14'></a><a href='#L14'>14</a>
+<a name='L15'></a><a href='#L15'>15</a>
+<a name='L16'></a><a href='#L16'>16</a>
+<a name='L17'></a><a href='#L17'>17</a>
+<a name='L18'></a><a href='#L18'>18</a>
+<a name='L19'></a><a href='#L19'>19</a>
+<a name='L20'></a><a href='#L20'>20</a>
+<a name='L21'></a><a href='#L21'>21</a>
+<a name='L22'></a><a href='#L22'>22</a>
+<a name='L23'></a><a href='#L23'>23</a>
+<a name='L24'></a><a href='#L24'>24</a>
+<a name='L25'></a><a href='#L25'>25</a>
+<a name='L26'></a><a href='#L26'>26</a>
+<a name='L27'></a><a href='#L27'>27</a>
+<a name='L28'></a><a href='#L28'>28</a>
+<a name='L29'></a><a href='#L29'>29</a>
+<a name='L30'></a><a href='#L30'>30</a>
+<a name='L31'></a><a href='#L31'>31</a>
+<a name='L32'></a><a href='#L32'>32</a>
+<a name='L33'></a><a href='#L33'>33</a>
+<a name='L34'></a><a href='#L34'>34</a>
+<a name='L35'></a><a href='#L35'>35</a>
+<a name='L36'></a><a href='#L36'>36</a>
+<a name='L37'></a><a href='#L37'>37</a>
+<a name='L38'></a><a href='#L38'>38</a>
+<a name='L39'></a><a href='#L39'>39</a>
+<a name='L40'></a><a href='#L40'>40</a>
+<a name='L41'></a><a href='#L41'>41</a>
+<a name='L42'></a><a href='#L42'>42</a>
+<a name='L43'></a><a href='#L43'>43</a>
+<a name='L44'></a><a href='#L44'>44</a>
+<a name='L45'></a><a href='#L45'>45</a>
+<a name='L46'></a><a href='#L46'>46</a>
+<a name='L47'></a><a href='#L47'>47</a>
+<a name='L48'></a><a href='#L48'>48</a>
+<a name='L49'></a><a href='#L49'>49</a>
+<a name='L50'></a><a href='#L50'>50</a>
+<a name='L51'></a><a href='#L51'>51</a>
+<a name='L52'></a><a href='#L52'>52</a>
+<a name='L53'></a><a href='#L53'>53</a>
+<a name='L54'></a><a href='#L54'>54</a>
+<a name='L55'></a><a href='#L55'>55</a>
+<a name='L56'></a><a href='#L56'>56</a>
+<a name='L57'></a><a href='#L57'>57</a>
+<a name='L58'></a><a href='#L58'>58</a>
+<a name='L59'></a><a href='#L59'>59</a>
+<a name='L60'></a><a href='#L60'>60</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-yes">168x</span>
+<span class="cline-any cline-yes">168x</span>
+<span class="cline-any cline-yes">1299121x</span>
+<span class="cline-any cline-yes">1299121x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-yes">184579x</span>
+<span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-yes">161373x</span>
+<span class="cline-any cline-yes">161373x</span>
+<span class="cline-any cline-yes">161373x</span>
+<span class="cline-any cline-yes">161373x</span>
+<span class="cline-any cline-yes">24199x</span>
+<span class="cline-any cline-yes">137174x</span>
+<span class="cline-any cline-yes">56349x</span>
+<span class="cline-any cline-yes">80825x</span>
+<span class="cline-any cline-yes">8140x</span>
+<span class="cline-any cline-yes">72685x</span>
+<span class="cline-any cline-yes">40369x</span>
+<span class="cline-any cline-yes">40369x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">32316x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-yes">22199x</span>
+<span class="cline-any cline-yes">22199x</span>
+<span class="cline-any cline-yes">22199x</span>
+<span class="cline-any cline-yes">22199x</span>
+<span class="cline-any cline-yes">2192x</span>
+<span class="cline-any cline-yes">20007x</span>
+<span class="cline-any cline-yes">1109x</span>
+<span class="cline-any cline-yes">18898x</span>
+<span class="cline-any cline-yes">3290x</span>
+<span class="cline-any cline-yes">3290x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">15608x</span>
+<span class="cline-any cline-yes">15608x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import {Rect} from '../Rect';
+&nbsp;
+/** Numerical Recipes constants. */
+export const lcg = (seed: number) =&gt; {
+  let s = seed &gt;&gt;&gt; 0;
+  return (): number =&gt; {
+    s = (Math.imul(s, 1664525) + 1013904223) &gt;&gt;&gt; 0;
+    return s / 4294967296;
+  };
+};
+&nbsp;
+export const xywh = (x: number, y: number, w: number, h: number): Rect =&gt; new Rect(x, y, x + w, y + h);
+&nbsp;
+const CLUSTERS = [
+  [-30000, -30000],
+  [0, 0],
+  [1200, -800],
+  [25000, 4000],
+];
+&nbsp;
+export const randomRect = (rnd: () =&gt; number, world = 50000): Rect =&gt; {
+  const kind = rnd();
+  const x = (rnd() * 2 - 1) * world;
+  const y = (rnd() * 2 - 1) * world;
+  if (kind &lt; 0.15) return xywh(x, y, rnd() &lt; 0.3 ? 0 : rnd() * 2, rnd() &lt; 0.3 ? 0 : rnd() * 2);
+  if (kind &lt; 0.5) return xywh(x, y, 10 + rnd() * 300, 10 + rnd() * 300);
+  if (kind &lt; 0.55) return xywh(x, y, 5000 + rnd() * 25000, 5000 + rnd() * 25000);
+  if (kind &lt; 0.8) {
+    const c = CLUSTERS[Math.floor(rnd() * CLUSTERS.length)];
+    return xywh(c[0] + rnd() * 1000, c[1] + rnd() * 1000, 5 + rnd() * 100, 5 + rnd() * 100);
+  }
+  return rnd() &lt; 0.5 ? xywh(x, y, 4000, 2) : xywh(x, y, 2, 4000);
+};
+&nbsp;
+export const randomQuery = (rnd: () =&gt; number, world = 50000): Rect =&gt; {
+  const kind = rnd();
+  const x = (rnd() * 2 - 1) * world;
+  const y = (rnd() * 2 - 1) * world;
+  if (kind &lt; 0.1) return new Rect(x, y, x, y);
+  if (kind &lt; 0.15) return new Rect(-world * 2, -world * 2, world * 2, world * 2);
+  if (kind &lt; 0.3) {
+    const c = CLUSTERS[Math.floor(rnd() * CLUSTERS.length)];
+    return xywh(c[0] + rnd() * 800, c[1] + rnd() * 800, rnd() * 600, rnd() * 600);
+  }
+  const s = 100 + rnd() * 8000;
+  return xywh(x, y, s * 1.7, s);
+};
+&nbsp;
+/** A whiteboard: mostly card-sized shapes, some tiny ones, long dividers and a few huge frames. */
+export const sceneRect = (rnd: () =&gt; number, world: number): Rect =&gt; {
+  const k = rnd();
+  const x = (rnd() * 2 - 1) * world;
+  const y = (rnd() * 2 - 1) * world;
+  if (k &lt; 0.7) return xywh(x, y, 20 + rnd() * 380, 20 + rnd() * 380);
+  if (k &lt; 0.85) return xywh(x, y, 2 + rnd() * 38, 2 + rnd() * 38);
+  if (k &lt; 0.93) re<span class="fstat-no" title="function not covered" >tu</span>rn rnd() &lt; 0.5 ? xywh(x, y, 50 + rnd() * 4000, 2) : xywh(x, y, 2, 50 + rnd() * 4000);
+  if (k &lt; 0.98<span class="cstat-no" title="statement not covered" >) retu</span>rn xywh(x / 20, y / 20, 5 + rnd() * 100, 5 + rnd() * 100);
+  return xywh(<span class="cstat-no" title="statement not covered" >x, y, 2000 + rnd() * 600</span>0, 2000 + rnd() * 6000);
+};<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" ></span></pre></td></tr></table></pre>
+
+                <div class='push'></div><!-- for sticky footer -->
+            </div><!-- /wrapper -->
+            <div class='footer quiet pad2 space-top1 center small'>
+                Code coverage generated by
+                <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
+                at 2026-10-21T14:58:07.324Z
+            </div>
+        <script src="../../../prettify.js"></script>
+        <script>
+            window.onload = function () {
+                prettyPrint();
+            };
+        </script>
+        <script src="../../../sorter.js"></script>
+        <script src="../../../block-navigation.js"></script>
+    </body>
+</html>
+    

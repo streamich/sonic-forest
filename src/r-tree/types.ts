@@ -24,10 +24,12 @@ export interface SpatialIndex<K = unknown> {
   clear(): void;
   /** Appends the ids whose rectangle intersects `r`, touching edges included, in no particular order. */
   search(r: IRect, out: K[]): void;
-  /** Appends up to `k` ids nearest to `(x, y)` by rectangle distance, nearest
+  /**
+   * Appends up to `k` ids nearest to `(x, y)` by rectangle distance, nearest
    * first, skipping any whose squared distance exceeds `maxDist2`. Rectangle
    * distance is a lower bound of the distance to what it bounds: refine the
-   * candidates with exact geometry. */
+   * candidates with exact geometry.
+   */
   nearest(x: number, y: number, k: number, maxDist2: number, out: K[]): void;
   /** @param fn must not mutate the rectangle, nor the index. */
   forEach(fn: (id: K, r: IRect) => void): void;

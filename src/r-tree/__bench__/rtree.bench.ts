@@ -51,8 +51,9 @@ const visits = (root: RTreeNode<number>, q: Rect): number => {
 };
 
 const meanVisits = (t: RTree<number>, qs: Rect[]): string => {
+  const root = t.root;
   let n = 0;
-  for (const q of qs) n += visits(t.root, q);
+  for (const q of qs) n += visits(root, q);
   return (n / qs.length).toFixed(1);
 };
 

@@ -1,47 +1,25 @@
+import {Arena} from './Arena';
 import {bulkBuild} from './bulk';
 import {MinQueue} from './MinQueue';
-import {RTreeEntry} from './RTreeEntry';
-import {type RTreeChild, RTreeNode} from './RTreeNode';
-import {split} from './split';
+import {Rect} from './Rect';
+import type {RTreeNode} from './RTreeNode';
+import {nearestIn, searchIn} from './query';
+import {snapshot} from './snapshot';
 import type {IRect, SpatialIndex} from './types';
-import {enlargedArea, pointDist2} from './util';
 
-const removeChild = <K>(ch: RTreeChild<K>[], c: RTreeChild<K>): void => {
-  const i = ch.indexOf(c);
-  ch[i] = ch[ch.length - 1];
-  ch.pop();
-};
-
-/** Guttman 1984 ChooseLeaf. */
-const chooseChild = <K>(node: RTreeNode<K>, r: IRect): RTreeNode<K> => {
-  const ch = node.children as RTreeNode<K>[];
-  let best = ch[0];
-  let minEnlargement = Infinity;
-  let minArea = Infinity;
-  for (let i = 0, n = ch.length; i < n; i++) {
-    const c = ch[i];
-    const area = c.area;
-    const enlargement = enlargedArea(c, r) - area;
-    if (enlargement < minEnlargement || (enlargement === minEnlargement && area < minArea)) {
-      minEnlargement = enlargement;
-      minArea = area;
-      best = c;
-    }
-  }
-  return best;
-};
-
-const collect = <K>(node: RTreeNode<K>, out: K[]): void => {
-  const ch = node.children;
-  const n = ch.length;
-  if (node.height === 1) for (let i = 0; i < n; i++) out.push((ch[i] as RTreeEntry<K>).id);
-  else for (let i = 0; i < n; i++) collect(ch[i] as RTreeNode<K>, out);
+const putRect = (boxes: Float64Array, i: number, r: IRect): void => {
+  const b = i << 2;
+  boxes[b] = r.minX;
+  boxes[b + 1] = r.minY;
+  boxes[b + 2] = r.maxX;
+  boxes[b + 3] = r.maxY;
 };
 
 // TODO: implement Printable from tree-dump, as the other sonic-forest trees do.
 /**
- * Dynamic R-tree, after rbush (MIT). It never rebuilds itself:
- * once {@link needsRebuild} turns true, the owner calls {@link rebuild} while idle.
+ * Dynamic R-tree, after rbush (MIT), stored as a struct of typed arrays. It
+ * never rebuilds itself: once {@link needsRebuild} turns true, the owner
+ * calls {@link rebuild} while idle.
  */
 export class RTree<K = unknown> implements SpatialIndex<K> {
   public version = 0;
@@ -49,41 +27,46 @@ export class RTree<K = unknown> implements SpatialIndex<K> {
   public churn = 0;
   public readonly maxEntries: number;
   public readonly minEntries: number;
-  private _root = new RTreeNode<K>(1, []);
-  private readonly entries = new Map<K, RTreeEntry<K>>();
-  private readonly stack: RTreeNode<K>[] = [];
-  private readonly orphans: RTreeChild<K>[] = [];
-  private readonly queue = new MinQueue<RTreeChild<K>>();
+  private a: Arena<K>;
+  private slots = new Map<K, number>();
+  // Query scratch.
+  private readonly stack: number[] = [];
+  private readonly queue = new MinQueue();
+  private readonly near = new MinQueue();
+  private readonly held: number[] = [];
 
-  /** @param maxEntries fanout, clamped to at least 4 */
+  /** @param maxEntries fanout, clamped to 4..65535 */
   constructor(maxEntries: number = 9) {
-    const max = Math.max(4, Math.floor(maxEntries));
+    // not Math.max(4, f), which keeps a NaN
+    const f = Math.floor(maxEntries);
+    const max = f >= 4 ? Math.min(0xffff, f) : 4;
     this.maxEntries = max;
     this.minEntries = Math.max(2, Math.ceil(max * 0.4));
+    this.a = new Arena<K>(max, this.minEntries);
   }
 
-  /** Do not mutate. */
+  /** A copy of the tree, built in O(n) on every read, for walks and debugging. */
   public get root(): RTreeNode<K> {
-    return this._root;
+    return snapshot(this.a);
   }
 
   public get size(): number {
-    return this.entries.size;
+    return this.slots.size;
   }
 
   public get needsRebuild(): boolean {
-    const size = this.entries.size;
+    const size = this.slots.size;
     return size > this.maxEntries && this.churn >= size;
   }
 
   public has(id: K): boolean {
-    return this.entries.has(id);
+    return this.slots.has(id);
   }
 
   public insert(id: K, r: IRect): void {
-    const e = this.entries.get(id);
-    if (e) this.move(e, r);
-    else this.add(id, r);
+    const s = this.slots.get(id);
+    if (s === undefined) this.add(id, r);
+    else this.move(s, r);
   }
 
   public update(id: K, r: IRect): void {
@@ -91,11 +74,20 @@ export class RTree<K = unknown> implements SpatialIndex<K> {
   }
 
   public remove(id: K): void {
-    const entries = this.entries;
-    const e = entries.get(id);
-    if (!e) return;
-    entries.delete(id);
-    this.detach(e);
+    const slots = this.slots;
+    const s = slots.get(id);
+    if (s === undefined) return;
+    slots.delete(id);
+    const a = this.a;
+    a.detach(s);
+    a.freeEntry(s);
+    const size = slots.size;
+    // Down to one leaf in grown arrays: an O(maxEntries) rebuild releases them.
+    if (size <= this.maxEntries && a.eLeaf.length > 4 * size + 64) {
+      const churn = this.churn;
+      this.rebuild();
+      this.churn = churn;
+    }
     this.version++;
     this.churn++;
   }
@@ -103,174 +95,167 @@ export class RTree<K = unknown> implements SpatialIndex<K> {
   public load(ids: readonly K[], rects: readonly IRect[]): void {
     const n = ids.length;
     if (!n) return;
-    const entries = this.entries;
+    const slots = this.slots;
     // A batch smaller than the tree costs less inserted one by one than rebuilt in.
-    if (n < entries.size) {
+    if (n < slots.size) {
       for (let i = 0; i < n; i++) this.insert(ids[i], rects[i]);
       return;
     }
-    const all = Array.from(entries.values());
-    for (let i = 0; i < n; i++) {
-      const id = ids[i];
-      const e = entries.get(id);
-      if (e) e.setTo(rects[i]);
-      else {
-        const ne = new RTreeEntry<K>(id, rects[i]);
-        entries.set(id, ne);
-        all.push(ne);
-      }
-    }
-    this._root = bulkBuild(all, this.maxEntries);
-    this.churn = 0;
     // TODO: bump only when an id is new or a rectangle differs, as LinearIndex.load does, once a consumer keys caches on version.
     this.version++;
+    if (!slots.size) {
+      const boxes = new Float64Array(n * 4);
+      for (let i = 0; i < n; i++) putRect(boxes, i, rects[i]);
+      if (this.build(ids, boxes, n, true)) return;
+    }
+    // Entries keep their Map order and new ids follow in input order: the order a rebuild sees.
+    const all: K[] = [];
+    const boxes = new Float64Array((slots.size + n) * 4);
+    const at = new Int32Array(this.a.eLeaf.length);
+    let len = this.gather(all, boxes, at);
+    try {
+      for (let i = 0; i < n; i++) {
+        const id = ids[i];
+        const s = slots.get(id);
+        let j: number;
+        // Until the build, a new id maps to the complement of its index in `all`.
+        if (s === undefined) {
+          slots.set(id, ~(j = len++));
+          all[j] = id;
+        } else j = s < 0 ? ~s : at[s];
+        putRect(boxes, j, rects[i]);
+      }
+    } catch (error) {
+      slots.forEach((s, id) => {
+        if (s < 0) slots.delete(id);
+      });
+      throw error;
+    }
+    this.build(all, boxes, len, false);
   }
 
   /** Results and `version` stay as they are. */
   public rebuild(): void {
-    const entries = this.entries;
-    if (entries.size) this._root = bulkBuild(Array.from(entries.values()), this.maxEntries);
-    this.churn = 0;
+    const all: K[] = [];
+    const boxes = new Float64Array(this.slots.size * 4);
+    this.build(all, boxes, this.gather(all, boxes, new Int32Array(this.a.eLeaf.length)), false);
   }
 
   public clear(): void {
-    // TODO: also empty the scratch stack, queue and orphans, which pin old nodes and keys until the next query overwrites them.
     this.churn = 0;
-    if (!this.entries.size) return;
-    this.entries.clear();
-    this._root = new RTreeNode<K>(1, []);
+    if (!this.slots.size) return;
+    this.slots.clear();
+    this.a = new Arena<K>(this.maxEntries, this.minEntries);
     this.version++;
   }
 
   public search(r: IRect, out: K[]): void {
-    const {minX, minY, maxX, maxY} = r;
-    const root = this._root;
-    if (root.minX > maxX || root.maxX < minX || root.minY > maxY || root.maxY < minY) return;
-    const stack = this.stack;
-    let sp = 0;
-    stack[sp++] = root;
-    while (sp > 0) {
-      const node = stack[--sp];
-      const ch = node.children;
-      const n = ch.length;
-      if (node.height === 1) {
-        for (let i = 0; i < n; i++) {
-          const e = ch[i] as RTreeEntry<K>;
-          if (e.minX <= maxX && e.maxX >= minX && e.minY <= maxY && e.maxY >= minY) out.push(e.id);
-        }
-        continue;
-      }
-      for (let i = 0; i < n; i++) {
-        const c = ch[i] as RTreeNode<K>;
-        if (c.minX > maxX || c.maxX < minX || c.minY > maxY || c.maxY < minY) continue;
-        if (c.minX >= minX && c.maxX <= maxX && c.minY >= minY && c.maxY <= maxY) collect(c, out);
-        else stack[sp++] = c;
-      }
-    }
+    searchIn(this.a, r, out, this.stack);
   }
 
   public nearest(x: number, y: number, k: number, maxDist2: number, out: K[]): void {
-    if (k <= 0 || !this.entries.size) return;
-    const q = this.queue;
-    q.clear();
-    let found = 0;
-    let node: RTreeNode<K> | undefined = this._root;
-    while (node) {
-      const ch = node.children;
-      for (let i = 0, n = ch.length; i < n; i++) {
-        const c = ch[i];
-        const d = pointDist2(c, x, y);
-        if (d <= maxDist2) q.push(c, d);
-      }
-      while (q.peek() instanceof RTreeEntry) {
-        out.push((q.pop() as RTreeEntry<K>).id);
-        if (++found === k) return;
-      }
-      node = q.pop() as RTreeNode<K> | undefined;
-    }
+    // A fractional k would never fill the bounded heap, which would then drop nearer entries.
+    const n = Math.floor(k);
+    if (n > 0 && this.slots.size) nearestIn(this.a, x, y, n, maxDist2, out, this.queue, this.near, this.held);
   }
 
+  /** Hands `fn` one rectangle, overwritten for every entry: copy it to keep it. */
   public forEach(fn: (id: K, r: IRect) => void): void {
-    this.entries.forEach((e, id) => fn(id, e));
+    const a = this.a;
+    // One per call: a forEach nested in `fn` must not overwrite the outer one.
+    const r = new Rect();
+    this.slots.forEach((s, id) => {
+      const box = a.eBox;
+      const b = s << 2;
+      r.minX = box[b];
+      r.minY = box[b + 1];
+      r.maxX = box[b + 2];
+      r.maxY = box[b + 3];
+      fn(id, r);
+    });
   }
 
-  // TODO: one-by-one inserts trail rbush, which keeps no id Map and stores the caller's object; profile both before tuning.
+  /** Copies out every entry in Map order: its id to `all`, its box to `boxes`, its index there to `at[slot]`. */
+  private gather(all: K[], boxes: Float64Array, at: Int32Array): number {
+    const eBox = this.a.eBox;
+    let i = 0;
+    this.slots.forEach((s, id) => {
+      at[s] = i;
+      all.push(id);
+      const b = s << 2;
+      const p = i++ << 2;
+      boxes[p] = eBox[b];
+      boxes[p + 1] = eBox[b + 1];
+      boxes[p + 2] = eBox[b + 2];
+      boxes[p + 3] = eBox[b + 3];
+    });
+    return i;
+  }
+
+  /**
+   * Replaces the tree, and the Map, with ones bulk loaded from `all` and
+   * their `boxes`, sized to fit.
+   *
+   * @param fresh `all` may repeat an id: then nothing changes, and this returns false
+   */
+  private build(all: readonly K[], boxes: Float64Array, n: number, fresh: boolean): boolean {
+    const a = new Arena<K>(this.maxEntries, this.minEntries, n);
+    const from = bulkBuild(a, all, boxes, n);
+    const slot = new Int32Array(n);
+    for (let j = 0; j < n; j++) slot[from[j]] = j;
+    // In the order of `all`, which a later rebuild follows.
+    const slots = new Map<K, number>();
+    for (let i = 0; i < n; i++) {
+      slots.set(all[i], slot[i]);
+      if (fresh && slots.size === i) return false;
+    }
+    this.slots = slots;
+    this.a = a;
+    this.churn = 0;
+    return true;
+  }
+
   private add(id: K, r: IRect): void {
-    const e = new RTreeEntry<K>(id, r);
-    this.entries.set(id, e);
-    this.place(e, 1);
+    const a = this.a;
+    const s = a.newEntry(id, r);
+    this.slots.set(id, s);
+    a.place(s, 1);
     this.version++;
     this.churn++;
   }
 
-  private move(e: RTreeEntry<K>, r: IRect): void {
-    if (e.equals(r)) return;
-    let node: RTreeNode<K> | null = e.parent;
-    if (node.contains(r)) {
-      e.setTo(r);
-      while (node && node.refit()) node = node.parent;
+  private move(s: number, r: IRect): void {
+    const a = this.a;
+    const box = a.eBox;
+    const b = s << 2;
+    const {minX, minY, maxX, maxY} = r;
+    const x0 = box[b];
+    const y0 = box[b + 1];
+    const x1 = box[b + 2];
+    const y1 = box[b + 3];
+    if (x0 === minX && y0 === minY && x1 === maxX && y1 === maxY) return;
+    const leaf = a.eLeaf[s];
+    const nBox = a.nBox;
+    const l = leaf << 2;
+    if (minX >= nBox[l] && maxX <= nBox[l + 2] && minY >= nBox[l + 1] && maxY <= nBox[l + 3]) {
+      box[b] = minX;
+      box[b + 1] = minY;
+      box[b + 2] = maxX;
+      box[b + 3] = maxY;
+      // `x0 + NaN`, not a ternary of NaN and `x0`, which would box both.
+      a.shrink(
+        leaf,
+        x0 + (minX === x0 ? NaN : 0),
+        y0 + (minY === y0 ? NaN : 0),
+        x1 + (maxX === x1 ? NaN : 0),
+        y1 + (maxY === y1 ? NaN : 0),
+      );
     } else {
-      this.detach(e);
-      e.setTo(r);
-      this.place(e, 1);
+      a.detach(s);
+      a.setBox(s, r);
+      a.place(s, 1);
       this.churn++;
     }
     this.version++;
-  }
-
-  private place(item: RTreeChild<K>, height: number): void {
-    let node = this._root;
-    while (node.height > height) node = chooseChild(node, item);
-    node.children.push(item);
-    item.parent = node;
-    for (let n: RTreeNode<K> | null = node; n && !n.contains(item); n = n.parent) n.union(item);
-    const max = this.maxEntries;
-    const min = this.minEntries;
-    while (node.children.length > max) {
-      const sibling = split(node, min);
-      const parent: RTreeNode<K> | null = node.parent;
-      if (!parent) {
-        const root = new RTreeNode<K>(node.height + 1, [node, sibling]);
-        node.parent = sibling.parent = root;
-        root.refit();
-        this._root = root;
-        return;
-      }
-      parent.children.push(sibling);
-      sibling.parent = parent;
-      node = parent;
-    }
-  }
-
-  /** Guttman 1984 CondenseTree. */
-  private detach(e: RTreeEntry<K>): void {
-    let node = e.parent;
-    removeChild(node.children, e);
-    const min = this.minEntries;
-    const orphans = this.orphans;
-    for (;;) {
-      const parent = node.parent;
-      if (!parent) {
-        node.refit();
-        break;
-      }
-      const ch = node.children;
-      if (ch.length < min) {
-        removeChild(parent.children, node);
-        for (let i = 0, n = ch.length; i < n; i++) orphans.push(ch[i]);
-      } else if (!node.refit()) break;
-      node = parent;
-    }
-    for (let i = 0, n = orphans.length; i < n; i++) {
-      const o = orphans[i];
-      this.place(o, o instanceof RTreeNode ? o.height + 1 : 1);
-    }
-    orphans.length = 0;
-    let root = this._root;
-    while (root.height > 1 && root.children.length === 1) {
-      root = root.children[0] as RTreeNode<K>;
-      root.parent = null;
-    }
-    this._root = root;
   }
 }

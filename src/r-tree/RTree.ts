@@ -138,7 +138,7 @@ export class RTree<K = unknown> implements SpatialIndex<K> {
   public rebuild(): void {
     const all: K[] = [];
     const boxes = new Float64Array(this.slots.size * 4);
-    this.build(all, boxes, this.gather(all, boxes, new Int32Array(this.a.eLeaf.length)), false);
+    this.build(all, boxes, this.gather(all, boxes), false);
   }
 
   public clear(): void {
@@ -175,12 +175,12 @@ export class RTree<K = unknown> implements SpatialIndex<K> {
     });
   }
 
-  /** Copies out every entry in Map order: its id to `all`, its box to `boxes`, its index there to `at[slot]`. */
-  private gather(all: K[], boxes: Float64Array, at: Int32Array): number {
+  /** Copies out every entry in Map order: its id to `all`, its box to `boxes`, its index there to `at[slot]` if given. */
+  private gather(all: K[], boxes: Float64Array, at?: Int32Array): number {
     const eBox = this.a.eBox;
     let i = 0;
     this.slots.forEach((s, id) => {
-      at[s] = i;
+      if (at) at[s] = i;
       all.push(id);
       const b = s << 2;
       const p = i++ << 2;
@@ -252,7 +252,8 @@ export class RTree<K = unknown> implements SpatialIndex<K> {
       );
     } else {
       a.detach(s);
-      a.setBox(s, r);
+      // The coordinates read above, not `r` again: a second read could throw with the entry detached.
+      a.setBox(s, minX, minY, maxX, maxY);
       a.place(s, 1);
       this.churn++;
     }

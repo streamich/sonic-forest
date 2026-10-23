@@ -307,6 +307,36 @@ test('a load or insert that throws leaves the tree as it was', () => {
   expect(checkTree(t)).toBe('');
 });
 
+test('reads each side of an input rectangle once', () => {
+  const t = new RTree<number>(4);
+  for (let i = 0; i < 50; i++) t.insert(i, xywh(i * 10, 0, 5, 5));
+  let reads = 0;
+  const counted = (r: IRect): IRect => ({
+    get minX() {
+      reads++;
+      return r.minX;
+    },
+    get minY() {
+      reads++;
+      return r.minY;
+    },
+    get maxX() {
+      reads++;
+      return r.maxX;
+    },
+    get maxY() {
+      reads++;
+      return r.maxY;
+    },
+  });
+  t.insert(100, counted(xywh(1, 1, 1, 1)));
+  // inside its leaf, then out of it
+  t.update(100, counted(xywh(1.5, 1.5, 1, 1)));
+  t.update(100, counted(xywh(9000, 9000, 1, 1)));
+  expect(reads).toBe(12);
+  expect(checkTree(t)).toBe('');
+});
+
 test('releases the arrays it grew once it shrinks to one leaf', () => {
   const t = new RTree<number>(9);
   const capacity = (): number => (t as unknown as {a: {eLeaf: Int32Array}}).a.eLeaf.length;

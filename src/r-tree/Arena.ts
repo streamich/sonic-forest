@@ -149,12 +149,7 @@ export class Arena<K> {
     if (s >= 0) this.eFree = this.eLeaf[s];
     else if ((s = this.eLen++) === this.eLeaf.length) this.growEntries(s + 1);
     this.eIds[s] = id;
-    const box = this.eBox;
-    const b = s << 2;
-    box[b] = minX;
-    box[b + 1] = minY;
-    box[b + 2] = maxX;
-    box[b + 3] = maxY;
+    this.setBox(s, minX, minY, maxX, maxY);
     return s;
   }
 
@@ -166,13 +161,13 @@ export class Arena<K> {
     this.eFree = s;
   }
 
-  public setBox(s: number, r: IRect): void {
+  public setBox(s: number, minX: number, minY: number, maxX: number, maxY: number): void {
     const box = this.eBox;
     const b = s << 2;
-    box[b] = r.minX;
-    box[b + 1] = r.minY;
-    box[b + 2] = r.maxX;
-    box[b + 3] = r.maxY;
+    box[b] = minX;
+    box[b + 1] = minY;
+    box[b + 2] = maxX;
+    box[b + 3] = maxY;
   }
 
   public reserveNodes(n: number): void {

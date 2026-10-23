@@ -23,30 +23,30 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">100% </span>
+                <span class="strong">72.22% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>18/18</span>
+                <span class='fraction'>13/18</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">100% </span>
+                <span class="strong">66.66% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>12/12</span>
+                <span class='fraction'>8/12</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">100% </span>
+                <span class="strong">25% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>4/4</span>
+                <span class='fraction'>1/4</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">100% </span>
+                <span class="strong">81.25% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>16/16</span>
+                <span class='fraction'>13/16</span>
             </div>
         
             
@@ -61,7 +61,7 @@
             </div>
         </template>
     </div>
-    <div class='status-line high'></div>
+    <div class='status-line medium'></div>
     <pre><table class="coverage">
 <tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
 <a name='L2'></a><a href='#L2'>2</a>
@@ -82,24 +82,24 @@
 <a name='L17'></a><a href='#L17'>17</a>
 <a name='L18'></a><a href='#L18'>18</a>
 <a name='L19'></a><a href='#L19'>19</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">3x</span>
-<span class="cline-any cline-yes">3x</span>
-<span class="cline-any cline-yes">3x</span>
-<span class="cline-any cline-yes">1398103x</span>
-<span class="cline-any cline-yes">1398103x</span>
-<span class="cline-any cline-yes">1398103x</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-yes">5483317x</span>
+<span class="cline-any cline-yes">5483317x</span>
+<span class="cline-any cline-yes">5483317x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">3x</span>
-<span class="cline-any cline-yes">1478980x</span>
-<span class="cline-any cline-yes">3x</span>
-<span class="cline-any cline-yes">3x</span>
-<span class="cline-any cline-yes">79195x</span>
-<span class="cline-any cline-yes">79195x</span>
-<span class="cline-any cline-yes">79195x</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">3x</span>
-<span class="cline-any cline-yes">316780x</span>
-<span class="cline-any cline-yes">3x</span></td><td class="text"><pre class="prettyprint lang-js">import type {IRect} from './types';
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-yes">4x</span></td><td class="text"><pre class="prettyprint lang-js">import type {IRect} from './types';
 &nbsp;
 export const pointDist2 = (r: IRect, x: number, y: number): number =&gt; {
   const dx = x &lt; r.minX ? r.minX - x : x &gt; r.maxX ? x - r.maxX : 0;
@@ -108,15 +108,15 @@ export const pointDist2 = (r: IRect, x: number, y: number): number =&gt; {
 };
 &nbsp;
 export const enlargedArea = (a: IRect, b: IRect): number =&gt;
-  (Math.max(a.maxX, b.maxX) - Math.min(a.minX, b.minX)) * (Math.max(a.maxY, b.maxY) - Math.min(a.minY, b.minY));
+  (Math.max(a.maxX, b<span class="fstat-no" title="function not covered" >.m</span>axX) - M<span class="cstat-no" title="statement not covered" >ath.min(a.minX, b.minX)) * (Math.max(a.maxY, b.maxY) - Math.min(a.minY, b.minY));</span>
 &nbsp;
-export const overlapArea = (a: IRect, b: IRect): number =&gt; {
-  const w = Math.min(a.maxX, b.maxX) - Math.max(a.minX, b.minX);
-  const h = Math.min(a.maxY, b.maxY) - Math.max(a.minY, b.minY);
-  return w &gt; 0 &amp;&amp; h &gt; 0 ? w * h : 0;
+export const overlap<span class="fstat-no" title="function not covered" >Ar</span>ea = (a: IRect, b: IRect): number =&gt; {
+  const w = Ma<span class="cstat-no" title="statement not covered" >th.min(a.maxX, b.maxX) - Math.max(a.minX, b.minX);</span>
+  const h = Ma<span class="cstat-no" title="statement not covered" >th.min(a.maxY, b.maxY) - Math.max(a.minY, b.minY);</span>
+  re<span class="cstat-no" title="statement not covered" >turn w &gt; 0 &amp;&amp; h &gt; 0 ? w * h : 0;</span>
 };
 &nbsp;
-export const margin = (r: IRect): number =&gt; r.maxX - r.minX + (r.maxY - r.minY);
+export const ma<span class="fstat-no" title="function not covered" >rg</span>in = <span class="cstat-no" title="statement not covered" >(r: IRect): number =&gt; r.maxX - r.min</span>X + (r.maxY - r.minY);
 &nbsp;</pre></td></tr></table></pre>
 
                 <div class='push'></div><!-- for sticky footer -->
@@ -124,7 +124,7 @@ export const margin = (r: IRect): number =&gt; r.maxX - r.minX + (r.maxY - r.min
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2026-10-21T14:58:07.324Z
+                at 2026-10-23T14:54:19.544Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

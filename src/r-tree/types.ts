@@ -1,3 +1,4 @@
+/** `minX <= maxX` and `minY <= maxY`: an inverted rectangle may be missed or misranked. */
 export interface IRect {
   readonly minX: number;
   readonly minY: number;
@@ -31,6 +32,6 @@ export interface SpatialIndex<K = unknown> {
    * candidates with exact geometry.
    */
   nearest(x: number, y: number, k: number, maxDist2: number, out: K[]): void;
-  /** @param fn must not mutate the rectangle, nor the index. */
+  /** @param fn must not mutate the rectangle, nor the index; the rectangle is valid only during the call. */
   forEach(fn: (id: K, r: IRect) => void): void;
 }

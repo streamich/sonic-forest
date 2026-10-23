@@ -41,12 +41,22 @@ export const checkTree = <K>(t: RTree<K>, oracle?: LinearIndex<K>): string => {
   const err = walk(root, true);
   if (err) return err;
   if (leaves.size !== t.size) return 'tree holds ' + leaves.size + ' entries, size is ' + t.size;
+  const byId = new Map<K, RTreeEntry<K>>();
+  for (const e of leaves) {
+    if (byId.has(e.id)) return 'id linked twice: ' + e.id;
+    byId.set(e.id, e);
+  }
   let mapErr = '';
   let mapped = 0;
+  // Private access: an id mapped to another entry's slot of an equal rectangle shows only here.
+  const own = t as unknown as {slots: Map<K, number>; a: {eIds: K[]}};
   t.forEach((id, r) => {
     mapped++;
-    if (!leaves.has(r as RTreeEntry<K>)) mapErr ||= 'map entry not in the tree: ' + id;
-    else if ((r as RTreeEntry<K>).id !== id) mapErr ||= 'map key differs from entry id: ' + id;
+    const e = byId.get(id);
+    const held = own.a.eIds[own.slots.get(id)!];
+    if (!e) mapErr ||= 'map entry not in the tree: ' + id;
+    else if (!e.equals(r)) mapErr ||= 'map rectangle differs from the tree: ' + id;
+    else if (held !== id && (held === held || id === id)) mapErr ||= 'map slot holds another id: ' + id;
   });
   if (mapErr) return mapErr;
   if (mapped !== leaves.size) return 'map size differs from the tree';

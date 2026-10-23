@@ -79,7 +79,8 @@ export class LinearIndex<K = unknown> implements SpatialIndex<K> {
   }
 
   public nearest(x: number, y: number, k: number, maxDist2: number, out: K[]): void {
-    if (k <= 0) return;
+    const m = Math.floor(k);
+    if (!(m > 0)) return;
     const ids = this.ids;
     const rects = this.rects;
     const nearIds = this.nearIds;
@@ -87,8 +88,8 @@ export class LinearIndex<K = unknown> implements SpatialIndex<K> {
     let len = 0;
     for (let i = 0, n = ids.length; i < n; i++) {
       const d = pointDist2(rects[i], x, y);
-      if (d > maxDist2 || (len === k && d >= nearDist2[len - 1])) continue;
-      let j = len < k ? len++ : len - 1;
+      if (d > maxDist2 || (len === m && d >= nearDist2[len - 1])) continue;
+      let j = len < m ? len++ : len - 1;
       for (; j > 0 && nearDist2[j - 1] > d; j--) {
         nearDist2[j] = nearDist2[j - 1];
         nearIds[j] = nearIds[j - 1];
